@@ -5,10 +5,13 @@
                 Utilisateur
             </div>
             <div>
-                <a class="nav-link" href="recherche.php">Recherche</a>
+                <a class="nav-link" href="index.php">Tableau de bord</a>
             </div>
             <div>
                 <a class="nav-link" href="nouveau_contact.php">Nouveau contact</a>
+            </div>
+            <div>
+                <a class="nav-link" href="recherche.php">Recherche</a>
             </div>
             <div>
                 <button type="button" class="btn btn-secondary">Déconnexion</button>

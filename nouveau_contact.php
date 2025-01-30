@@ -1,17 +1,8 @@
 <?php
-session_start();
+
 
 require_once(__DIR__ . '/config/mysql.php');
 require_once(__DIR__ . '/config/databaseconnect.php');
-
-
-
-    $getVilles = $mysqlCreche->prepare("SELECT ville FROM villes");
-    $getVilles->execute();
-
-    // Récupérer les résultats
-    $villes = $getVilles->fetchAll(PDO::FETCH_ASSOC);
-
 
 $operateur = 'jzabiolle@youinvest.fr';
 /**
@@ -62,33 +53,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
             'sens' => $sens
     ]);
     }
+
+    //on ajoute la ville, le code postal et le département
+    //Comme il peut y'avoir plusieurs lignes on boucle sur les input
     foreach ($_POST as $key => $value) {
         if (strpos($key, 'ville') === 0) {
             $ville = trim(strip_tags($value));
-            
-            $postalCodeKey = 'postalCode' . substr($key, 5); // Correction ici
+            //on récupère le code postal
+            $postalCodeKey = 'postalCode' . substr($key, 5);
             if (isset($_POST[$postalCodeKey])) {
                 $postalCode = trim(strip_tags($_POST[$postalCodeKey]));
-    
+                
+                //on vérifie si la ville existe déjà dans la base villes
                 $checkVille = $mysqlCreche->prepare('SELECT * FROM villes WHERE ville = :ville');
                 $checkVille->execute(['ville' => $ville]);
-    
+                
+                //si elle exista pas on l'ajoute
                 if (!$checkVille->rowCount() > 0) {
                     $insertVille = $mysqlCreche->prepare('INSERT INTO villes(ville, code_postal) VALUES (:ville, :postalCode)');
                     $insertVille->execute([
                         'ville' => $ville,
-                        'postalCode' => $postalCode, // Correction ici
+                        'postalCode' => $postalCode, 
                     ]);
                 }
             }
-    
-            $departementKey = 'departement' . substr($key, 5); // Correction ici
+            
+            // on ajoute le dept dans la base départements
+            $departementKey = 'departement' . substr($key, 5);
             if (isset($_POST[$departementKey])) {
                 $departement = trim(strip_tags($_POST[$departementKey]));
                 
+                //on vérifie qu'il n'est pas déjà dans la base
                 $checkDepartement = $mysqlCreche->prepare('SELECT * FROM departements WHERE departement = :departement');
                 $checkDepartement->execute(['departement' => $departement]);
-    
+                
+                //s'il est pas dans la base, on l'ajoute
                 if (!$checkDepartement->rowCount() > 0) {
                     $insertDepartement = $mysqlCreche->prepare('INSERT INTO departements (departement) VALUES (:departement)');
                     $insertDepartement->execute([
@@ -96,26 +95,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
                     ]);
                 }
             }
+
+            //on remplit la base de données localisation
+            $insertLocalisation = $mysqlCreche->prepare('INSERT INTO localisation (nom, contact, ville, departement) VALUES (:nom, :contact, :ville, :departement)');
+            $insertLocalisation -> execute([
+                'nom' => $nom,
+                'contact' => $contact,
+                'ville' => $ville,
+                'departement' => $departement,
+            ]);
+        }
+    }
+    //on ajoute les intérêts
+    foreach ($_POST as $key => $value) {
+        if (strpos($key, 'niveau') === 0) {
+            $niveau = trim(strip_tags($value));
+    
+            $villeInterestKey = 'villeInterest' . substr($key, 6); // 6 correspond à la longueur de 'niveau'
+            $departementInterestKey = 'departementInterest' . substr($key, 6); // 6 correspond à la longueur de 'niveau'
+            $identifierKey = 'identifierInterest' . substr($key, 6); // 6 correspond à la longueur de 'niveau'
+    
+            $villeInterest = isset($_POST[$villeInterestKey]) ? trim(strip_tags($_POST[$villeInterestKey])) : '';
+            $departementInterest = isset($_POST[$departementInterestKey]) ? trim(strip_tags($_POST[$departementInterestKey])) : '';
+            $identifier = isset($_POST[$identifierKey]) ? trim(strip_tags($_POST[$identifierKey])) : '';
+    
+            $insertInterest = $mysqlCreche->prepare('INSERT INTO interet (niveau, contact, ville, departement, identifiant) VALUES (:niveau, :contact, :ville, :departement, :identifiant)');
+            $insertInterest->execute([
+                'niveau' => $niveau,
+                'contact' => $contact,
+                'ville' => $villeInterest,
+                'departement' => $departementInterest,
+                'identifiant' => $identifier
+            ]);
         }
     }
 }
 
+require_once(__DIR__ . '/views/head.php'); 
+ 
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nouveaux contacts</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css">
-</head>
+
 <body>
-    <?php require_once(__DIR__ . '/header.php'); ?>
+    <?php require_once(__DIR__ . '/views/header.php'); ?>
     <div class="container">
         <div class="container form-container mt-5">
             <form id="form" method="post" action="nouveau_contact.php">
@@ -161,29 +182,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
                         <label for="ville">Ville</label>
                         <input class="form-control" list="villes" id="ville" name="ville">
                         <datalist id="villes">
-                        <?php
-                            if (isset($villes)) {
-                                foreach ($villes as $ville) {
-                                echo "<option value=\"".$ville['nom_ville']."\"></option>";
-                                }
-                            }
-                        ?>
+                            <?php
+                                include(__DIR__ . '/views/options_villes.php');
+                            ?>
                         </datalist>
                     </div>
                     <div class="form-group col-md-2">
                         <label for="postalCode">Code postal</label>
-                        <input class="form-control" list="postalCodes" id="postalCode" name="postalCode">
-                        <datalist id="postalCodes">
-                            <option value= null>
-                            <option value="Consultation">
-                        </datalist>
+                        <input class="form-control" id="postalCode" name="postalCode">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="departement">Département</label>
                         <input class="form-control" list="departements" id="departement" name="departement">
                         <datalist id="departements">
-                            <option value= null>
-                            <option value="Consultation">
+                            <?php
+                                include(__DIR__ . '/views/options_departements.php');
+                            ?>
                         </datalist>
                     </div>
                     <div class="form-group col-md-2 d-none" id="seller-choice">
@@ -200,30 +214,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
                 </div>
                 <h5 class="mt-3" id="buyer-title">Intérêt</h5>
                 <div class="row form-row mt-3" id="interest">
-                    <div class="form-group col-md-3">
-                        <label for="villeInterest">Ville</label>
-                        <input class="form-control" list="villesInterest" id="villeInterest" name="villeInterest">
-                        <datalist id="villesInterest">
-                            <option value= null>
-                            <option value="Consultation">
-                        </datalist>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="departementInterest">Département</label>
-                        <input class="form-control" list="departementsInterest" id="departementInterest" name="departementInterest">
-                        <datalist id="departementsInterest">
-                            <option value= null>
-                            <option value="Consultation">
-                        </datalist>
-                    </div>    
-                    <div class="form-group col-md-3">
-                        <label for="identifiantInterest">Identifiant</label>
-                        <input class="form-control" list="identifiantsInterest" id="identifiantInterest" name="identifiantInterest">
-                        <datalist id="identifiantsInterest">
-                            <option value= null>
-                            <option value="Consultation">
-                        </datalist>
-                    </div>
                     <div class="form-group col-md-2">
                         <label for="niveau">Niveau</label>
                         <select class="form-control" name="niveau" id="niveau">
@@ -235,12 +225,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
                             <option value="achat">Achat réalisé</option>
                         </select>
                     </div>
+                    <div class="form-group col-md-3">
+                        <label for="villeInterest">Ville</label>
+                        <input class="form-control" list="villesInterest" id="villeInterest" name="villeInterest">
+                        <datalist id="villesInterest">
+                            <?php
+                                include(__DIR__ . '/views/options_villes.php');
+                            ?>
+                        </datalist>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="departementInterest">Département</label>
+                        <input class="form-control" list="departementsInterest" id="departementInterest" name="departementInterest">
+                        <datalist id="departementsInterest">
+                            <?php
+                                include(__DIR__ . '/views/options_departements.php');
+                            ?>
+                        </datalist>
+                    </div>    
+                    <div class="form-group col-md-3">
+                        <label for="identifierInterest">Identifiant</label>
+                        <input class="form-control" list="identifiersInterest" id="identifierInterest" name="identifierInterest">
+                        <datalist id="identifierInterest">
+                            <option value= null>
+                            <option value="Consultation">
+                        </datalist>
+                    </div>
                     <button type="button" class="btn btn-secondary mt-3" id="add-interest">Ajouter un intérêt</button>
                 </div>
                 <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
             </form>
         </div>
     </div>
-    <script src="js/script.js" defer> </script>
+    <script src="js/form_contact.js" defer> </script>
 </body>
 </html>

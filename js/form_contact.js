@@ -6,6 +6,7 @@ const sellerChosen = document.getElementById('seller-choice')
 const interest = document.getElementById('interest')
 const buyerTitle = document.getElementById('buyer-title')
 
+
 choiceSeller.addEventListener('click', () => {
 
     sellerChosen.classList.remove('d-none')
@@ -181,13 +182,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const identifierDiv = document.createElement('div')
         identifierDiv.className = 'form-group col-md-3'
         const identifierLabel = document.createElement('label')
-        identifierLabel.setAttribute('for', 'identifiant')
-        identifierLabel.textContent = 'Identifiant'
+        identifierLabel.setAttribute('for', 'identifier')
+        identifierLabel.textContent = 'Identifier'
         const identifierInput = document.createElement('input')
         identifierInput.className = 'form-control'
-        identifierInput.setAttribute('list', 'identifiants')
-        identifierInput.setAttribute('name', 'identifiant')
-        identifierInput.setAttribute('id', 'identifiant'+ nombreClicInterest)
+        identifierInput.setAttribute('list', 'identifiersInterest')
+        identifierInput.setAttribute('name', 'identifier')
+        identifierInput.setAttribute('id', 'identifier'+ nombreClicInterest)
         identifierDiv.appendChild(identifierLabel)
         identifierDiv.appendChild(identifierInput)
 
@@ -202,12 +203,12 @@ document.addEventListener('DOMContentLoaded', () => {
         niveauSelect.setAttribute('name', 'niveau')
         niveauSelect.setAttribute('id', 'niveau'+ nombreClicInterest)
         const niveauOptions = [
-        { value: null, text: '' },
-        { value: 'interesse', text: 'Intéressé' },
-        { value: 'NDAenvoye', text: 'NDA envoyé' },
-        { value: 'dossierEnvoye', text: 'Dossier envoyé' },
-        { value: 'LOI', text: 'LOI' },
-        { value: 'achat', text: 'Achat réalisé' }
+            { value: null, text: '' },
+            { value: 'interesse', text: 'Intéressé' },
+            { value: 'NDAenvoye', text: 'NDA envoyé' },
+            { value: 'dossierEnvoye', text: 'Dossier envoyé' },
+            { value: 'LOI', text: 'LOI' },
+            { value: 'achat', text: 'Achat réalisé' }
         ]
         niveauOptions.forEach(function(optionData) {
         const option = document.createElement('option')
@@ -227,10 +228,10 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         removeDivInterest.appendChild(removeButtonInterest)
         
-        newRowInterest.appendChild(villeDivInterest)
-        newRowInterest.appendChild(identifierDiv)
-        newRowInterest.appendChild(departementDivInterest)
         newRowInterest.appendChild(niveauDiv)
+        newRowInterest.appendChild(villeDivInterest)
+        newRowInterest.appendChild(departementDivInterest)
+        newRowInterest.appendChild(identifierDiv)
         newRowInterest.appendChild(removeDivInterest)
 
         interestContainer.prepend(newRowInterest)
