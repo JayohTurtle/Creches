@@ -39,7 +39,7 @@ body{
     max-width: 1200px;
 }
 
-/*index.html*/
+/*index*/
 .creches{
     width: 300px;
     height: 500px;
@@ -47,6 +47,29 @@ body{
     border-radius: 10px;
 
 }
+
+.radio-group {
+    display: flex;
+    flex-direction: row;
+}
+
+.radio-item {
+    display: flex;
+    align-items: center;
+    margin-left: 10px; /* Ajuste cet espace selon tes besoins */
+}
+
+.radio-item label {
+    margin-left: 10px; /* Ajuste cet espace selon tes besoins */
+}
+
+
+
+
+
+
+
+
 
 
 

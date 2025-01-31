@@ -165,6 +165,33 @@ document.addEventListener('DOMContentLoaded', () => {
         villeInputInterest.setAttribute('id', 'villeInterest' + nombreClicInterest)
         villeDivInterest.appendChild(villeLabelInterest)
         villeDivInterest.appendChild(villeInputInterest)
+
+        const postalCodeDivInterest = document.createElement('div')
+        postalCodeDivInterest.className = 'form-group col-md-2'
+        const postalCodeLabelInterest = document.createElement('label')
+        postalCodeLabelInterest.setAttribute('for', 'postalCodeInterest')
+        postalCodeLabelInterest.textContent = 'Code postal'
+        const postalCodeInputInterest = document.createElement('input')
+        postalCodeInputInterest.className = 'form-control'
+        postalCodeInputInterest.setAttribute('name', 'postalCodeInterest')
+        postalCodeInputInterest.setAttribute('id', 'postalCodeInterest' + nombreClicInterest)
+        postalCodeDivInterest.appendChild(postalCodeLabelInterest)
+        postalCodeDivInterest.appendChild(postalCodeInputInterest)
+
+        const rayonDivInterest = document.createElement('div')
+        rayonDivInterest.className = 'form-group col-md-2'
+        const rayonLabelInterest = document.createElement('label')
+        rayonLabelInterest.setAttribute('for', 'rayonInterest')
+        rayonLabelInterest.textContent = 'Rayon'
+        const rayonInputInterest = document.createElement('input')
+        rayonInputInterest.className = 'form-control'
+        rayonInputInterest.setAttribute('name', 'rayonInterest')
+        rayonInputInterest.setAttribute('id', 'rayonInterest' + nombreClicInterest)
+        rayonDivInterest.appendChild(rayonLabelInterest)
+        rayonDivInterest.appendChild(rayonInputInterest)
+
+        const interestDiv = document.createElement('div')
+        interestDiv.className = 'row form-row mt-3'
         
         const departementDivInterest = document.createElement('div')
         departementDivInterest.className = 'form-group col-md-3'
@@ -183,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
         identifierDiv.className = 'form-group col-md-3'
         const identifierLabel = document.createElement('label')
         identifierLabel.setAttribute('for', 'identifier')
-        identifierLabel.textContent = 'Identifier'
+        identifierLabel.textContent = 'Identifiant'
         const identifierInput = document.createElement('input')
         identifierInput.className = 'form-control'
         identifierInput.setAttribute('list', 'identifiersInterest')
@@ -217,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
         niveauSelect.appendChild(option)
         })
         niveauDiv.appendChild(niveauSelect)
-
+        
         const removeDivInterest = document.createElement('div')
         removeDivInterest.className = 'form-group col-md-1 d-flex align-items-end'
         const removeButtonInterest = document.createElement('button')
@@ -230,9 +257,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         newRowInterest.appendChild(niveauDiv)
         newRowInterest.appendChild(villeDivInterest)
-        newRowInterest.appendChild(departementDivInterest)
-        newRowInterest.appendChild(identifierDiv)
-        newRowInterest.appendChild(removeDivInterest)
+        newRowInterest.appendChild(postalCodeDivInterest)
+        newRowInterest.appendChild(rayonDivInterest)
+        newRowInterest.appendChild(interestDiv)
+        interestDiv.appendChild(departementDivInterest)
+        interestDiv.appendChild(identifierDiv)
+        interestDiv.appendChild(removeDivInterest)
 
         interestContainer.prepend(newRowInterest)
     })
