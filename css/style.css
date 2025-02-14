@@ -7,12 +7,19 @@
 /*police et couleur principale des textes*/
 body{
     font-family:"Poppins", sans-serif;
-    color:black;
+    background-color: #121212; /* Noir profond */
+    color: #E0E0E0; /* Gris clair pour un bon contraste */
 }
+
 /*Largeur maximale des éléments et centrage du container*/
 .container{
     width: 100%;
     max-width: 1200px;
+    background-color: #1E1E1E;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0px 8px 20px rgba(255, 255, 255, 0.1); /* Ombre légère */
 }
 /*les marges*/
 .mt-200{
@@ -34,18 +41,114 @@ body{
     margin-top: 25px;
 }
 
+/*Les titres*/
+h5, h6 {
+    color: #E0E0E0;
+    font-weight: 600;
+    border-bottom: 2px solid #E0E0E0;
+    padding-bottom: 5px;
+}
+
 /*Header*/
 .custom-container {
     max-width: 1200px;
 }
+#mainNavbar {
+    background-color: #1E1E1E;
+    padding: 10px 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Ombre subtile */
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.navbar .nav-link {
+    color: #E0E0E0;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+.navbar .nav-link:hover {
+    color: #90CAF9; /* Bleu clair pour l'interaction */
+}
+.btn-secondary {
+    background-color: #424242;
+    border: none;
+    outline: none;
+    height: 40px; /* Hauteur fixe pour éviter le déplacement */
+    width: 130px; /* Largeur ajustée */
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
 
-/*index*/
-.creches{
-    width: 300px;
-    height: 500px;
-    border: solid 1px black;
-    border-radius: 10px;
+.btn-secondary:hover {
+    background-color: #616161;
+    box-shadow: inset 0px 2px 5px rgba(144, 202, 249, 0.2); /* Ombre interne pour éviter le déplacement */
+}
 
+
+/*Cartes et boutons*/
+.card {
+    background-color: #1E1E1E;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.15);
+}
+
+.card-title {
+    color: #BB86FC; /* Violet doux */
+}
+
+.card-text {
+    color: #B0B0B0; /* Gris clair */
+}
+
+.btn-primary {
+    background-color: #90CAF9; /* Bleu clair */
+    border: none;
+    transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #64B5F6;
+}
+
+/*New contact*/
+.form-control {
+    background-color: #2A2A2A;
+    color: #E0E0E0;
+    border: 1px solid #A3B3C2;
+}
+.form-control:focus {
+    background-color: #333;
+    color: #fff;
+    border-color: #03DAC6;
+    box-shadow: 0 0 5px #03DAC6;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.radio-item label {
+    margin-bottom: 0;
+}
+
+textarea {
+    resize: none;
+}
+.btn-primary {
+    background-color: #42A5F5; /* Bleu moderne */
+    border: none;
+    padding: 10px 20px;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #1E88E5; /* Bleu plus foncé */
+    transform: scale(1.05);
 }
 
 .radio-group {
@@ -62,14 +165,58 @@ body{
 .radio-item label {
     margin-left: 10px; /* Ajuste cet espace selon tes besoins */
 }
+.error {
+    border: 2px solid red !important; /* Bordure rouge */
+    box-shadow: 0 0 5px red; /* Lueur rouge autour */
+    color: red; /* Texte rouge */
+}
+
+#success-message {
+    color: green;
+    padding: 10px;
+    border: 1px solid green;
+    margin-bottom: 10px;
+    transition: opacity 0.5s ease-out; /* Animation douce */
+}
+.hidden {
+    opacity: 0;
+    pointer-events: none; /* Empêche toute interaction avec l'élément */
+}
 
 
+.error::placeholder {
+    color: red; /* Texte du placeholder en rouge */
+    opacity: 1;
+}
 
 
+/*index*/
+.creches{
+    width: 300px;
+    height: 500px;
+    border: solid 1px black;
+    border-radius: 10px;
+}
 
+/*Research*/
+.small-button {
+    height: 38px; /* Ajuste la hauteur selon celle des inputs */
+    padding: 5px 10px; /* Ajuste le padding */
+    font-size: 16px; /* Ajuste la taille du texte */
+}
 
-
-
-
-
+/*researchResult*/
+.articles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+.article {
+    background: #252525;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 8px rgba(0, 255, 128, 0.1);
+    width: 100%;
+}
 

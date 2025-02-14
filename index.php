@@ -1,15 +1,61 @@
 <?php
-session_start();
 
-require_once(__DIR__ . '/views/head.php'); 
-?>
-<html>
-<body>
-<?php
-    include_once(__DIR__ . '/views/header.php');
-    include_once(__DIR__ . '/views/dashboard.php');
-?>
+include_once('config.php');
+include_once('view.php');
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>  
-</body>
-</html>
+
+// Auto-chargement des modèles et contrôleurs (évite les include à rallonge)
+spl_autoload_register(function ($class) {
+    if (file_exists("Models/$class.php")) {
+        include_once "Models/$class.php";
+    } elseif (file_exists("Controllers/$class.php")) {
+        include_once "Controllers/$class.php";
+    }
+});
+
+// Récupération de l'action (par défaut : "dashboard")
+$action = $_REQUEST['action'] ?? 'dashboard';
+
+// Définition du contrôleur en fonction de l'action demandée
+$controller = null;
+
+switch ($action) {
+    case 'dashboard':
+        $controller = new DashboardController();
+        $controller->showDashboard();
+        break;
+
+    case 'newContactForm':
+        $controller = new ContactFormController();
+        $controller->showContactForm();
+        break;
+
+    case 'saveContact': // Ajout d'une action pour enregistrer un contact
+        $controller = new AddContactController();
+        $controller->handleAddContact();
+        break;
+
+    case 'research':
+        $controller = new ResearchController();
+        $controller->showResearch();
+        break;
+
+    case 'researchResultContact':
+        $controller = new ResearchResultContactController();
+        $controller->showResultContact();
+        break;
+
+    case 'researchResultClient':
+        $controller = new ResearchResultClientController();
+        $controller->showResultClient();
+        break;
+
+    case 'researchResultTaille':
+        $controller = new ResearchResultTailleController();
+        $controller->showResultTaille();
+        break;
+
+    default:
+        echo "La page '$action' n'existe pas.";
+        break;
+}
