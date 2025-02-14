@@ -165,6 +165,12 @@ textarea {
 .radio-item label {
     margin-left: 10px; /* Ajuste cet espace selon tes besoins */
 }
+
+input[type="checkbox"] {
+    transform: scale(1.5); /* Agrandit la checkbox 1.5x */
+    margin-left: 15px; /* Espace entre la case et le texte */
+}
+
 .error {
     border: 2px solid red !important; /* Bordure rouge */
     box-shadow: 0 0 5px red; /* Lueur rouge autour */

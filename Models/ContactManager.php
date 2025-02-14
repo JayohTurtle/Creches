@@ -84,10 +84,16 @@ class ContactManager extends AbstractEntityManager {
             $contact->setSens($row['sens']);
             
             return $contact;
-            
         }
-    
         return null;
+    }
+
+    //Récupére l'id d'un nom de groupe
+    public function getIdContactByName($nom) {
+        $sql = "SELECT idContact FROM contacts WHERE nom = :nom LIMIT 1";
+        $stmt = $this->db->prepare($sql);  // Prépare la requête SQL
+        $stmt->execute(['nom' => $nom]);  // Exécute avec la valeur de l'identifiant
+        return $stmt->fetchColumn();  // Retourne l'ID du contact
     }
     
 }

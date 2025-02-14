@@ -6,10 +6,15 @@ class AddContactController {
     private $localisationManager;
     private $villeManager;
     private $departementManager;
-    private $regionManager;
     private $clientManager;
     private $interetCrecheManager;
-    private $interetManager;
+    private $interetVilleManager;
+    private $interetDepartementManager;
+    private $regionManager;
+    private $interetRegionManager;
+    private $interetTailleManager;
+    private $interetGroupeManager;
+    private $interetFranceManager;
 
     public function __construct() {
         $this->contactManager = new ContactManager();
@@ -18,9 +23,14 @@ class AddContactController {
         $this->villeManager = new VilleManager();
         $this->departementManager = new DepartementManager();
         $this->clientManager = new ClientManager();
-        $this->interetCrecheManager = new InteretCrecheManager();
-        $this->interetManager = new InteretManager();
         $this->regionManager = new RegionManager();
+        $this->interetCrecheManager = new InteretCrecheManager();
+        $this->interetVilleManager = new InteretVilleManager();
+        $this->interetDepartementManager = new InteretDepartementManager();
+        $this->interetRegionManager = new InteretRegionManager();
+        $this->interetTailleManager = new InteretTailleManager();
+        $this->interetGroupeManager = new InteretGroupeManager();
+        $this->interetFranceManager = new InteretFranceManager();
     }
 
     public function handleAddContact() {
@@ -44,17 +54,48 @@ class AddContactController {
             $this->addInteretCreche($postData, $idContact);
             }
 
+            //Vérifier si un intérêt groupe est renseigné et ajouter l'intérêt groupe
+            if (!empty($postData['niveau']) && !empty($postData['groupeInterest'])) {
+                $this->addInteretGroupe($postData, $idContact);
+            }
+
             // Vérifier si le contact est un vendeur avant d'ajouter un client (liée au contact)
             if (isset($postData['directionChoice']) && strtolower(trim($postData['directionChoice'])) === "vendeur") {
             $this->addClient($postData, $idContact);
             }
             
-            //Vérifier si ville, departement ou région sont remplis avant d'ajouter un interet global
-            if (!empty($postData['villeInterest']) || !empty($postData['departementInterest']) || !empty($postData['regionInterest'])){
-            $this->addInteret($postData, $idContact);
+            // Vérifier si villeInterest est rempli avant d'ajouter un intérêt ville
+            if (!empty($postData['villeInterest']) && array_filter($postData['villeInterest'], 'strlen')) {
+                $this->addInteretVille($postData, $idContact);
             }
-            // Redirection après ajout
 
+            // Vérifier si departementInterest est rempli avant d'ajouter un intérêt département
+            if (!empty($postData['departementInterest']) && array_filter($postData['departementInterest'], 'strlen')) {
+                $this->addInteretDepartement($postData, $idContact);
+            }
+
+            // Vérifier si regionInterest est rempli avant d'ajouter un intérêt région
+            if (!empty($postData['regionInterest']) && array_filter($postData['regionInterest'], 'strlen')) {
+                $this->addInteretRegion($postData, $idContact);
+            }
+
+            if (!empty($postData['franceInterest'])){
+                $this->addInteretFrance($idContact);
+            }
+
+            //vérifier si france est rempli avant d'ajouter un intérêt france
+
+            // Vérifier si au moins une des valeurs est remplie avant d'ajouter un intérêt taille
+            if (
+                (!empty($postData['villeInterest']) && array_filter($postData['villeInterest'], 'strlen')) ||
+                (!empty($postData['departementInterest']) && array_filter($postData['departementInterest'], 'strlen')) ||
+                (!empty($postData['regionInterest']) && array_filter($postData['regionInterest'], 'strlen')) ||
+                (!empty($postData['franceInterest']))
+            ) {
+                $this->addInteretTaille($postData, $idContact);
+            }
+
+            // Redirection après ajout
             header("Location: index.php?action=newContactForm&success=1");
             exit();
         }
@@ -196,96 +237,117 @@ class AddContactController {
             );
         }
     }
+    private function addInteretGroupe($postData) {
+            
+        // Récupérer l'ID du contact correspondant au groupe
+        $groupeInterest = $this->sanitizeInput($postData['groupeInterest'] ?? null);
+        $idGroupe = $this->contactManager->getIdContactByName($groupeInterest);
 
-    private function addInteret($postData, $idContact) {
-        $interetsInsérés = [];
-    
-        // 📌 1️⃣ Traitement des villes
-        if (!empty($postData['villeInterest'])) {
-            foreach ($postData['villeInterest'] as $key => $villeInterest) {
-                $villeInterest = $this->sanitizeInput($villeInterest);
-                $codePostalInterest = $this->sanitizeInput($postData['codePostalInterest'][$key] ?? null);
-                $rayonInterest = !empty($postData['rayonInterest'][$key]) && is_numeric($postData['rayonInterest'][$key]) 
-                    ? (int) $this->sanitizeInput($postData['rayonInterest'][$key]) 
-                    : 0;
-    
-                $departementInterest = $this->sanitizeInput($postData['departementInterest'][$key] ?? null);
-                $regionInterest = $this->sanitizeInput($postData['regionInterest'][$key] ?? null);
-    
-                $idDepartement = !empty($codePostalInterest) ? 
-                    $this->departementManager->getDepartementIdByCodePostal($codePostalInterest) : null;
-                $idVille = (!empty($villeInterest) && !empty($codePostalInterest)) ? 
-                    $this->villeManager->insertVilleIfNotExists($villeInterest, $codePostalInterest, $idDepartement) : null;
-                $idRegion = !empty($regionInterest) ? $this->regionManager->getRegionIdByName($regionInterest) : null;
-    
-                // Clé unique pour éviter les doublons
-                $cleInteret = "$idContact-$idVille-$idDepartement-$idRegion";
-                if (!isset($interetsInsérés[$cleInteret])) {
-                    $this->insertInteret($idContact, $idVille, $idDepartement, $idRegion, $rayonInterest, $postData['sizeCreche'] ?? '');
-                    $interetsInsérés[$cleInteret] = true;
-                }
-            }
-        }
-    
-        // 📌 2️⃣ Traitement des départements + région (sans doublons avec les villes déjà insérées)
-        if (!empty($postData['departementInterest'])) {
-            foreach ($postData['departementInterest'] as $key => $departementInterest) {
-                $departementInterest = $this->sanitizeInput($departementInterest);
-                $regionInterest = $this->sanitizeInput($postData['regionInterest'][$key] ?? null);
-    
-                $idDepartement = $this->departementManager->getDepartementIdByName($departementInterest);
-                $idRegion = !empty($regionInterest) ? $this->regionManager->getRegionIdByName($regionInterest) : null;
-    
-                $cleInteret = "$idContact-null-$idDepartement-$idRegion";
-                if (!isset($interetsInsérés[$cleInteret])) {
-                    $this->insertInteret($idContact, null, $idDepartement, $idRegion, null, $postData['sizeCreche'] ?? '');
-                    $interetsInsérés[$cleInteret] = true;
-                }
-            }
-        }
-    
-        // 📌 3️⃣ Traitement des régions seules (évite les doublons)
-        if (!empty($postData['regionInterest'])) {
-            foreach ($postData['regionInterest'] as $key => $regionInterest) {
-                $regionInterest = $this->sanitizeInput($regionInterest);
-                $idRegion = $this->regionManager->getRegionIdByName($regionInterest);
-    
-                $cleInteret = "$idContact-null-null-$idRegion";
-                if (!isset($interetsInsérés[$cleInteret])) {
-                    $this->insertInteret($idContact, null, null, $idRegion, null, $postData['sizeCreche'] ?? '');
-                    $interetsInsérés[$cleInteret] = true;
-                }
-            }
+
+        if ($idGroupe) { // Vérifier si un ID a bien été trouvé
+            $interetGroupe = new InteretGroupe();
+            $interetGroupe->setIdContact($idGroupe);
+            $interetGroupe->setNiveau($this->sanitizeInput($postData['niveau'] ?? null));
+
+            $this->interetGroupeManager->insertInteretGroupe(
+                $interetGroupe->getIdContact(),
+                $interetGroupe->getNiveau(),
+            );
         }
     }
+
+    private function addInteretVille($postData, $idContact) {
+
+        foreach ($postData['villeInterest'] as $key => $villeInterest) {
+            $villeInterest = $this->sanitizeInput($villeInterest);
+            $codePostalInterest = $this->sanitizeInput ($postData['codePostalInterest'][$key]);
+            $rayonInterest = !empty($postData['rayonInterest'][$key]) && is_numeric($postData['rayonInterest'][$key]) 
+            ? (int) $this->sanitizeInput($postData['rayonInterest'][$key]) 
+            : 0;
+        
+        $interetVille = new InteretVille();
+        
+        // Récupérer l'ID du département à partir du code postal
+        $idDepartement = $this->departementManager->getDepartementIdByCodePostal($codePostalInterest);
+
+        // Vérifier si la ville existe, sinon l'ajouter
+        $idVilleInterest = $this->villeManager->insertVilleIfNotExists($villeInterest, $codePostalInterest,$idDepartement);
+        
+        $interetVille->setIdContact($idContact);
+        $interetVille->setIdVille($idVilleInterest);
+        $interetVille->setRayon($rayonInterest ?? 0);
     
-    
-    /**
-     * Fonction pour insérer un intérêt dans la base
-     */
-    private function insertInteret($idContact, $idVille, $idDepartement, $idRegion, $rayonInterest, $taille) {
-    // Vérifier qu'au moins un des trois ID n'est pas NULL avant d'insérer
-    if ($idVille === null && $idDepartement === null && $idRegion === null) {
-        return; // Ne rien insérer si tout est NULL
-    }
-        $interet = new Interet();
-        $interet->setIdContact($idContact);
-        $interet->setIdVille($idVille ?? null);
-        $interet->setIdDepartement($idDepartement ?? null);
-        $interet->setIdRegion($idRegion ?? null);
-        $interet->setTaille($taille);
-        $interet->setRayon($rayonInterest ?? 0);
-    
-        $this->interetManager->insertInteret(
+        $this->interetVilleManager->insertInteretVille(
             $idContact,
-            $interet->getIdVille(),
-            $interet->getIdDepartement(),
-            $interet->getIdRegion(),
-            $interet->getRayon(),
-            $interet->getTaille()
+            $interetVille->getIdVille(),
+            $interetVille->getRayon(),
         );
     }
-    
+}
+    private function addInteretDepartement($postData, $idContact) {
+
+        foreach ($postData['departementInterest'] as $key => $departementInterest) {
+            $departementInterest = $this->sanitizeInput($departementInterest);
+        
+        $interetDepartement = new InteretDepartement();
+        
+        // Récupérer l'ID du département à partir du nom
+        $idDepartementInterest = $this->departementManager->getDepartementIdByName($departementInterest);
+        
+        $interetDepartement->setIdContact($idContact);
+        $interetDepartement->setIdDepartement($idDepartementInterest);
+
+        $this->interetDepartementManager->insertInteretDepartement(
+            $idContact,
+            $interetDepartement->getIdDepartement(),
+        );
+    }
+}
+    private function addInteretRegion($postData, $idContact) {
+
+        foreach ($postData['regionInterest'] as $key => $regionInterest) {
+            $regionInterest = $this->sanitizeInput($regionInterest);
+        
+        $interetRegion = new InteretRegion();
+        
+        // Récupérer l'ID de la région à partir du nom
+        $idRegionInterest = $this->regionManager->getRegionIdByName($regionInterest);
+        
+        $interetRegion->setIdContact($idContact);
+        $interetRegion->setIdRegion($idRegionInterest);
+
+        $this->interetRegionManager->insertInteretRegion(
+            $idContact,
+            $interetRegion->getIdRegion(),
+        );
+    }
+}
+    private function addInteretFrance($idContact) {
+        
+        $interetFrance = new InteretFrance();
+        var_dump($idContact);
+die(); 
+        $interetFrance->setIdContact($idContact);
+
+        $this->interetFranceManager->insertInteretFrance(
+            $idContact,
+        );
+    }
+
+    private function addInteretTaille($postData, $idContact) {
+
+        $tailleInterest = $postData['sizeCreche'];
+        
+        $interetTaille = new InteretTaille();
+        
+        $interetTaille->setIdContact($idContact);
+        $interetTaille->setTaille($tailleInterest);
+
+        $this->interetTailleManager->insertInteretTaille(
+            $idContact,
+            $interetTaille->getTaille(),
+        );
+    }
  /**
      * Fonction utilitaire pour nettoyer les entrées utilisateur.
      */

@@ -1,186 +1,185 @@
-//suppression du success lorsqu'on clique sur un nouvel input
 document.addEventListener("DOMContentLoaded", function () {
     const successMessage = document.getElementById("success-message");
     const formInputs = document.querySelectorAll("input, textarea, select");
+    const choixCreche = document.getElementById("choixCreche");
+    const choixGroup = document.getElementById("choixGroup");
+    const inputChoixCreche = document.getElementById("inputChoixCreche");
+    const inputChoixGroup = document.getElementById("inputChoixGroup");
 
     if (successMessage) {
         formInputs.forEach(input => {
             input.addEventListener("focus", function () {
-                successMessage.classList.add("hidden"); // Ajoute la classe qui active la transition
-                setTimeout(() => {
-                    successMessage.style.display = "none"; // Supprime après l'animation
-                }, 500); // Correspond au temps de transition (0.5s)
+                successMessage.classList.add("hidden");
+                setTimeout(() => successMessage.style.display = "none", 500);
             });
         });
     }
-});
 
-let nombreClic = 0;
-let nombreClicInterest = 0
-const choiceBuyer = document.getElementById('buyer')
-const choiceSeller = document.getElementById('seller')
-const statutVendeur = document.getElementById('statutVendeur')
-const valoVendeur = document.getElementById('valoVendeur')
-const commVendeur = document.getElementById('commVendeur')
-const buyerTitle = document.getElementById('buyer-title')
-const crecheSizeChoice = document.getElementById('crecheSizeChoice')
-const addLocation = document.getElementById('add-location')
-const addInterest = document.getElementById('add-interest')
-const interest = document.getElementById('interest')
-const interestGeneral = document.getElementById('interestGeneral')
+    let counters = {
+        location: 0,
+        interestVille: 0,
+        interestDept: 0,
+        interestRegion: 0
+    };
 
-//gestion de l'affichage en fonction du choix acheteur/vendeur
-choiceSeller.addEventListener('click', () => {
+    const elements = {
+        choiceBuyer: document.getElementById("buyer"),
+        choiceSeller: document.getElementById("seller"),
+        statutVendeur: document.getElementById("statutVendeur"),
+        valoVendeur: document.getElementById("valoVendeur"),
+        commVendeur: document.getElementById("commVendeur"),
+        buyerTitle: document.getElementById("buyer-title"),
+        crecheSizeChoice: document.getElementById("crecheSizeChoice"),
+        interest: document.getElementById("interest"),
+        villeInterest: document.getElementById("villeInterestDiv"),
+        departementInterest: document.getElementById("departementInterestDiv"),
+        regionInterest: document.getElementById("regionInterestDiv"),
+        addLocation: document.getElementById("add-location"),
+        addInterestVille: document.getElementById("add-interestVille"),
+        addInterestDepartement: document.getElementById("add-interestDepartement"),
+        addInterestRegion: document.getElementById("add-interestRegion"),
+    };
 
-    statutVendeur.classList.remove('d-none')
-    commVendeur.classList.remove('d-none')
-    valoVendeur.classList.remove('d-none')
+    // 🔹 Gestion affichage acheteur/vendeur
+    elements.choiceSeller.addEventListener("click", () => toggleSellerBuyer(true));
+    elements.choiceBuyer.addEventListener("click", () => toggleSellerBuyer(false));
 
-    for (let i = 1; i <= nombreClic; i++) {
-        const existingElement = document.getElementById(`new-row${i}`)
-        if (existingElement) {
-            existingElement.classList.add('d-none');
-        }
+    function toggleSellerBuyer(isSeller) {
+        ["statutVendeur", "valoVendeur", "commVendeur"].forEach(id => 
+            elements[id].classList.toggle("d-none", !isSeller)
+        );
+        ["interest", "buyerTitle", "crecheSizeChoice"].forEach(id => 
+            elements[id].classList.toggle("d-none", isSeller)
+        );
+
+        document.querySelectorAll(`[id^="new-row"], [id^="seller-choice"]`).forEach(el => {
+            el.classList.add("d-none");
+            if (!isSeller) el.nextElementSibling?.remove();
+        });
     }
-    interest.classList.add('d-none')
-    buyerTitle.classList.add('d-none')
-    crecheSizeChoice.classList.add('d-none')
-    addInterest.classList.add('d-none')
 
-})
-
-choiceBuyer.addEventListener('click', () => {
-
-    statutVendeur.classList.add('d-none')
-    commVendeur.classList.add('d-none')
-    valoVendeur.classList.add('d-none')
-    for (let i = 1; i <= nombreClic; i++) {
-        const existingElement = document.getElementById(`seller-choice${i}`)
-        if (existingElement) {
-            existingElement.classList.add('d-none')
-            existingElement.nextElementSibling.remove()
-        }
+    // 🔹 Fonction générique d'ajout d'élément
+    function addNewRow(container, type, template) {
+        counters[type]++;
+        const newRow = document.createElement("div");
+        newRow.classList.add("row", "form-row", "mt-3");
+        newRow.id = `${type}-row-${counters[type]}`;
+        newRow.innerHTML = template(counters[type]);
+        container.appendChild(newRow);
     }
-    interest.classList.remove('d-none')
-    buyerTitle.classList.remove('d-none')
-    crecheSizeChoice.classList.remove('d-none')
-    addInterest.classList.remove('d-none')
 
-})
+    // 🔹 Fonction générique de suppression
+    document.addEventListener("click", (event) => {
+        const target = event.target.closest(".remove-item");
+        if (target) {
+            document.getElementById(target.dataset.id)?.remove();
+        }
+    });
 
-document.addEventListener('DOMContentLoaded', () => {          
-    addLocation.addEventListener('click', () => {
-    nombreClic++;
-
-        const location = document.getElementById('location');
-
-        // Création d'une nouvelle ligne avec un ID unique
-        const newRow = document.createElement('div');
-        newRow.classList.add('row', 'form-row', 'mt-3');
-        newRow.setAttribute('id', 'location-row-' + nombreClic);
-
-        newRow.innerHTML = `
+    // 🔹 Ajout de lignes
+    elements.addLocation.addEventListener("click", () => {
+        addNewRow(document.getElementById("location"), "location", (id) => `
             <div class="form-group col-md-3">
-                <label for="ville">Ville</label>
+                <label>Ville</label>
                 <input class="form-control" list="villes" name="ville[]">
             </div>
             <div class="form-group col-md-2">
-                <label for="codePostal">Code postal</label>
+                <label>Code postal</label>
                 <input class="form-control" name="codePostal[]">
             </div>
             <div class="form-group col-md-3">
-                <label for="adresse">Adresse</label>
+                <label>Adresse</label>
                 <input class="form-control" name="adresse[]">
             </div>
             <div class="form-group col-md-2">
-                <label for="taille">Taille</label>
+                <label>Taille</label>
                 <select class="form-control" name="taille[]">
                     <option value="Micro-crèche">Micro-crèche</option>
                     <option value="Crèche">Crèche</option>
                 </select>
             </div>
             <div class="form-group col-md-1 d-flex align-items-end">
-                <button type="button" class="btn btn-danger remove-location" data-id="location-row-${nombreClic}">
+                <button type="button" class="btn btn-danger remove-item" data-id="location-row-${id}">
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
-        `;
-
-        location.appendChild(newRow);
+        `);
     });
 
-    // Gestion de la suppression des lignes ajoutées dynamiquement
-    document.addEventListener('click', (event) => {
-        if (event.target.classList.contains('remove-location') || event.target.closest('.remove-location')) {
-            const rowId = event.target.closest('.remove-location').getAttribute('data-id');
-            document.getElementById(rowId).remove();
-        }
-    });
-});
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    addInterest.addEventListener('click', () => {
-        nombreClicInterest++;
-    
-        // Création d'une nouvelle ligne avec un ID unique
-        const newRowInterest = document.createElement('div');
-        newRowInterest.classList.add('row', 'form-row', 'mt-3');
-        newRowInterest.setAttribute('id', 'interest-row-' + nombreClicInterest);
-
-        newRowInterest.innerHTML = `
+    elements.addInterestVille.addEventListener("click", () => {
+        addNewRow(elements.villeInterest, "interestVille", (id) => `
             <div class="form-group col-md-2">
-                <label for="villeInterest">Ville</label>
+                <label>Ville</label>
                 <input class="form-control" list="villesInterest" name="villeInterest[]">
             </div>
             <div class="form-group col-md-2">
-                <label for="codePostalInterest">Code postal</label>
+                <label>Code postal</label>
                 <input class="form-control" name="codePostalInterest[]">
             </div>
             <div class="form-group col-md-1">
-                <label for="rayonInterest">Rayon</label>
+                <label>Rayon</label>
                 <input class="form-control" name="rayon[]">
             </div>
-            <div class="form-group col-md-3">
-                <label for="departementInterest">Département</label>
-                <input class="form-control" list="departementsInterest" name="departementInterest[]">
-            </div>
-            <div class="form-group col-md-3">
-                <label for="regionInterest">Région</label>
-                <input class="form-control" list="regionsInterest" name="regionInterest[]">
-            </div>
-
             <div class="form-group col-md-1 d-flex align-items-end">
-                <button type="button" class="btn btn-danger remove-interest" data-id="interest-row-${nombreClicInterest}">
+                <button type="button" class="btn btn-danger remove-item" data-id="interestVille-row-${id}">
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
-        `;
-
-        interestGeneral.appendChild(newRowInterest);
+        `);
     });
 
-    // Gestion de la suppression des lignes ajoutées dynamiquement
-    document.addEventListener('click', (event) => {
-        if (event.target.classList.contains('remove-interest') || event.target.closest('.remove-interest')) {
-            const rowInterestId = event.target.closest('.remove-interest').getAttribute('data-id');
-            document.getElementById(rowInterestId).remove();
+    elements.addInterestDepartement.addEventListener("click", () => {
+        addNewRow(elements.departementInterest, "interestDept", (id) => `
+            <div class="form-group col-md-3">
+                <label>Département</label>
+                <input class="form-control" list="departementsInterest" name="departementInterest[]">
+            </div>
+            <div class="form-group col-md-1 d-flex align-items-end">
+                <button type="button" class="btn btn-danger remove-item" data-id="interestDept-row-${id}">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        `);
+    });
+
+    elements.addInterestRegion.addEventListener("click", () => {
+        addNewRow(elements.regionInterest, "interestRegion", (id) => `
+            <div class="form-group col-md-3">
+                <label>Région</label>
+                <input class="form-control" list="regionsInterest" name="regionInterest[]">
+            </div>
+            <div class="form-group col-md-1 d-flex align-items-end">
+                <button type="button" class="btn btn-danger remove-item" data-id="interestRegion-row-${id}">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        `);
+    });
+
+    // 🔹 Gestion des recherches par crèches ou groupes
+    const radioButtonsCrecheGroup = document.querySelectorAll('input[name="crecheGroup"]');
+    const inputCrecheGroup = {
+        Creche: "choixCreche",
+        Group: "choixGroup",
+    };
+
+    function updateVisibleInputCrecheGroup() {
+        if (choixCreche.checked) {
+            inputChoixCreche.classList.remove("d-none");
+            inputChoixGroup.classList.add("d-none");
+        } else if (choixGroup.checked) {
+            inputChoixCreche.classList.add("d-none");
+            inputChoixGroup.classList.remove("d-none");
         }
-    });
+    }
+
+    radioButtonsCrecheGroup.forEach(radio => 
+        radio.addEventListener("change", updateVisibleInputCrecheGroup)
+    );
+    // Ajout des écouteurs d'événements
+    choixCreche.addEventListener("change", updateVisibleInputCrecheGroup);
+    choixGroup.addEventListener("change", updateVisibleInputCrecheGroup);
+    
+    updateVisibleInputCrecheGroup(); 
 });
 
- //Gestion des recherches par crèches ou groupes
- const radioButtonsCrecheGroup = document.querySelectorAll('input[name="crecheGroup"]')
- const inputCrecheGroup = {
-    choixCreche: "inputChoixCreche",
-    choixGroup: "inputChoixGroup",
- }
-
- function updateVisibleInputCrecheGroup() {
-     const selectedValue = document.querySelector('input[name="crecheGroup"]:checked').value;
-     Object.values(inputCrecheGroup).forEach(id => document.getElementById(id).classList.add('d-none'));
-     document.getElementById(inputCrecheGroup[selectedValue]).classList.remove('d-none');
- }
-
- radioButtonsCrecheGroup.forEach(radio => radio.addEventListener("change", updateVisibleInputCrecheGroup));
- updateVisibleInputCrecheGroup(); // Exécuter au chargement

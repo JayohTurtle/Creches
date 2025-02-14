@@ -120,7 +120,7 @@
             </div>
             <div id = "interest">
                 <h6>Intérêt général</h6>
-                <div class="row form-row" id="interestGeneral">
+                <div class="row form-row align-items-end" id="villeInterestDiv">
                     <div class="form-group col-md-2">
                         <label for="villeInterest">Ville</label>
                         <input class="form-control" list="villesInterest" id="villeInterest" name="villeInterest[]">
@@ -140,6 +140,11 @@
                         <label for="rayonInterest">Rayon</label>
                         <input class="form-control" id="rayonInterest" name="rayonInterest[]">
                     </div>
+                    <div class="form-group col-md-1 d-flex justify-content-end">
+                        <i class="fas fa-plus-circle text-secondary" style="font-size: 1.5rem; cursor: pointer;" id="add-interestVille"></i>
+                    </div>
+                </div>
+                <div class="row form-row align-items-end" id="departementInterestDiv">
                     <div class="form-group col-md-3">
                     <label for="departementInterest">Département</label>
                     <input class="form-control" list="departementsInterest" id="departementInterest" name="departementInterest[]">
@@ -151,6 +156,11 @@
                         ?>
                     </datalist>
                     </div>
+                    <div class="form-group col-md-1 d-flex justify-content-end">
+                        <i class="fas fa-plus-circle text-secondary" style="font-size: 1.5rem; cursor: pointer;" id="add-interestDepartement"></i>
+                    </div>
+                </div>
+                <div class="row form-row align-items-end" id="regionInterestDiv">
                     <div class="form-group col-md-3">
                     <label for="regionInterest">Région</label>
                     <input class="form-control" list="regionsInterest" id="regionInterest" name="regionInterest[]">
@@ -161,20 +171,26 @@
                             <?php endforeach; 
                         ?>
                     </datalist>
-                    </div>    
+                    </div>
+                    <div class="form-group col-md-1 d-flex justify-content-end">
+                        <i class="fas fa-plus-circle text-secondary" style="font-size: 1.5rem; cursor: pointer;" id="add-interestRegion"></i>
+                    </div>
+                    <div>
+                        <label for="franceInterest">Toute la France</label>
+                        <input type="checkbox" id="franceInterest" name="franceInterest" value="franceInterest">
+                    </div>
                 </div>
-                <button type="button" class="btn btn-secondary w-100 mt-3" id="add-interest">Ajouter un intérêt</button>
                 <h6 class = "mt-3">Intérêt précis</h6>
                 <div class="form-group col-md-4" id="crecheGroupChoice">
                     <div class="row">
                         <p>Choix</p>
                         <div class="radio-group">
                             <div class="radio-item">
-                                <input type="radio" id="choixCreche" name="crecheGroup" value="choixCreche" checked>
+                                <input type="radio" id="choixCreche" name="crecheGroup" value="Creche" checked>
                                 <label for="choixCreche">Crèche</label>
                             </div>
                             <div class="radio-item">
-                                <input type="radio" id="group" name="crecheGroup" value="choixGroup">
+                                <input type="radio" id="choixGroup" name="crecheGroup" value="Groupe">
                                 <label for="choixGroup">Groupe</label>
                             </div>
                         </div>
@@ -192,7 +208,7 @@
                             <option value="Achat réalisé">Achat réalisé</option>
                         </select>
                     </div>
-                    <div class="form-group col-md-3" id="inputChoixCreche">
+                    <div class="form-group col-md-5" id="inputChoixCreche">
                         <label for="identifiantInterest">Nom de la crèche</label>
                         <input class="form-control" list="getIdentifiantInterests" id="identifiantInterest" name="identifiantInterest">
                         <datalist id="getIdentifiantInterests">

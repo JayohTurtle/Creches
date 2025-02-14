@@ -26,9 +26,6 @@ class DBManager {
             $query = $this -> db -> query($sql);
         }else{
             $query = $this -> db -> prepare($sql);
-
-            var_dump($sql);
-            var_dump($params);
             
             $query -> execute($params);
         }
