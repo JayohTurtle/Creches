@@ -1,15 +1,24 @@
+
 <div class = "container">
     <div class = "row">
         <div class = "articles col-md-4">
             <div class="article">
                 <h5>Identité</h5>
-                <p>Contact : </p>
-                <p>Nom du groupe :</p>
-                <p>Email :</p>
-                <p>Téléphone :</p>
-                <p>Site internet :</p>
-                <p>SIREN :</p>
-                <p>Sens :</p>
+                <?php if ($contact instanceof Contact): ?>
+                    <p><strong>Nom: </strong> <?= htmlspecialchars($contact->getNom()) ?></p>
+                    <p><strong>Contact: </strong> <?= htmlspecialchars($contact->getContact()) ?></p>
+                    <p><strong>SIREN: </strong> <?= htmlspecialchars($contact->getSiren()) ?></p>
+                    <p><strong>Email: </strong> <?= htmlspecialchars($contact->getEmail()) ?></p>
+                    <p><strong>Téléphone: </strong> <?= htmlspecialchars($contact->getTelephone()) ?></p>
+                    <p><strong>Sens: </strong> <?= htmlspecialchars($contact->getSens()) ?></p>
+                    <p><strong>Site Internet: </strong> 
+                        <a href="<?= htmlspecialchars($contact->getSiteInternet()) ?>" target="_blank">
+                            <?= htmlspecialchars($contact->getSiteInternet()) ?>
+                        </a>
+                    </p>
+                <?php else: ?>
+                    <p>Aucun contact trouvé.</p>
+                <?php endif; ?>
             </div>
         </div>
         <div class = "articles col-md-8">

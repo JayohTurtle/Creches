@@ -95,6 +95,41 @@ class ContactManager extends AbstractEntityManager {
         $stmt->execute(['nom' => $nom]);  // Exécute avec la valeur de l'identifiant
         return $stmt->fetchColumn();  // Retourne l'ID du contact
     }
+
+    // Liste des colonnes autorisées pour éviter l'injection SQL
+    private $allowedColumns = ['contact', 'nom', 'email', 'telephone', 'siren', 'siteInternet'];
+
+    // Extrait les résultats sous forme d'objets ResearchContact
+    public function extractResearchContact($donneeRecherchee, $valeurRecherchee) {
+        // Vérifier si la colonne demandée est autorisée
+        if (!in_array($donneeRecherchee, $this->allowedColumns)) {
+            throw new Exception("Colonne non autorisée");
+        }
+    
+        // Requête SQL sécurisée avec LIKE
+        $sql = 'SELECT * FROM contacts WHERE ' . $donneeRecherchee . ' LIKE :value';
+        $statement = $this->db->prepare($sql);
+        $statement->execute(['value' => "%$valeurRecherchee%"]);
+    
+        // Récupérer une seule ligne
+        $contactData = $statement->fetch(PDO::FETCH_ASSOC);
+    
+        // Vérifier si un résultat est trouvé
+        if ($contactData) {
+            $contact = new Contact();
+            $contact->setNom($contactData['nom']);
+            $contact->setContact($contactData['contact']);
+            $contact->setSiren($contactData['siren']);
+            $contact->setEmail($contactData['email']);
+            $contact->setTelephone($contactData['telephone']);
+            $contact->setSiteInternet($contactData['siteInternet']);
+            $contact->setSens($contactData['sens']);
+    
+            return $contact; // ✅ Retourne un seul objet ResearchContact
+        }
+    
+        return null; // ❌ Retourne null si aucun résultat trouvé
+    }
     
 }
 

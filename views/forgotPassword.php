@@ -1,5 +1,8 @@
-<div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="card shadow p-4" style="width: 350px; max-width: 60%;">
+<div class="container d-flex justify-content-center align-items-center">
+    <div class="card shadow p-4" style="width: 350px; max-width: 90%;">
+    <?php if (isset($_GET['success'])): ?>
+    <div class="alert alert-success">Email envoyé avec succès !</div>
+<?php endif; ?>
 
         <h3 class="text-center mb-4">Mot de passe oublié</h3>
 

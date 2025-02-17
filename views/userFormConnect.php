@@ -25,9 +25,9 @@
 
                 <button type="submit" class="btn btn-secondary w-100">Se connecter</button>
 
-                <div class="text-center mt-3">
+                <!--<div class="text-center mt-3">
                     <a href="index.php?action=forgotPassword" class="text-decoration-none linkMdp">Mot de passe oublié ?</a>
-                </div>
+                </div>-->
             </form>
         </div>
     </div>

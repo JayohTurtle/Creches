@@ -205,14 +205,14 @@ input[type="checkbox"] {
 /*formulaire de connexion*/
 /* Modifier la couleur du lien */
 .linkMdp {
-    color: #28a745;
+    color: #E0E0E0;
     font-weight: bold; 
     transition: color 0.3s ease-in-out;
 }
 
 /* Modifier la couleur au survol */
 .linkMdp:hover {
-    color: #1e7e34;
+    color: white;
     text-decoration: underline;
 }
 

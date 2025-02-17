@@ -201,7 +201,7 @@
                         <label for="niveau">Niveau</label>
                         <select class="form-control" name="niveau" id="niveau">
                             <option value=""></option>
-                            <option value="Intéressz">Intéressé</option>
+                            <option value="Intéressé">Intéressé</option>
                             <option value="NDA envoyé">NDA envoyé</option>
                             <option value="Dossier envoyé">Dossier envoyé</option>
                             <option value="LOI">LOI</option>
@@ -231,12 +231,11 @@
                         </datalist>
                     </div>   
                 </div>
-                
-                <div class="d-flex justify-content-end mt-4">
-                    <button type="submit" class="btn btn-primary">Enregistrer</button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div class="d-flex justify-content-end mt-4">
+                <button type="submit" class="btn btn-primary" id="contactEnvoi">Enregistrer</button>
+            </div>
+        </form>
     </div>
 </div>
 <script src="js/validate_form_contact.js" defer></script>

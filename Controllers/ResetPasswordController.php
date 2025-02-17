@@ -1,4 +1,7 @@
 <?php
+require 'vendor/autoload.php';  
+use PHPMailer\PHPMailer\PHPMailer;  
+use PHPMailer\PHPMailer\Exception;
 
 class ResetPasswordController {
     public $db;
@@ -7,55 +10,65 @@ class ResetPasswordController {
         $this->db = DBManager::getInstance();
     }
 
-    /**
-     * Affiche le formulaire pour entrer l'email et demander une réinitialisation
-     */
     public function showForgotPasswordForm() {
         $view = new View();
         $view->render("forgotPassword", []);
     }
 
-    /**
-     * Gère l'envoi du lien de réinitialisation par email
-     */
     public function sendResetLink() {
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {      
             $email = trim($_POST['email']);
             $stmt = $this->db->query("SELECT idUser FROM users WHERE email = ?", [$email]);
             $user = $stmt->fetch();
-
+    
             if ($user) {
-                // Génération d'un token sécurisé
                 $token = bin2hex(random_bytes(32));
                 $expiry = date("Y-m-d H:i:s", strtotime("+1 hour"));
-
-                // Enregistrer le token dans la base de données
-                $this->db->query("UPDATE users SET resetToken = ?, resetTokenExpiry = ? WHERE idUser = ?", [$token, $expiry, $user['idUser']]);
-
-                // Lien de réinitialisation
+    
+                $this->db->query("UPDATE users SET reset_token = ?, token_expiration = ? WHERE idUser = ?", [$token, $expiry, $user['idUser']]);
+    
                 $resetLink = "http://localhost/creches/index.php?action=resetPassword&token=$token";
 
-                // Envoi de l'email
-                mail($email, "Réinitialisation de votre mot de passe", "Cliquez sur ce lien : $resetLink");
+                try {
+                    
+                    $mail = new PHPMailer(true);
+                    $mail->isSMTP();
+                    $mail->Host = 'mail.gandi.net'; 
+                    $mail->SMTPAuth = true;
+                    $mail->Username = getenv('SMTP_USER');  // Ton adresse email complète
+                    $mail->Password = getenv('SMTP_PASSWORD');  // Ton mot de passe email
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // STARTTLS recommandé
+                    $mail->Port = 587; // Port 587 avec STARTTLS ou 465 avec SSL
 
-                echo "Un email de réinitialisation a été envoyé.";
-            } else {
-                echo "Aucun compte trouvé avec cet email.";
+                    $mail->setFrom(getenv('SMTP_USER'), 'Support Creches');
+                    $mail->addAddress($email);
+
+                    $mail->Subject = "Réinitialisation de votre mot de passe";
+                    $mail->Body = "Cliquez sur ce lien pour réinitialiser votre mot de passe : $resetLink";
+
+                    if ($mail->send()) {
+                        $_SESSION['success_message'] = "Un email de réinitialisation a été envoyé.";
+                    } else {
+                        $_SESSION['error_message'] = "Erreur d'envoi de l'email.";
+                    }
+                } catch (Exception $e) {
+                    $_SESSION['error_message'] = "Erreur d'envoi de l'email : {$mail->ErrorInfo}";
+                }
+
+    
+            // Redirige après traitement
+            header("Location: index.php?action=forgotPassword&success=1");
+            exit();
             }
+
         }
     }
-
-    /**
-     * Affiche le formulaire de réinitialisation de mot de passe
-     */
+    
     public function showResetPasswordForm() {
         $view = new View();
         $view->render("resetPassword", ["token" => $_GET['token'] ?? '']);
     }
 
-    /**
-     * Gère la mise à jour du mot de passe après clic sur le lien
-     */
     public function resetPassword() {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $token = $_POST['token'];
@@ -63,26 +76,27 @@ class ResetPasswordController {
             $confirmPassword = $_POST['confirmPassword'];
 
             if ($newPassword !== $confirmPassword) {
-                echo "Les mots de passe ne correspondent pas.";
-                return;
+                $_SESSION['error_message'] = "Les mots de passe ne correspondent pas.";
+                header("Location: index.php?action=resetPassword&token=$token");
+                exit();
             }
 
-            // Vérification du token
-            $stmt = $this->db->query("SELECT idUser FROM users WHERE resetToken = ? AND resetTokenExpiry > NOW()", [$token]);
+            $stmt = $this->db->query("SELECT idUser FROM users WHERE reset_token = ? AND token_expiration > NOW()", [$token]);
             $user = $stmt->fetch();
 
             if ($user) {
-                // Hacher le nouveau mot de passe
                 $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+                $this->db->query("UPDATE users SET password = ?, reset_token = NULL, token_expiration = NULL WHERE idUser = ?", [$hashedPassword, $user['idUser']]);
 
-                // Mettre à jour le mot de passe et supprimer le token
-                $this->db->query("UPDATE users SET password = ?, resetToken = NULL, resetTokenExpiry = NULL WHERE idUser = ?", [$hashedPassword, $user['idUser']]);
-
-                echo "Mot de passe réinitialisé ! Vous pouvez maintenant vous connecter.";
+                $_SESSION['success_message'] = "Mot de passe réinitialisé ! Vous pouvez vous connecter.";
+                header("Location: index.php?action=userFormConnect");
+                exit();
             } else {
-                echo "Lien invalide ou expiré.";
+                $_SESSION['error_message'] = "Lien invalide ou expiré.";
+                header("Location: index.php?action=forgotPassword");
+                exit();
             }
         }
     }
 }
-
+?>

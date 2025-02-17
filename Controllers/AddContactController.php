@@ -36,6 +36,7 @@ class AddContactController {
     public function handleAddContact() {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $postData = $_POST;
+
             $operateur = 'jzabiolle@youinvest.fr';
             $adresse = $this->sanitizeInput($postData['adresse'] ?? null);
             $codePostal = $this->sanitizeInput($postData['codePostal'] ?? null);
@@ -186,18 +187,19 @@ class AddContactController {
                 }
             }
         }
-    
+
         return $idLocalisations;
     }
     
-    private function addLocation($idLocalisations, $ville, $codePostal, $adresse) {
+    private function addLocation($idLocalisations, $villes, $codesPostaux, $adresses) {
         if (!empty($idLocalisations)) {
-            foreach ($idLocalisations as $idLocalisation) {
-                $adresseComplete = $this->localisationManager->createAddress(
-                    is_array($adresse) ? implode(' ', $adresse) : $adresse,
-                    is_array($codePostal) ? implode(' ', $codePostal) : $codePostal,
-                    is_array($ville) ? implode(' ', $ville) : $ville
-                );
+            foreach ($idLocalisations as $key => $idLocalisation) {
+                // On récupère la valeur correspondant à chaque localisation
+                $ville = $villes[$key] ?? '';
+                $codePostal = $codesPostaux[$key] ?? '';
+                $adresse = $adresses[$key] ?? '';
+    
+                $adresseComplete = $this->localisationManager->createAddress($adresse, $codePostal, $ville);
     
                 $coords = $this->localisationManager->geocodeAdresse($adresseComplete);
                 if ($coords) {
@@ -360,7 +362,7 @@ class AddContactController {
             $interetTaille->getTaille(),
         );
     }
- /**
+    /**
      * Fonction utilitaire pour nettoyer les entrées utilisateur.
      */
     private function sanitizeInput($input) {

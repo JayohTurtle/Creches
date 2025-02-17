@@ -2,7 +2,10 @@
 
 include_once('config.php');
 include_once('view.php');
+require_once __DIR__ . '/vendor/autoload.php';  // Charge Composer et PHPMailer
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 
 // Auto-chargement des modèles et contrôleurs (évite les include à rallonge)
 spl_autoload_register(function ($class) {
@@ -88,7 +91,7 @@ switch ($action) {
         break;
 
     case 'researchResultContact':
-        $controller = new ResearchResultContactController();
+        $controller = new ResearchContactController();
         $controller->showResultContact();
         break;
 

@@ -51,11 +51,14 @@ document.addEventListener("DOMContentLoaded", function () {
         ["interest", "buyerTitle", "crecheSizeChoice"].forEach(id => 
             elements[id].classList.toggle("d-none", isSeller)
         );
-
+    
         document.querySelectorAll(`[id^="new-row"], [id^="seller-choice"]`).forEach(el => {
             el.classList.add("d-none");
             if (!isSeller) el.nextElementSibling?.remove();
         });
+    
+        // Assure que le bouton reste visible
+        document.getElementById("contactEnvoi").classList.remove("d-none");
     }
 
     // 🔹 Fonction générique d'ajout d'élément
@@ -118,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
             <div class="form-group col-md-1">
                 <label>Rayon</label>
-                <input class="form-control" name="rayon[]">
+                <input class="form-control" name="rayonInterest[]">
             </div>
             <div class="form-group col-md-1 d-flex align-items-end">
                 <button type="button" class="btn btn-danger remove-item" data-id="interestVille-row-${id}">
