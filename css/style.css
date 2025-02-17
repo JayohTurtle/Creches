@@ -42,7 +42,7 @@ body{
 }
 
 /*Les titres*/
-h5, h6 {
+h5, h6, h3 {
     color: #E0E0E0;
     font-weight: 600;
     border-bottom: 2px solid #E0E0E0;
@@ -54,7 +54,7 @@ h5, h6 {
     max-width: 1200px;
 }
 #mainNavbar {
-    background-color: #1E1E1E;
+    background-color: #121212;
     padding: 10px 0;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Ombre subtile */
     position: sticky;
@@ -81,30 +81,6 @@ h5, h6 {
 .btn-secondary:hover {
     background-color: #616161;
     box-shadow: inset 0px 2px 5px rgba(144, 202, 249, 0.2); /* Ombre interne pour éviter le déplacement */
-}
-
-
-/*Cartes et boutons*/
-.card {
-    background-color: #1E1E1E;
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.15);
-}
-
-.card-title {
-    color: #BB86FC; /* Violet doux */
-}
-
-.card-text {
-    color: #B0B0B0; /* Gris clair */
 }
 
 .btn-primary {
@@ -224,5 +200,19 @@ input[type="checkbox"] {
     border-radius: 8px;
     box-shadow: 0px 0px 8px rgba(0, 255, 128, 0.1);
     width: 100%;
+}
+
+/*formulaire de connexion*/
+/* Modifier la couleur du lien */
+.linkMdp {
+    color: #28a745;
+    font-weight: bold; 
+    transition: color 0.3s ease-in-out;
+}
+
+/* Modifier la couleur au survol */
+.linkMdp:hover {
+    color: #1e7e34;
+    text-decoration: underline;
 }
 

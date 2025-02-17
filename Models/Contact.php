@@ -5,12 +5,12 @@ include_once('AbstractEntity.php');
 class Contact extends AbstractEntity{
 
     private $idContact;
-    private $nom;
-    private $contact;
-    private $siren;
-    private $email;
-    private $telephone;
-    private $siteInternet;
+    private ?string $nom = null;
+    private ?string $contact = null;
+    private ?string $siren = null;
+    private ?string $email = null;
+    private ?string $telephone = null;
+    private ?string $siteInternet = null;
     private $sens;
 
     public function setIdContact(int $idContact):void{
@@ -21,51 +21,51 @@ class Contact extends AbstractEntity{
         return $this -> idContact;
     }
 
-    public function setNom (string $nom){
+    public function setNom (?string $nom){
         $this -> nom = $nom;
     }
 
-    public function getNom ():string{
+    public function getNom ():?string{
         return $this -> nom;
     }
 
-    public function setContact (string $contact){
+    public function setContact (?string $contact){
         $this -> contact = $contact;
     }
 
-    public function getContact ():string{
+    public function getContact ():?string{
         return $this -> contact;
     }
 
-    public function setSiren (string $siren){
+    public function setSiren (?string $siren){
         $this -> siren = $siren;
     }
 
-    public function getSiren ():string{
+    public function getSiren ():?string{
         return $this -> siren;
     }
 
-    public function setEmail (string $email){
+    public function setEmail (?string $email){
         $this -> email = $email;
     }
 
-    public function getEmail ():string{
+    public function getEmail ():?string{
         return $this -> email;
     }
 
-    public function setTelephone (string $telephone){
+    public function setTelephone (?string $telephone){
         $this -> telephone = $telephone;
     }
 
-    public function getTelephone ():string{
+    public function getTelephone ():?string{
         return $this -> telephone;
     }
 
-    public function setSiteInternet (string $siteInternet){
+    public function setSiteInternet (?string $siteInternet){
         $this -> siteInternet = $siteInternet;
     }
 
-    public function getSiteInternet ():string{
+    public function getSiteInternet ():?string{
         return $this -> siteInternet;
     }
 

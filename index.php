@@ -13,6 +13,19 @@ spl_autoload_register(function ($class) {
     }
 });
 
+session_start();
+
+$publicPages = ['userFormConnect', 'resetPassword', 'changePassword', 'forgotPassword', 'login', 'sendResetLink']; // Liste des pages accessibles sans connexion
+
+$action = $_GET['action'] ?? 'home';
+
+// Vérifier si l'utilisateur est connecté sauf pour les pages publiques
+if (!isset($_SESSION['user']) && (!isset($_GET['action']) || !in_array($_GET['action'], $publicPages))) {
+    header("Location: index.php?action=userFormConnect");
+    exit;
+}
+
+
 // Récupération de l'action (par défaut : "dashboard")
 $action = $_REQUEST['action'] ?? 'dashboard';
 
@@ -33,6 +46,40 @@ switch ($action) {
     case 'saveContact': // Ajout d'une action pour enregistrer un contact
         $controller = new AddContactController();
         $controller->handleAddContact();
+        break;
+
+    case 'userFormConnect':
+        $controller = new UserFormConnectController();
+        $controller->showUserFormconnect();
+        break;
+
+    case 'login':
+        $controller = new UserFormConnectController();
+        $controller->login();
+        break;
+    
+    case 'logout':
+        $controller = new UserFormConnectController();
+        $controller->logout();
+        break;        
+        
+    case 'forgotPassword':
+        $controller = new ResetPasswordController();
+        $controller->showForgotPasswordForm();
+        break;
+    
+    case 'sendResetLink':
+        $controller = new ResetPasswordController();
+        $controller->sendResetLink();
+        break;
+    
+    case 'changePassword':
+        $controller = new ChangePasswordController();
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $controller->changePassword();
+        } else {
+            $controller->showChangePasswordForm();
+        }
         break;
 
     case 'research':
@@ -58,4 +105,5 @@ switch ($action) {
     default:
         echo "La page '$action' n'existe pas.";
         break;
+
 }

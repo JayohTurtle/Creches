@@ -91,7 +91,7 @@
                 </div>
                 <div class="form-group col-md-2">
                     <label for="taille">Taille</label>
-                    <select class="form-control" name="taille" id="taille">
+                    <select class="form-control" name="taille[]" id="taille">
                         <option value="Micro-crèche">Micro-crèche</option>
                         <option value="Crèche">Crèche</option>
                     </select>
@@ -201,7 +201,7 @@
                         <label for="niveau">Niveau</label>
                         <select class="form-control" name="niveau" id="niveau">
                             <option value=""></option>
-                            <option value="Intéressé">Intéressé</option>
+                            <option value="Intéressz">Intéressé</option>
                             <option value="NDA envoyé">NDA envoyé</option>
                             <option value="Dossier envoyé">Dossier envoyé</option>
                             <option value="LOI">LOI</option>

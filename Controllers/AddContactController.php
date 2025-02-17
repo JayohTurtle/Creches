@@ -37,6 +37,10 @@ class AddContactController {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $postData = $_POST;
             $operateur = 'jzabiolle@youinvest.fr';
+            $adresse = $this->sanitizeInput($postData['adresse'] ?? null);
+            $codePostal = $this->sanitizeInput($postData['codePostal'] ?? null);
+            $ville = $this->sanitizeInput($postData['ville'] ?? null);  
+            $idLocalisation = null;
 
             // Ajout du contact et récupération de son ID
             $idContact = $this->addContact($postData);
@@ -44,11 +48,12 @@ class AddContactController {
             // Ajout du commentaire (liée au contact)
             $this->addComment($postData, $operateur, $idContact);
 
-            // Vérifier si une ville est renseignée avant d'ajouter une localisation (liée au contact, à ville et à departement)            
-            if (!empty($postData['ville']) && array_filter($postData['ville'])) {//si on a une chaine vide, c'est vide
-                $this->addLocalisation($postData, $idContact);
+            // Vérifier si une ville est renseignée avant d'ajouter une localisation et un point de location(liée au contact, à ville et à departement)            
+            if (!empty($postData['ville']) && array_filter($postData['ville'])) {
+                $idLocalisations = $this->addLocalisation($postData, $idContact);
+                $this->addLocation($idLocalisations, $postData['ville'], $postData['codePostal'], $postData['adresse']);
             }
-
+            
             // Vérifier si un intérêt crèche est renseigné et ajouter l'intérêt crèche
             if (!empty($postData['niveau']) && !empty($postData['identifiantInterest'])) {
             $this->addInteretCreche($postData, $idContact);
@@ -152,50 +157,58 @@ class AddContactController {
     }
 
     private function addLocalisation($postData, $idContact) {
-        
-        if (!empty($postData['ville'])) {
+        $idLocalisations = [];
     
+        if (!empty($postData['ville'])) {
             foreach ($postData['ville'] as $key => $ville) {
                 $ville = $this->sanitizeInput($ville);
-                $codePostal = $this->sanitizeInput ($postData['codePostal'][$key]);
-                $adresse = $this->sanitizeInput ($postData['adresse'][$key]);
-                $taille = $this->sanitizeInput ($postData['taille'][$key]);
-
-                // Créer une instance de Localisation
-                $localisation = new Localisation();
-
-                // Récupérer l'ID du département à partir du code postal
-                $idDepartement = $this->departementManager->getDepartementIdByCodePostal($codePostal);
+                $codePostal = $this->sanitizeInput($postData['codePostal'][$key] ?? '');
+                $adresse = $this->sanitizeInput($postData['adresse'][$key] ?? '');
+                $taille = $postData['taille'][$key] ?? null;
     
-                // Vérifier si la ville existe, sinon l'ajouter
-                $idVille = $this->villeManager->insertVilleIfNotExists($ville, $codePostal,$idDepartement);
-                
+                $idDepartement = $this->departementManager->getDepartementIdByCodePostal($codePostal);
+                $idVille = $this->villeManager->insertVilleIfNotExists($ville, $codePostal, $idDepartement);
+    
                 $nom = $this->sanitizeInput($postData['nom']);
-                $ville = $this->sanitizeInput($ville);
-                $adresse = $this->sanitizeInput($adresse);
-
-                $identifiant = $nom . ' - ' . $ville . ' - ' . $adresse;
-
-                $localisation->setIdVille($idVille);
-                $localisation->setIdDepartement($idDepartement);
-                $localisation->setAdresse($adresse);
-                $localisation->setIdentifiant($identifiant);
-
-                // Insérer la localisation
-                $this->localisationManager->insertLocalisation(
+                $identifiant = "$nom - $ville - $adresse";
+    
+                $idLocalisation = $this->localisationManager->insertLocalisation(
                     $idContact,
-                    $localisation->getIdVille(),
-                    $localisation->getAdresse(),
-                    $localisation->getIdDepartement(),
-                    $localisation->getidentifiant(),
+                    $idVille,
+                    $adresse,
+                    $idDepartement,
+                    $identifiant,
                     $taille
-                    
                 );
+    
+                if ($idLocalisation) {
+                    $idLocalisations[] = $idLocalisation;
+                }
             }
         }
-        return [$idVille, $idDepartement]; // Retourner les IDs pour qu'ils soient utilisés plus tard
+    
+        return $idLocalisations;
     }
-
+    
+    private function addLocation($idLocalisations, $ville, $codePostal, $adresse) {
+        if (!empty($idLocalisations)) {
+            foreach ($idLocalisations as $idLocalisation) {
+                $adresseComplete = $this->localisationManager->createAddress(
+                    is_array($adresse) ? implode(' ', $adresse) : $adresse,
+                    is_array($codePostal) ? implode(' ', $codePostal) : $codePostal,
+                    is_array($ville) ? implode(' ', $ville) : $ville
+                );
+    
+                $coords = $this->localisationManager->geocodeAdresse($adresseComplete);
+                if ($coords) {
+                    $latitude = $coords['lat'];
+                    $longitude = $coords['lng'];
+                    $this->localisationManager->insertLocation($idLocalisation, $latitude, $longitude);
+                }
+            }
+        }
+    }
+    
     private function addClient($postData, $idContact){
 
         $client = new Client;
@@ -325,8 +338,7 @@ class AddContactController {
     private function addInteretFrance($idContact) {
         
         $interetFrance = new InteretFrance();
-        var_dump($idContact);
-die(); 
+
         $interetFrance->setIdContact($idContact);
 
         $this->interetFranceManager->insertInteretFrance(
@@ -351,9 +363,13 @@ die();
  /**
      * Fonction utilitaire pour nettoyer les entrées utilisateur.
      */
-    private function sanitizeInput($value) {
-        return !empty($value) ? trim(strip_tags($value)) : null;
-    }    
+    private function sanitizeInput($input) {
+        if (is_array($input)) {
+            return array_map([$this, 'sanitizeInput'], $input);
+        }
+        return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
+    }
+    
 }
 
     

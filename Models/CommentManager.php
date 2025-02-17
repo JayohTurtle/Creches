@@ -8,7 +8,7 @@ class CommentManager extends AbstractEntityManager {
         if (!empty($commentaire)) {
             $sql = 'INSERT INTO commentaires (idContact, commentaire, date_comment, operateur) 
                     VALUES (:idContact, :commentaire, :date_comment, :operateur)';
-            $this->db->query($sql, [
+            return $this->db->query($sql, [
                 'idContact' => $idContact,
                 'commentaire' => $commentaire,
                 'date_comment' => $dateComment,
