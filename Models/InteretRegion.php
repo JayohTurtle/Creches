@@ -7,6 +7,7 @@ class InteretRegion extends AbstractEntity{
     private $idInteretRegion;
     private $idContact;
     private $idRegion;
+    private $region;
 
     public function setIdInteretRegion(int $idInteretRegion):void{
         $this -> idInteretRegion = $idInteretRegion;
@@ -30,5 +31,13 @@ class InteretRegion extends AbstractEntity{
 
     public function getIdRegion ():?int{
         return $this -> idRegion;
+    }
+
+    public function setRegion (Region $region){
+        $this -> region = $region;
+    }
+
+    public function getRegion ():Region{
+        return $this -> region;
     }
 }

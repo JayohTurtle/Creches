@@ -17,5 +17,28 @@ public function insertInteretCreche($idContact, $niveau, $idIdentifiant) {
             'idIdentifiant' => $idIdentifiant
         ]);
     }
+
+    public function getInteretCrechesByContact($idContact) {
+        try {
+            $sql = "SELECT i.niveau, l.identifiant
+                    FROM interetCreches i
+                    JOIN localisations l ON i.idIdentifiant = l.idLocalisation
+                    WHERE i.idContact = :idContact";
+
+    
+            $query = $this->db->query($sql, ['idContact' => $idContact]);
+            $result = $query->fetchAll(PDO::FETCH_ASSOC);
+    
+            $interets = [];
+            foreach ($result as $row) {
+                $interets[] = new InteretCreche($row); // 🔥 On passe un tableau
+            }
+    
+            return $interets;
+    
+        } catch (PDOException $e) {
+            return [];
+        }
+    }    
 }
 

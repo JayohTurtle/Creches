@@ -91,8 +91,8 @@ switch ($action) {
         break;
 
     case 'researchResultContact':
-        $controller = new ResearchContactController();
-        $controller->showResultContact();
+        $controller = new ResultContactController();
+        $controller->handleResearchContact();
         break;
 
     case 'researchResultClient':

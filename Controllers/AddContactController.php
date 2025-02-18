@@ -37,11 +37,7 @@ class AddContactController {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $postData = $_POST;
 
-            $operateur = 'jzabiolle@youinvest.fr';
-            $adresse = $this->sanitizeInput($postData['adresse'] ?? null);
-            $codePostal = $this->sanitizeInput($postData['codePostal'] ?? null);
-            $ville = $this->sanitizeInput($postData['ville'] ?? null);  
-            $idLocalisation = null;
+            $operateur = $_SESSION['user_email'];
 
             // Ajout du contact et récupération de son ID
             $idContact = $this->addContact($postData);
@@ -145,7 +141,7 @@ class AddContactController {
             $comment = new Comment();
             $comment->setIdContact($idContact);
             $comment->setCommentaire($this->sanitizeInput(($postData['comment'])));
-            $comment->setDateComment(date("Y/m/d"));
+            $comment->setDateComment(date("d/m/Y"));
             $comment->setOperateur($operateur);
 
             $this->commentManager->insertComment(

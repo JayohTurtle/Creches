@@ -15,4 +15,38 @@ class InteretVilleManager extends AbstractEntityManager{
             'rayon' => (int) $rayon,
         ]);
     }
+     // Récupère les intérêts villes par contact
+    public function getInteretVillesByContact($idContact) {
+        try {
+            $sql = "SELECT iv.idContact, iv.rayon, v.idVille, v.ville
+                    FROM interetvilles iv
+                    JOIN villes v ON iv.idVille = v.idVille
+                    WHERE iv.idContact = :idContact";
+    
+            $query = $this->db->query($sql, ['idContact' => $idContact]);
+            $result = $query->fetchAll(PDO::FETCH_ASSOC);
+    
+            $interetVilles = [];
+            foreach ($result as $row) {
+                // Création d'un objet Ville
+                $ville = new Ville();
+                $ville->setIdVille($row['idVille']);
+                $ville->setVille($row['ville']);
+    
+                // Création d'un objet InteretVille
+                $interetVille = new InteretVille();
+                $interetVille->setIdContact($row['idContact']);
+                $interetVille->setRayon($row['rayon']);
+                $interetVille->setVille($ville);
+    
+                $interetVilles[] = $interetVille;
+            }
+    
+            return $interetVilles;
+    
+        } catch (PDOException $e) {
+            return ["error" => "Erreur SQL : " . $e->getMessage()];
+        }
+    }
+    
 }

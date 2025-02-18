@@ -117,6 +117,7 @@ class ContactManager extends AbstractEntityManager {
         // Vérifier si un résultat est trouvé
         if ($contactData) {
             $contact = new Contact();
+            $contact->setIdContact($contactData['idContact']);
             $contact->setNom($contactData['nom']);
             $contact->setContact($contactData['contact']);
             $contact->setSiren($contactData['siren']);

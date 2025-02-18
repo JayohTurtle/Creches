@@ -113,7 +113,7 @@
                         </div>
                         <div class="radio-item">
                             <input type="radio" id="bothCreche" name="sizeCreche" value="Les deux" checked>
-                            <label for="bothCreche">Les 2</label>
+                            <label for="bothCreche">Crèche et micro-crèche</label>
                         </div>
                     </div>
                 </div>

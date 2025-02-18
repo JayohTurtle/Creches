@@ -7,6 +7,7 @@ class InteretDepartement extends AbstractEntity{
     private $idInteretDepartement;
     private $idContact;
     private $idDepartement;
+    private $departement;
 
     public function setIdInteretDepartement(int $idInteretDepartement):void{
         $this -> idInteretDepartement = $idInteretDepartement;
@@ -30,5 +31,13 @@ class InteretDepartement extends AbstractEntity{
 
     public function getIdDepartement ():?int{
         return $this -> idDepartement;
+    }
+
+    public function setDepartement (Departement $departement){
+        $this -> departement = $departement;
+    }
+
+    public function getDepartement ():Departement{
+        return $this -> departement;
     }
 }

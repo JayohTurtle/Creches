@@ -1,7 +1,3 @@
-<!--
-    Configuration pour: MySQL
-    Endroit où les constantes de connexion MySQL sont enregistrées
- -->
  <?php
 
 define ('DB_HOST', 'localhost');

@@ -7,6 +7,7 @@ class InteretGroupe extends AbstractEntity{
     private $idInteretGroupe;
     private $idContact;
     private $niveau;
+    private $nom;
 
     public function setIdInteretGroupe(int $idInteretGroupe):void{
         $this -> idInteretGroupe = $idInteretGroupe;
@@ -30,5 +31,13 @@ class InteretGroupe extends AbstractEntity{
 
     public function getniveau ():string{
         return $this -> niveau;
+    }
+
+    public function setNom (string $nom){
+        $this -> nom = $nom;
+    }
+
+    public function getNom ():string{
+        return $this -> nom;
     }
 }

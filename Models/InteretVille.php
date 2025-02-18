@@ -7,7 +7,7 @@ class InteretVille extends AbstractEntity{
     private $idInteretVille;
     private $idContact;
     private $idVille;
-    private $taille;
+    private $ville;
     private $rayon;
 
 
@@ -41,6 +41,14 @@ class InteretVille extends AbstractEntity{
 
     public function getRayon ():int{
         return $this -> rayon;
+    }
+
+    public function setVille (Ville $ville){
+        $this -> ville = $ville;
+    }
+
+    public function getVille ():Ville{
+        return $this -> ville;
     }
     
 }

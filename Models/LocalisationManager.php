@@ -5,6 +5,7 @@ include_once('AbstractEntityManager.php');
 class LocalisationManager extends AbstractEntityManager{
     public $db;
 
+    //Récupérer toutes les localisations
     function getLocalisations(){
         $request = "select * from localisations";
         $statement = $this -> db -> query($request);
@@ -46,7 +47,6 @@ class LocalisationManager extends AbstractEntityManager{
 
     }
 
-
     //Récupére l'id d'un identifiant
     public function getIdLocalisationByIdentifiant($identifiant) {
         $sql = "SELECT idLocalisation FROM localisations WHERE identifiant = :identifiant LIMIT 1";
@@ -55,6 +55,7 @@ class LocalisationManager extends AbstractEntityManager{
         return $stmt->fetchColumn();  // Retourne l'ID de la localisation
     }
 
+    //Créer une adresse à partir du code postal, de la ville et de l'adresse
     public function createAddress($codePostal, $ville, $adresse) {
         // Vérifier si les paramètres ne sont pas vides
         if (empty($adresse) || empty($codePostal) || empty($ville)) {
@@ -85,6 +86,7 @@ class LocalisationManager extends AbstractEntityManager{
         return $result;
     }
 
+    //Récupérer les coordonnées géographiques d'une adresse
     public function geocodeAdresse($adresse) {
         $apiKey = "e42f639a17dc40eebffcb9283aa34afe"; // Remplace par ta clé API OpenCage
         $adresse = urlencode($adresse);
@@ -116,6 +118,7 @@ class LocalisationManager extends AbstractEntityManager{
         return $this->db->query($sql, ['idLocalisation' => $idLocalisation])->fetch();
     }
     
+    //Insérer les points lat et lng dans la base de données
     public function insertLocation($idLocalisation, $lat, $lng) {
         echo "insertLocation appelée avec : ID = $idLocalisation, LAT = $lat, LNG = $lng<br>";
     
@@ -128,7 +131,63 @@ class LocalisationManager extends AbstractEntityManager{
             'point' => $point
         ]);
     }
+
+    //Récupérer tous les points lat et lng
+    public function getPoints() {
+        try {
+            $sql = "SELECT l.identifiant, ST_X(l.location) AS lat, ST_Y(l.location) AS lng, c.sens 
+            FROM localisations l
+            JOIN contacts c ON l.idContact = c.idContact";
+
+            $query = $this->db->query($sql);
+            return $query->fetchAll(); // Retourne le résultat sous forme de tableau associatif
+        } catch (PDOException $e) {
+            return ["error" => "Erreur SQL : " . $e->getMessage()];
+        }
+    }
+     //Récupérer les localisations d'un contact
+     public function getLocalisationByContact($idContact) {
+        try {
+            $sql = "SELECT l.adresse, v.idVille, v.ville, d.idDepartement, d.departement 
+                    FROM localisations l
+                    JOIN villes v ON l.idVille = v.idVille
+                    JOIN departements d ON l.idDepartement = d.idDepartement
+                    WHERE l.idContact = :idContact";
+            
+            $query = $this->db->query($sql, ['idContact' => $idContact]);
+            $result = $query->fetchAll(PDO::FETCH_ASSOC);
+    
+            $localisations = [];
+            foreach ($result as $row) {
+                // Création des objets Ville et Departement
+                $ville = new Ville([
+                    'idVille' => $row['idVille'],
+                    'ville' => $row['ville']
+                ]);
+    
+                $departement = new Departement([
+                    'idDepartement' => $row['idDepartement'],
+                    'departement' => $row['departement']
+                ]);
+    
+                // Création de l'objet Localisation
+                $localisation = new Localisation([
+                    'adresse' => $row['adresse'],
+                ]);
+                $localisation->setVille($ville);
+                $localisation->setDepartement($departement);
+    
+                $localisations[] = $localisation;
+            }
+    
+            return $localisations; // ✅ Retourne des objets avec Ville et Departement
+    
+        } catch (PDOException $e) {
+            return ["error" => "Erreur SQL : " . $e->getMessage()];
+        }
+    } 
 }
+    
 
 
 
