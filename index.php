@@ -95,9 +95,9 @@ switch ($action) {
         $controller->handleResearchContact();
         break;
 
-    case 'researchResultClient':
-        $controller = new ResearchResultClientController();
-        $controller->showResultClient();
+    case 'researchResultZoneVente':
+        $controller = new ResearchResultVenteCrecheController();
+        $controller->showResultVenteCreche();
         break;
 
     case 'researchResultTaille':

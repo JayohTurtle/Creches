@@ -185,7 +185,49 @@ class LocalisationManager extends AbstractEntityManager{
         } catch (PDOException $e) {
             return ["error" => "Erreur SQL : " . $e->getMessage()];
         }
-    } 
+    }
+
+    public function getContactsByIdVille($idVille): array
+    {
+        $sql = 'SELECT c.idContact
+                FROM localisations l
+                JOIN contacts c ON l.idContact = c.idContact
+                WHERE l.idVille = :idVille';
+    
+        $stmt = $this->db->query($sql, [':idVille' => $idVille]);
+    
+        // Récupérer les résultats sous forme de tableau d'ID
+        $idContacts = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+    
+        return $idContacts; // Retourne un tableau contenant uniquement les idContact
+    }
+    
+
+    public function getLocalisationsByVendeurAndVille(array $idContacts, $idVille): array
+{
+    if (empty($idContacts)) {
+        return []; // Retourne un tableau vide si aucun contact vendeur trouvé
+    }
+
+    // Création des placeholders pour la requête IN (?, ?, ?)
+    $placeholders = implode(',', array_fill(0, count($idContacts), '?'));
+
+    $sql = "SELECT identifiant FROM localisations WHERE idContact IN ($placeholders) AND idVille = ?";
+
+    $params = array_merge($idContacts, [$idVille]);
+    $stmt = $this->db->query($sql, $params);
+
+    // Stocker les identifiants sous forme d'objets Localisation
+    $localisations = [];
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $localisation = new Localisation();
+        $localisation->setIdentifiant($row['identifiant']);
+        $localisations[] = $localisation;
+    }
+
+    return $localisations; // Retourne un tableau d'objets Localisation
+}
+
 }
     
 

@@ -133,7 +133,29 @@ class ContactManager extends AbstractEntityManager {
     
         return null; // ❌ Retourne null si aucun résultat trouvé
     }
+
+    public function getVendeurContactsByIdContacts(array $idContacts): array
+{
+    if (empty($idContacts)) {
+        return []; // Aucun contact trouvé
+    }
+
+    // Création des placeholders pour la requête SQL
+    $placeholders = implode(',', array_fill(0, count($idContacts), '?'));
+
+    $sql = "SELECT * FROM contacts WHERE idContact IN ($placeholders) AND sens = 'vendeur'";
     
+    // Exécuter la requête avec les IDs en paramètre
+    $stmt = $this->db->query($sql, $idContacts);
+
+    // Stocker les résultats sous forme d'objets Contact
+    $vendeurs = [];
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $vendeurs[] = new Contact($row);
+    }
+
+    return $vendeurs;
+}
 }
 
 

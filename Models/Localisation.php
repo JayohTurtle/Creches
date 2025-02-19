@@ -85,5 +85,5 @@ class Localisation extends AbstractEntity {
     public function getTaille(): string {
         return $this->taille;
     }
-     
 }
+

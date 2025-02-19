@@ -50,7 +50,6 @@ class InteretGroupeManager extends AbstractEntityManager{
             JOIN contacts c ON i.idContact = c.idContact
             WHERE i.nom = :nom';
 
-        // Exécute la requête via ton singleton
         $stmt = $this->db->query($sql, [':nom' => $groupe]);
 
         $contacts = [];

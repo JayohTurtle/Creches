@@ -13,7 +13,7 @@ class ResearchResultInteretGroupeController {
 
     public function showResultInteretGroupe(){
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $groupe = $_POST['groupe'];
+            $groupe = $this->sanitizeInput($_POST['groupe']);
 
             // Récupérer les contacts intéressés par le groupe
             $contacts = $this->interetGroupeManager->getContactsByGroupe($groupe);
@@ -31,5 +31,15 @@ class ResearchResultInteretGroupeController {
                 'groupe' => $groupe,
             ]);
         }
+    }
+
+    /**
+     * Fonction utilitaire pour nettoyer les entrées utilisateur.
+     */
+    private function sanitizeInput($input) {
+        if (is_array($input)) {
+            return array_map([$this, 'sanitizeInput'], $input);
+        }
+        return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
     }
 }
