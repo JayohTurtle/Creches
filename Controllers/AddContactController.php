@@ -248,23 +248,18 @@ class AddContactController {
             );
         }
     }
-    private function addInteretGroupe($postData) {
-            
-        // Récupérer l'ID du contact correspondant au groupe
-        $groupeInterest = $this->sanitizeInput($postData['groupeInterest'] ?? null);
-        $idGroupe = $this->contactManager->getIdContactByName($groupeInterest);
+    private function addInteretGroupe($postData, $idContact) {
 
+        $interetGroupe = new InteretGroupe();
 
-        if ($idGroupe) { // Vérifier si un ID a bien été trouvé
-            $interetGroupe = new InteretGroupe();
-            $interetGroupe->setIdContact($idGroupe);
-            $interetGroupe->setNiveau($this->sanitizeInput($postData['niveau'] ?? null));
+        $interetGroupe->setNiveau($this->sanitizeInput($postData['niveau'] ?? null));
+        $interetGroupe->setNom($this->sanitizeInput ($postData['groupeInterest']));
 
-            $this->interetGroupeManager->insertInteretGroupe(
-                $interetGroupe->getIdContact(),
-                $interetGroupe->getNiveau(),
-            );
-        }
+        $this->interetGroupeManager->insertInteretGroupe(
+            $idContact,
+            $interetGroupe->getNiveau(),
+            $interetGroupe->getNom()
+        );
     }
 
     private function addInteretVille($postData, $idContact) {

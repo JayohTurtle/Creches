@@ -1,16 +1,16 @@
 
 <div class = "container">
-    <div class = "row">
-        <div class="row">
-            <div class="col-md-4">
-                <button type="button" class="btn btn-primary">Ajouter une information</button>
-            </div>
-            <div class="col-md-4">
-                <button type="button" class="btn btn-primary">Ajouter un commentaire</button>
-            </div>
-        </div>
-        <div class = "articles col-md-4">
+    <div class = "row">            
+        <div class = "articles col-md-3">
             <div class="article">
+                <div class="row col-md-12">
+                    <div class="mb-3 col-md-5">
+                        <button type="button" class="btn btn-primary">Ajouter</button>
+                    </div>
+                    <div class="mb-3 col-md-6 ms-2">
+                        <button type="button" class="btn btn-success">Modifier</button>
+                    </div>
+                </div>
                 <h5>Identité</h5>
                 <?php if ($contact instanceof Contact): ?>
                     <p><strong>Nom: </strong> <?= htmlspecialchars($contact->getNom()) ?></p>
@@ -31,6 +31,14 @@
         </div>
         <div class = "articles col-md-8">
             <div class="article">
+                <div class="row col-md-12">
+                    <div class="mb-3 col-md-1">
+                        <button type="button" class="btn btn-primary">Ajouter</button>
+                    </div>
+                    <div class="mb-3 col-md-6 ms-5">
+                        <button type="button" class="btn btn-success">Modifier</button>
+                    </div>
+                </div>
                 <h5 >Commentaires</h5>
                 <ul>
                     <?php if (!empty($commentaires)): ?>
@@ -50,8 +58,13 @@
     <div class="row">
         <div class = "articles mt-3 col-md-5">
             <div class = "article">
-                <div class="mb-3">
-                    <button type="button" class="btn btn-primary">Ajouter un intérêt</button>
+                <div class="row col-md-12">
+                    <div class="mb-3 col-md-3">
+                        <button type="button" class="btn btn-primary">Ajouter</button>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <button type="button" class="btn btn-success">Modifier</button>
+                    </div>
                 </div>
                 <h5>Intérêt général</h5>
                 <?php if (!empty($interetVilles)): ?>
@@ -98,8 +111,13 @@
         </div>
         <div class = "articles mt-3 col-md-7">
             <div class = "article">
-                <div class="mb-3">
-                    <button type="button" class="btn btn-primary">Ajouter un intérêt</button>
+                <div class="row">
+                    <div class="mb-3 col-md-2">
+                        <button type="button" class="btn btn-primary">Ajouter</button>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <button type="button" class="btn btn-success">Modifier</button>
+                    </div>
                 </div>
                 <h5>Intérêt précis</h5>
                 <?php if (!empty($interetCreches)): ?>

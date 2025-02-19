@@ -12,6 +12,26 @@ class Contact extends AbstractEntity{
     private ?string $telephone = null;
     private ?string $siteInternet = null;
     private $sens;
+    private string $niveau;
+    private $nbCreches;
+    private ?Departement $departement = null; // Stocke le département du contact
+    private ?Ville $ville = null; // Stocke le département du contact
+    
+    public function setVille(?Ville $ville) {
+        $this->ville = $ville;
+    }
+
+    public function getVille(): ?Ville {
+        return $this->ville;
+    }  
+    
+    public function setDepartement(?Departement $departement) {
+        $this->departement = $departement;
+    }
+
+    public function getDepartement(): ?Departement {
+        return $this->departement;
+    }  
 
     public function setIdContact(int $idContact):void{
         $this -> idContact = $idContact;
@@ -76,5 +96,20 @@ class Contact extends AbstractEntity{
     public function getSens ():string{
         return $this -> sens;
     }
-    
+
+    public function setNiveau (string $niveau){
+        $this -> niveau = $niveau;
+    }
+
+    public function getNiveau ():string{
+        return $this -> niveau;
+    }
+
+    public function setNbCreches ($nbCreches){
+        $this -> nbCreches = $nbCreches;
+    }
+
+    public function getNbCreches ():int{
+        return $this -> nbCreches;
+    }    
 }

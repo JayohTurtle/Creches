@@ -105,6 +105,16 @@ switch ($action) {
         $controller->showResultTaille();
         break;
 
+    case 'researchResultInteretCreche':
+        $controller = new ResearchResultInteretCrecheController();
+        $controller->showResultInteretCreche();
+        break;
+
+    case 'researchResultInteretGroupe':
+        $controller = new ResearchResultInteretGroupeController();
+        $controller->showResultInteretGroupe();
+        break;
+
     default:
         echo "La page '$action' n'existe pas.";
         break;

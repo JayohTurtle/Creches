@@ -135,7 +135,7 @@ class LocalisationManager extends AbstractEntityManager{
     //Récupérer tous les points lat et lng
     public function getPoints() {
         try {
-            $sql = "SELECT l.identifiant, ST_X(l.location) AS lat, ST_Y(l.location) AS lng, c.sens 
+            $sql = "SELECT l.identifiant, ST_X(l.location) AS lng, ST_Y(l.location) AS lat, c.sens 
             FROM localisations l
             JOIN contacts c ON l.idContact = c.idContact";
 

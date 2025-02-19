@@ -49,4 +49,24 @@ class DepartementManager extends AbstractEntityManager{
     
         return $query->fetchColumn(); // Retourne l'ID du département
     }
+
+    public function getDepartementNameById($idDepartement){
+        $sql = 'SELECT departement FROM departements WHERE idDepartement = :idDepartement';
+        $query = $this->db->query($sql, ['idDepartement' => $idDepartement]);
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+
+        return $result ? $result['departement'] : null;
+    }
+
+    public function getDepartementIdByIdentifiant($identifiant) {
+        // Préparer la requête pour récupérer l'idDepartement pour l'identifiant donné
+        $sql = "SELECT idDepartement FROM localisations WHERE identifiant = :identifiant";
+        $stmt = $this->db->query($sql, ['identifiant' => $identifiant]);
+    
+        // Récupérer le résultat
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // Retourner l'ID du département ou null si aucun résultat
+        return $result ? $result['idDepartement'] : null;
+    }
 }

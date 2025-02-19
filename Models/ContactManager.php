@@ -65,6 +65,8 @@ class ContactManager extends AbstractEntityManager {
         }
         return $contactList;
     }
+
+    
     
     public function getContactById($id) {
         $sql = 'SELECT * FROM contacts WHERE id = :id';
