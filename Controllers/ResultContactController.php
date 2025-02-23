@@ -45,6 +45,7 @@ class ResultContactController {
             if (!empty($valeur)) {
                 $donneeRecherchee = $champ; 
                 $valeurRecherchee = $valeur;
+                
                 break; // On s'arrête après avoir trouvé la première donnée remplie
             }
         }
@@ -55,7 +56,6 @@ class ResultContactController {
         if ($valeurRecherchee !== null && $donneeRecherchee !== null) {
             // Récupérer un SEUL contact
             $contact = $this->contactManager->extractResearchContact($donneeRecherchee, $valeurRecherchee);
-        
 
             if ($contact && method_exists($contact, 'getIdContact')) {
                 // Récupérer les localisations du contact
@@ -65,68 +65,72 @@ class ResultContactController {
             }
         }
 
-        //Récupérer les intérêts du contact
-        $interetVilleManager = new InteretVilleManager();
-        $interetVilles = $interetVilleManager->getInteretVillesByContact($idContact);
+        // Vérifier si $idContact est défini avant de l'utiliser
+        if (isset($idContact)) {
+            //Récupérer les intérêts du contact
+            $interetVilleManager = new InteretVilleManager();
+            $interetVilles = $interetVilleManager->getInteretVillesByContact($idContact);
 
-        $interetDepartementManager = new InteretDepartementManager();
-        $interetDepartements = $interetDepartementManager->getInteretDepartementsByContact($idContact);
+            $interetDepartementManager = new InteretDepartementManager();
+            $interetDepartements = $interetDepartementManager->getInteretDepartementsByContact($idContact);
 
-        $interetRegionManager = new InteretRegionManager();
-        $interetRegions = $interetRegionManager->getInteretRegionsByContact($idContact);
+            $interetRegionManager = new InteretRegionManager();
+            $interetRegions = $interetRegionManager->getInteretRegionsByContact($idContact);
+            
+            $interetFranceManager = new InteretFranceManager();
+            $hasInteretFrance = $interetFranceManager->hasInteretFrance($idContact);
+
+            $interetCrecheManager = new InteretCrecheManager();
+            $interetCreches = $interetCrecheManager->getInteretCrechesByContact($idContact);
+
+            $interetGroupeManager = new InteretGroupeManager();
+            $interetGroupe = $interetGroupeManager->getInteretGroupesByContact($idContact);
+
+            $interetGroupeManager = new InteretGroupeManager();
+            $interetGroupe = $interetGroupeManager->getInteretGroupesByContact($idContact);
+
+            $interetTailleManager = new InteretTailleManager();
+            $interetTaille = $interetTailleManager->getInteretTailleByContact($idContact);
+            
+            // Récupérer les commentaires du contact
+            $commentaires = $this->extractCommentsFromContact($contact);
         
-        $interetFranceManager = new InteretFranceManager();
-        $hasInteretFrance = $interetFranceManager->hasInteretFrance($idContact);
-
-        $interetCrecheManager = new InteretCrecheManager();
-        $interetCreches = $interetCrecheManager->getInteretCrechesByContact($idContact);
-
-        $interetGroupeManager = new InteretGroupeManager();
-        $interetGroupe = $interetGroupeManager->getInteretGroupesByContact($idContact);
-
-        $interetGroupeManager = new InteretGroupeManager();
-        $interetGroupe = $interetGroupeManager->getInteretGroupesByContact($idContact);
-
-        $interetTailleManager = new InteretTailleManager();
-        $interetTaille = $interetTailleManager->getInteretTailleByContact($idContact);
-        
-        // Récupérer les commentaires du contact
-        $commentaires = $this->extractCommentsFromContact($contact);
-    
-        // Passer les résultats à la vue
-        $view = new View();
-        $view->render('researchResultContact', [
-            'contact' => $contact,
-            'commentaires' => $commentaires,
-            'localisations' => $localisations ?? [],
-            'interetVilles' => $interetVilles ?? [],
-            'interetDepartements' => $interetDepartements ?? [],
-            'interetRegions' => $interetRegions ?? [],
-            'hasInteretFrance' => $hasInteretFrance,
-            'interetCreches' => $interetCreches ?? [],
-            'interetGroupe' => $interetGroupe ?? [],
-            'interetTaille' => $interetTaille ?? [],
-        ]);
+            // Passer les résultats à la vue
+            $view = new View();
+            $view->render('researchResultContact', [
+                'idContact' =>$idContact,
+                'contact' => $contact,
+                'commentaires' => $commentaires,
+                'localisations' => $localisations ?? [],
+                'interetVilles' => $interetVilles ?? [],
+                'interetDepartements' => $interetDepartements ?? [],
+                'interetRegions' => $interetRegions ?? [],
+                'hasInteretFrance' => $hasInteretFrance,
+                'interetCreches' => $interetCreches ?? [],
+                'interetGroupe' => $interetGroupe ?? [],
+                'interetTaille' => $interetTaille ?? [],
+            ]);
+        }
     }
-    
-    public function extractCommentsFromContact($contact) {
-        if (!$contact || !method_exists($contact, 'getIdContact')) {
-            return []; // Aucun commentaire si pas d'ID de contact
+        
+        public function extractCommentsFromContact($contact) {
+            if (!$contact || !method_exists($contact, 'getIdContact')) {
+                return []; // Aucun commentaire si pas d'ID de contact
+            }
+        
+            $idContact = $contact->getIdContact(); // Utilisation du getter
+            return $this->commentManager->extractComments($idContact);
         }
     
-        $idContact = $contact->getIdContact(); // Utilisation du getter
-        return $this->commentManager->extractComments($idContact);
-    }
-    
-    /**
-     * Fonction utilitaire pour nettoyer les entrées utilisateur.
-     */
-    private function sanitizeInput($input) {
-        if (is_array($input)) {
-            return array_map([$this, 'sanitizeInput'], $input);
+        /**
+         * Fonction utilitaire pour nettoyer les entrées utilisateur.
+         */
+        private function sanitizeInput($input) {
+            if (is_array($input)) {
+                return array_map([$this, 'sanitizeInput'], $input);
+            }
+            return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
         }
-        return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
-    }
 }
 
 

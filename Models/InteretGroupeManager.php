@@ -18,7 +18,7 @@ class InteretGroupeManager extends AbstractEntityManager{
 
     public function getInteretGroupesByContact($idContact) {
         try {
-            $sql = "SELECT i.niveau, c.nom
+            $sql = "SELECT i.niveau, i.nom
                     FROM interetgroupes i
                     JOIN contacts c ON i.idContact = c.idContact
                     WHERE i.idContact = :idContact";

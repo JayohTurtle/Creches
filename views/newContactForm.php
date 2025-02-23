@@ -74,16 +74,13 @@
             <div class="row form-row mt-3" id="location">
                 <div class="form-group col-md-3">
                     <label for="ville">Ville</label>
-                    <input class="form-control" list="villes" id="ville" name="ville[]">
-                    <datalist id="villes">
-                    <?php foreach ($villes as $ville) : ?>
-                        <option value="<?php echo htmlspecialchars($ville->getVille()); ?>"></option>
-                        <?php endforeach; ?>
-                    </datalist>
+                    <input class="form-control" list="villes" id="ville" name="ville[]" autocomplete="off">
+                    <datalist id="villes"></datalist>
                 </div>
                 <div class="form-group col-md-2">
                     <label for="codePostal">Code postal</label>
-                    <input class="form-control" id="codePostal" name="codePostal[]">
+                    <input class="form-control" type="text" id="codePostal" list="codePostaux" name="codePostal[]" autocomplete="off">
+                    <datalist id="codePostaux"></datalist>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="adresse">Adresse</label>
@@ -238,5 +235,6 @@
         </form>
     </div>
 </div>
+<script src="js/codePostal.js" defer></script>
 <script src="js/validate_form_contact.js" defer></script>
 <script src="js/form_contact.js" defer> </script>

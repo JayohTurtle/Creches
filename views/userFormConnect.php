@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="articles col-md-4">
-        <div class="article p-4" style="width: 350px; max-width: 90%;">
+    <div class="articles col-md-3 d-flex justify-content-center">
+        <div class="article" style="width: 350px; max-width: 90%;">
             <h5 class="text-center mb-4">Connexion</h5>
 
             <?php if (isset($_SESSION['success_message'])): ?>

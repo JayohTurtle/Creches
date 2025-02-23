@@ -13,6 +13,7 @@ class Localisation extends AbstractEntity {
     private $taille;
     private ?Ville $ville = null;   
     private ?Departement $departement = null;
+    private $distance;
 
     public function setIdLocalisation(int $idLocalisation): void {
         $this->idLocalisation = $idLocalisation;
@@ -70,11 +71,11 @@ class Localisation extends AbstractEntity {
         return $this->idDepartement;
     }
 
-    public function setidentifiant(string $identifiant) {
+    public function setIdentifiant(string $identifiant) {
         $this->identifiant = $identifiant;
     }
 
-    public function getidentifiant(): string {
+    public function getIdentifiant(): string {
         return $this->identifiant;
     }
 
@@ -84,6 +85,14 @@ class Localisation extends AbstractEntity {
 
     public function getTaille(): string {
         return $this->taille;
+    }
+
+    public function setDistance( $distance) {
+        $this->distance = $distance;
+    }
+
+    public function getDistance() {
+        return $this->distance;
     }
 }
 

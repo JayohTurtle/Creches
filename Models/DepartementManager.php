@@ -18,6 +18,7 @@ class DepartementManager extends AbstractEntityManager{
 
     //Récupère l'id du département par le code postal renseigné dans le formulaire
     public function getDepartementIdByCodePostal($codePostal) {
+
         // Extraire les deux premiers caractères du code postal
         $code= substr($codePostal, 0, 2);
     
@@ -37,7 +38,6 @@ class DepartementManager extends AbstractEntityManager{
     
         return $result ? (int) $result['idDepartement'] : null;
     
-        return $query->fetchColumn(); // Retourne l'ID du département
     }
 
     public function getDepartementIdByName($departement){
@@ -69,4 +69,17 @@ class DepartementManager extends AbstractEntityManager{
         // Retourner l'ID du département ou null si aucun résultat
         return $result ? $result['idDepartement'] : null;
     }
+
+    public function getDepartementsIdByIdRegion($idRegion) {
+        $request = "SELECT idDepartement FROM departements WHERE idRegion = :idRegion";
+
+        $statement = $this -> db -> query($request,['idRegion' => $idRegion]);
+
+        $idDepartementList=[];
+        while ($idDepartement = $statement -> fetch()){
+            $idDepartementList[] = new Departement ($idDepartement);
+        }
+        return $idDepartementList;
+    }
 }
+

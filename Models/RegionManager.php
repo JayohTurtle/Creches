@@ -15,7 +15,6 @@ class RegionManager extends AbstractEntityManager{
         }
         return $regionList;
     }
-   
 
     public function getRegionIdByName($region) {
         $sql = 'SELECT idRegion FROM regions WHERE region = :region';

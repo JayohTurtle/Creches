@@ -118,18 +118,16 @@ class LocalisationManager extends AbstractEntityManager{
         return $this->db->query($sql, ['idLocalisation' => $idLocalisation])->fetch();
     }
     
-    //Insérer les points lat et lng dans la base de données
     public function insertLocation($idLocalisation, $lat, $lng) {
-        echo "insertLocation appelée avec : ID = $idLocalisation, LAT = $lat, LNG = $lng<br>";
+        echo "🔹 insertLocation appelée avec : ID = $idLocalisation, LAT = $lat, LNG = $lng<br>";
     
-        $sql = 'UPDATE localisations SET location = ST_GeomFromText(:point) WHERE idLocalisation = :idLocalisation';
-        
+        $sql = 'UPDATE localisations 
+                SET location = ST_GeomFromText(?, 4326) 
+                WHERE idLocalisation = ?';
+    
         $point = "POINT($lng $lat)"; // Longitude en premier
     
-        return $this->db->query($sql, [
-            'idLocalisation' => $idLocalisation,
-            'point' => $point
-        ]);
+        return $this->db->query($sql, [$point, $idLocalisation]);
     }
 
     //Récupérer tous les points lat et lng
@@ -201,32 +199,133 @@ class LocalisationManager extends AbstractEntityManager{
     
         return $idContacts; // Retourne un tableau contenant uniquement les idContact
     }
+
+    public function getContactsByIdDepartement($idDepartement): array
+    {
+        $sql = 'SELECT c.idContact
+                FROM localisations l
+                JOIN contacts c ON l.idContact = c.idContact
+                WHERE l.idDepartement = :idDepartement';
     
+        $stmt = $this->db->query($sql, [':idDepartement' => $idDepartement]);
+    
+        // Récupérer les résultats sous forme de tableau d'ID
+        $idContacts = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+    
+        return $idContacts; // Retourne un tableau contenant uniquement les idContact
+    }
+    public function getLocalisationsInRayon($coords, $rayon) {
+        // Vérification des paramètres
+        if (empty($coords['lng']) || empty($coords['lat']) || empty($rayon)) {
+            throw new Exception("Les coordonnées et le rayon doivent être définis.");
+        }
+    
+        // Construire la requête SQL
+       $sql = "SELECT idLocalisation, idContact, identifiant,
+            ST_Distance_Sphere(location, POINT(?, ?)) / 1000 AS distance_km
+            FROM localisations
+            WHERE ST_Distance_Sphere(location, POINT(?, ?)) / 1000 <= ?
+            ";
 
-    public function getLocalisationsByVendeurAndVille(array $idContacts, $idVille): array
-{
-    if (empty($idContacts)) {
-        return []; // Retourne un tableau vide si aucun contact vendeur trouvé
+    
+        // Passer la requête SQL au DBManager qui s'occupe de la préparation et de l'exécution
+        $result = $this->db->query($sql, [
+            $coords['lng'],  // Longitude du point
+            $coords['lat'],  // Latitude du point
+            $coords['lng'],  // Longitude du point (pour le calcul de distance)
+            $coords['lat'],  // Latitude du point (pour le calcul de distance)
+            $rayon           // Rayon en kilomètres
+        ]);
+    
+        // Vérifier si on a bien récupéré des résultats sous forme de tableau
+        if (!$result) {
+            throw new Exception("Aucun résultat trouvé.");
+        }
+    
+        // Utiliser fetchAll pour obtenir les résultats sous forme de tableau
+        $contacts = $result->fetchAll(PDO::FETCH_ASSOC);
+    
+        // Si aucun résultat n'est trouvé, retourner un tableau vide
+        if (empty($contacts)) {
+            return [];
+        }
+    
+        // Extraire les idContact et la distance des résultats
+        $localisationContacts = array_map(function($contact) {
+            return [
+                'identifiant' => $contact['identifiant'],
+                'idLocalisation' => $contact['idLocalisation'],
+                'idContact' => $contact['idContact'],
+                'distance' =>$contact['distance_km']
+            ];
+        }, $contacts);
+    
+        // Retourner les ids des contacts avec leurs distances
+        return $localisationContacts;
+    }
+    
+    public function getLocalisationsByVendeurAndDepartement(array $idContacts, $idDepartementArray): array
+    {
+        if (empty($idContacts)) {
+            return []; // Retourne un tableau vide si aucun contact vendeur trouvé
+        }
+
+        // Création des placeholders pour la requête IN (?, ?, ?)
+        $placeholders = implode(',', array_fill(0, count($idContacts), '?'));
+
+        $sql = "SELECT identifiant FROM localisations WHERE idContact IN ($placeholders) AND idDepartement = ?";
+
+        $params = array_merge($idContacts, [$idDepartementArray]);
+        $stmt = $this->db->query($sql, $params);
+
+        // Stocker les identifiants sous forme d'objets Localisation
+        $localisations = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $localisation = new Localisation();
+            $localisation->setIdentifiant($row['identifiant']);
+            $localisations[] = $localisation;
+        }
+
+        return $localisations; // Retourne un tableau d'objets Localisation
     }
 
-    // Création des placeholders pour la requête IN (?, ?, ?)
-    $placeholders = implode(',', array_fill(0, count($idContacts), '?'));
+    public function getLocalisationsByVendeurAndRegion(array $idVendeurs, array $idDepartementList): array {
+        // Vérifier si on a des objets ou déjà des ID
+        if (!empty($idDepartementList) && is_object(reset($idDepartementList))) {
+            $idDepartementArray = array_map(fn($dep) => $dep->getIdDepartement(), $idDepartementList);
+        } else {
+            $idDepartementArray = $idDepartementList;
+        }
 
-    $sql = "SELECT identifiant FROM localisations WHERE idContact IN ($placeholders) AND idVille = ?";
+        // Vérifier que les listes ne sont pas vides
+        if (empty($idVendeurs) || empty($idDepartementArray)) {
+            return [];
+        }
 
-    $params = array_merge($idContacts, [$idVille]);
-    $stmt = $this->db->query($sql, $params);
+        // Création des placeholders dynamiques pour la requête SQL
+        $placeholdersVendeurs = implode(',', array_fill(0, count($idVendeurs), '?'));
+        $placeholdersDepartements = implode(',', array_fill(0, count($idDepartementArray), '?'));
 
-    // Stocker les identifiants sous forme d'objets Localisation
-    $localisations = [];
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $localisation = new Localisation();
-        $localisation->setIdentifiant($row['identifiant']);
-        $localisations[] = $localisation;
+        // Requête SQL pour récupérer la colonne identifiant
+        $sql = "SELECT identifiant FROM localisations 
+                WHERE idContact IN ($placeholdersVendeurs) 
+                AND idDepartement IN ($placeholdersDepartements)";
+
+        // Fusionner les valeurs à injecter
+        $params = array_merge($idVendeurs, $idDepartementArray);
+        
+        $statement = $this->db->query($sql, $params);
+
+        // Initialiser le tableau d'objets Identifiant
+        $localisations = [];
+        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+            $localisation = new Localisation();
+            $localisation->setIdentifiant($row['identifiant']);
+            $localisations[] = $localisation;
+        }
+
+        return $localisations;
     }
-
-    return $localisations; // Retourne un tableau d'objets Localisation
-}
 
 }
     

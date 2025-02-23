@@ -116,12 +116,12 @@ class AddContactController {
         }
         
         $contact = new Contact();
-        $contact->setNom($this->sanitizeInput(($postData['nom'])));
-        $contact->setContact($this->sanitizeInput(($postData['contact'])));
-        $contact->setSiren($this->sanitizeInput(($postData['siren'])));
-        $contact->setEmail($this->sanitizeInput(($postData['email'])));
-        $contact->setTelephone($this->sanitizeInput(($postData['telephone'])));
-        $contact->setSiteInternet($this->sanitizeInput(($postData['site'])));
+        $contact->setNom($this->sanitizeInput(($postData['nom']?? null)));
+        $contact->setContact($this->sanitizeInput(($postData['contact']?? null)));
+        $contact->setSiren($this->sanitizeInput(($postData['siren']?? null)));
+        $contact->setEmail($this->sanitizeInput(($postData['email']?? null)));
+        $contact->setTelephone($this->sanitizeInput(($postData['telephone']?? null)));
+        $contact->setSiteInternet($this->sanitizeInput(($postData['site']?? null)));
         $contact->setSens(isset($postData['directionChoice']) ? ($postData['directionChoice']) : null);
 
         return $this->contactManager->insertContact(
@@ -141,7 +141,7 @@ class AddContactController {
             $comment = new Comment();
             $comment->setIdContact($idContact);
             $comment->setCommentaire($this->sanitizeInput(($postData['comment'])));
-            $comment->setDateComment(date("d/m/Y"));
+            $comment->setDateComment(date("Y/m/d"));
             $comment->setOperateur($operateur);
 
             $this->commentManager->insertComment(
@@ -162,8 +162,9 @@ class AddContactController {
                 $codePostal = $this->sanitizeInput($postData['codePostal'][$key] ?? '');
                 $adresse = $this->sanitizeInput($postData['adresse'][$key] ?? '');
                 $taille = $postData['taille'][$key] ?? null;
-    
+                
                 $idDepartement = $this->departementManager->getDepartementIdByCodePostal($codePostal);
+
                 $idVille = $this->villeManager->insertVilleIfNotExists($ville, $codePostal, $idDepartement);
     
                 $nom = $this->sanitizeInput($postData['nom']);

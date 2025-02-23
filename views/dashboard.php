@@ -31,8 +31,8 @@ require __DIR__ . '/../includes/auth.php';// Vérifie si l'utilisateur est conne
         </article>
 
         <!-- Colonne de droite -->
-        <article class="col-md-8 mt-3">
-            <div id="map" style="height: 400px; width: 100%;"></div>
+        <article class="col-md-8">
+            <div id="map" style="height: 590px; width: 100%;"></div>
         </article>
     </div>
 </div>

@@ -1,5 +1,5 @@
 // Initialiser la carte Leaflet
-var map = L.map('map').setView([48.8566, 2.3522], 6); // Centre par défaut sur Paris
+var map = L.map('map').setView([46.853354, 1.888334], 6);
 
 // Ajouter une couche OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -7,19 +7,18 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // Icône bleue pour les crèches normales
-let blueIcon = L.divIcon({
-    className: 'custom-icon',
-    html: '<i class="fas fa-map-marker-alt" style="color:blue; font-size:24px;"></i>',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41]
+let blueIcon = L.icon({
+    /*className: 'custom-icon',*/
+    iconUrl: 'assets/images/blue-marker.png',
+    iconSize: [24, 24],
+    iconAnchor: [12, 24]
 });
 
 // Icône rouge pour les crèches à vendre
-let redIcon = L.divIcon({
-    className: 'custom-icon',
-    html: '<i class="fas fa-map-marker-alt" style="color:red; font-size:24px;"></i>',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41]
+let redIcon = L.icon({
+    iconUrl: 'assets/images/red-marker.png',
+    iconSize: [24, 24],
+    iconAnchor: [12, 24]
 });
 
 // Charger les données et afficher les marqueurs

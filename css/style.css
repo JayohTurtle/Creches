@@ -14,7 +14,7 @@ body{
 /*Largeur maximale des éléments et centrage du container*/
 .container{
     width: 100%;
-    max-width: 1200px;
+    max-width: 1600px;
     background-color: #1E1E1E;
     border-radius: 10px;
     padding: 20px;
@@ -42,7 +42,7 @@ body{
 }
 
 /*Les titres*/
-h5, h6, h3 {
+h5, h3 {
     color: #E0E0E0;
     font-weight: 600;
     border-bottom: 2px solid #E0E0E0;
@@ -158,7 +158,7 @@ textarea {
 .radio-item {
     display: flex;
     align-items: center;
-    margin-left: 10px; /* Ajuste cet espace selon tes besoins */
+    margin-left: 10px; 
 }
 
 .radio-item label {
@@ -238,5 +238,45 @@ input[type="checkbox"] {
 .linkMdp:hover {
     color: white;
     text-decoration: underline;
+}
+
+/*Pop up ajout d'informations dans researchResultContact*/ 
+
+.modal {
+    display: none; /* Caché par défaut */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Contenu du popup */
+.modal-content {
+    background-color: #252525;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 40%;
+    text-align: center;
+}
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centre horizontalement */
+}
+
+/* Bouton pour fermer */
+.close {
+    color: #E0E0E0;
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: white;
 }
 

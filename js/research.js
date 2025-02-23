@@ -51,6 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     radioButtonsLocalAchat.forEach(radio => radio.addEventListener("change", updateVisibleInputLocalAchat));
     updateVisibleInputLocalAchat(); // Exécuter au chargement
+
 });
 
 

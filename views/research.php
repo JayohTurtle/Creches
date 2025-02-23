@@ -30,7 +30,7 @@
                 <div class="row mt-2 align-items-end">
                     <div class="col-md-8">
                         <div class="form-group" id="inputContact">
-                            <label for="donneeContact">Donnée</label>
+                            <label for="donneeContact">Contact</label>
                             <input type="text" class="form-control" name="donneeContact" id="donneeContact" list="getContacts">
                             <datalist id="getContacts">
                                 <?php foreach ($contacts as $contact) : ?>
@@ -39,7 +39,7 @@
                             </datalist>
                         </div>
                         <div class="form-group d-none" id="inputNomGroupe">
-                            <label for="donneeNomGroupe">Donnée</label>
+                            <label for="donneeNomGroupe">Nom du groupe</label>
                             <input type="text" class="form-control" name="donneeNomGroupe" id="donneeNomGroupe" list="getNoms">
                             <datalist id="getNoms">
                                 <?php foreach ($contacts as $contact) : ?>
@@ -48,7 +48,7 @@
                             </datalist>
                         </div>
                         <div class="form-group d-none" id="inputSIREN">
-                            <label for="donneeSIREN">Donnée</label>
+                            <label for="donneeSIREN">SIREN</label>
                             <input type="text" class="form-control" name="donneeSIREN" id="donneeSIREN" list="getSirens">
                             <datalist id="getSirens">
                                 <?php foreach ($contacts as $contact) : ?>
@@ -57,7 +57,7 @@
                             </datalist>
                         </div>
                         <div class="form-group d-none" id="inputEmail">
-                            <label for="donneeEmail">Donnée</label>
+                            <label for="donneeEmail">Email</label>
                             <input type="text" class="form-control" name="donneeEmail" id="donneeEmail" list="getEmails">
                             <datalist id="getEmails">
                                 <?php foreach ($contacts as $contact) : ?>
@@ -66,7 +66,7 @@
                             </datalist>
                         </div>
                         <div class="form-group d-none" id="inputTelephone">
-                            <label for="donneeTelephone">Donnée</label>
+                            <label for="donneeTelephone">Téléphone</label>
                             <input type="text" class="form-control" name="donneeTelephone" id="donneeTelephone" list="getTelephones">
                             <datalist id="getTelephones">
                                 <?php foreach ($contacts as $contact) : ?>
@@ -138,18 +138,24 @@
                     </div>
                 </div>
                 <div class="row mt-2 align-items-end">
-                    <div class="col-md-8">
-                        <div class="form-group" id ="inputVille">
-                            <label for="zoneVille">Zone</label>
-                            <input type="text" class="form-control" name="zoneVille" id="zoneVille" list="getZoneVilles">
-                            <datalist id="getZoneVilles">
-                            <?php foreach ($villes as $ville) : ?>
-                                <option value="<?php echo htmlspecialchars($ville->getVille()); ?>"></option>
-                            <?php endforeach; ?>
-                            </datalist>
+                    <div class="row form-row col-md-8">
+                        <div class="row form-row col-md-12" id ="inputVille">
+                            <div class="form-group col-md-9 ">
+                                <label for="zoneVille">Ville</label>
+                                <input type="text" class="form-control" name="zoneVille" id="zoneVille" list="getZoneVilles">
+                                <datalist id="getZoneVilles">
+                                <?php foreach ($villes as $ville) : ?>
+                                    <option value="<?php echo htmlspecialchars($ville->getVille()); ?>"></option>
+                                <?php endforeach; ?>
+                                </datalist>
+                            </div>
+                            <div class="form-group col-md-3" id ="inputVilleRayon">
+                                <label for="zoneVilleRayon">Rayon</label>
+                                <input class="form-control" type="number" name="zoneVilleRayon" id="zoneVilleRayon" min="0" step="5">
+                            </div>
                         </div>
                         <div class="form-group d-none" id ="inputDepartement">
-                            <label for="zoneDepartement">Zone</label>
+                            <label for="zoneDepartement">Département</label>
                             <input type="text" class="form-control" name="zoneDepartement" id="zoneDepartement" list="getZoneDepartements">
                             <datalist id="getZoneDepartements">
                             <?php foreach ($departements as $departement) : ?>
@@ -158,7 +164,7 @@
                             </datalist>
                         </div>
                         <div class="form-group d-none" id = "inputRegion">
-                            <label for="zoneRegion">Zone</label>
+                            <label for="zoneRegion">Région</label>
                             <input type="text" class="form-control" name="zoneRegion" id="zoneRegion" list="getZoneRegions">
                             <datalist id="getZoneRegions">
                             <?php foreach ($regions as $region) : ?>
@@ -193,7 +199,7 @@
                 <div class="row mt-2 align-items-end">
                     <div class="col-md-8">
                         <div class="form-group" id ="inputVilleAchat">
-                            <label for="zoneVilleAchat">Zone</label>
+                            <label for="zoneVilleAchat">Ville</label>
                             <input type="text" class="form-control" name="zoneVilleAchat" id="zoneVilleAchat" list="getZoneVillesAchat">
                             <datalist id="getZoneVillesAchat">
                             <?php foreach ($villes as $ville) : ?>
@@ -202,7 +208,7 @@
                             </datalist>
                         </div>
                         <div class="form-group d-none" id ="inputDepartementAchat">
-                            <label for="zoneDepartementAchat">Zone</label>
+                            <label for="zoneDepartementAchat">Département</label>
                             <input type="text" class="form-control" name="zoneDepartementAchat" id="zoneDepartementAchat" list="getZoneDepartementsAchat">
                             <datalist id="getZoneDepartementsAchat">
                             <?php foreach ($departements as $departement) : ?>
@@ -211,7 +217,7 @@
                             </datalist>
                         </div>
                         <div class="form-group d-none" id = "inputRegionAchat">
-                            <label for="zoneRegionAchat">Zone</label>
+                            <label for="zoneRegionAchat">Région</label>
                             <input type="text" class="form-control" name="zoneRegionAchat" id="zoneRegionAchat" list="getZoneRegionsAchat">
                             <datalist id="getZoneRegionsAchat">
                             <?php foreach ($regions as $region) : ?>
@@ -224,10 +230,6 @@
                         <div class="form-group col-md-4">
                             <label for="researchNbreCreche">Nombre de crèches</label>
                             <input type="text" class="form-control" name="researchNbreCreche" id="researchNbreCreche">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="researchSurface">Surface financière</label>
-                            <input type="text" class="form-control" name="researchSurface" id="researchSurface">
                         </div>
                         <div class="form-group col-md-3 d-flex justify-content-end ms-4">
                             <button type="submit" class="btn btn-primary small-button align-self-end">Chercher</button>

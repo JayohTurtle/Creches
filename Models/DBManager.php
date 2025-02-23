@@ -1,5 +1,5 @@
 <?php
-
+include_once ('config.php');
 class DBManager {
 
     private static $instance;
@@ -10,6 +10,8 @@ class DBManager {
         $this -> db = new PDO('mysql:host='. DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8', DB_USER, DB_PASS);
         $this -> db ->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this -> db ->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO ::FETCH_ASSOC);
+        $this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
     }
 
     public static function getInstance() {
@@ -19,16 +21,14 @@ class DBManager {
         return self::$instance;
     }
 
-    public function query(string $sql, ?array $params = null) : PDOStatement
+
+        public function query(string $sql, ?array $params = null) : PDOStatement
     {
-        
-        if($params == null){
-            $query = $this -> db -> query($sql);
-        }else{
-            $query = $this -> db -> prepare($sql);
-            
-            $query -> execute($params);
-        }
+    $query = $this->db->prepare($sql);
+
+    $query->execute($params ?? []);
+    return $query;
+
         return $query;
     }
 

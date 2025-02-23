@@ -51,6 +51,16 @@ switch ($action) {
         $controller->handleAddContact();
         break;
 
+    case 'ajoutInfoContact':
+        $controller = new AddInfoContactController();
+        $controller->handleInfoContact();
+        break;
+
+    case 'ajoutComment':
+        $controller = new AddCommentController();
+        $controller->handleAddComment();
+        break;
+
     case 'userFormConnect':
         $controller = new UserFormConnectController();
         $controller->showUserFormconnect();
