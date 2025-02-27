@@ -51,7 +51,7 @@ class ResultContactController {
         }
     
         $contact = null;
-        $localisation = null;
+        $localisations = null;
     
         if ($valeurRecherchee !== null && $donneeRecherchee !== null) {
             // Récupérer un SEUL contact
@@ -67,6 +67,11 @@ class ResultContactController {
 
         // Vérifier si $idContact est défini avant de l'utiliser
         if (isset($idContact)) {
+
+            //Récupérer les clients pour ajout à la vue en cas de modification des intére^ts sur une crèche ou un groupe
+            $clientManager = new ClientManager();
+            $clients = $clientManager->getClientsWithContacts(); // ✅ Récupération des clients
+
             //Récupérer les intérêts du contact
             $interetVilleManager = new InteretVilleManager();
             $interetVilles = $interetVilleManager->getInteretVillesByContact($idContact);
@@ -109,6 +114,7 @@ class ResultContactController {
                 'interetCreches' => $interetCreches ?? [],
                 'interetGroupe' => $interetGroupe ?? [],
                 'interetTaille' => $interetTaille ?? [],
+                'clients' => $clients,
             ]);
         }
     }

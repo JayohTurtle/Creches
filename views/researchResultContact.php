@@ -51,13 +51,8 @@
     <div class="row">
         <div class = "articles mt-3 col-md-5">
             <div class = "article">
-                <div class="row col-md-12">
-                    <div class="mb-3 col-md-3">
-                        <button type="button" class="btn btn-primary">Ajouter</button>
-                    </div>
-                    <div class="mb-3 col-md-6">
-                        <button type="button" class="btn btn-danger">Supprimer</button>
-                    </div>
+                <div class="mb-3 col-md-3">
+                    <button id ="boutonAjoutInteretGeneral" type="button" class="btn btn-primary" onclick="ouvrirPopup('popupAjoutInteretGeneral')">Ajouter</button>
                 </div>
                 <h5>Intérêt général</h5>
                 <h6>Ville(s) :</h6>
@@ -105,13 +100,8 @@
         </div>
         <div class = "articles mt-3 col-md-7">
             <div class = "article">
-                <div class="row">
-                    <div class="mb-3 col-md-2">
-                        <button type="button" class="btn btn-primary">Ajouter</button>
-                    </div>
-                    <div class="mb-3 col-md-6">
-                        <button type="button" class="btn btn-danger">Supprimer</button>
-                    </div>
+                <div class="mb-3 col-md-2">
+                    <button id="boutonAjoutInteretCreche" type="button" class="btn btn-primary" onclick="ouvrirPopup('popupAjoutInteretCreche')">Ajouter</button>
                 </div>
                 <h5>Intérêt précis</h5>
                 <h6>Crèche(s) :</h6>
@@ -217,7 +207,6 @@
                     <div class="form-group d-none" id="inputInfoNomGroupe">
                             <label for="infoNomGroupe">Nom du groupe</label>
                             <input type="text" class="form-control" name="infoNomGroupe" id="infoNomGroupe">
-
                         </div>
                         <div class="form-group" id="inputInfoContact">
                             <label for="infoContact">Contact</label>
@@ -281,5 +270,131 @@
             </form>
         </div>
     </div>
+    <!-- Boîte modale pour ajouter un intérêt sur une crèche, un groupe -->
+    <div id="popupAjoutInteretCreche" class="modal" style="display: none;">
+        <div class="modal-content form-group d-flex flex-column align-items-center">
+            <span class="close" onclick="fermerPopup('popupAjoutInteretCreche')">&times;</span>
+            <h3>Ajouter un interêt</h3>
+            <form class = "article justify-content-center col-md-8" id="addInterestCrecheForm" method="POST">
+                <div class="row">
+                    <div class="radio-group d-flex justify-content-center">
+                        <div class="radio-item">
+                            <input type="radio" name="choixInteretPrecis" value="Interet Creche" id="choixInteretCreche" checked>
+                            <label for="choixInteretCreche">Crèche</label>
+                        </div>
+                        <div class="radio-item ms-2">
+                            <input type="radio" name="choixInteretPrecis" value="Interet Groupe" id="choixInteretGroupe">
+                            <label for="choixInteretGroupe">Groupe</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-4 mt-3">
+                    <label for="niveauInteret">Niveau</label>
+                    <select class="form-control" name="niveauInteret" id="niveauInteret">
+                        <option value="Intéressé">Intéressé</option>
+                        <option value="NDA envoyé">NDA envoyé</option>
+                        <option value="Dossier envoyé">Dossier envoyé</option>
+                        <option value="LOI">LOI</option>
+                        <option value="Achat réalisé">Achat réalisé</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-8 mt-3" id= "inputChoixInteretCreche">
+                    <label for="identifiant">Sur une crèche</label>
+                    <input type="text" class="form-control" name="interetCreche" id="interetCreche" list="getIdentifiants">
+                    <datalist id="getIdentifiants">
+                    <?php foreach ($clients as $client) : ?>
+                        <?php foreach (explode(', ', $client->getIdentifiant()) as $identifiant) : ?>
+                            <?php if (!empty($identifiant)) : ?>
+                                <option value="<?php echo htmlspecialchars($identifiant); ?>"></option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    <?php endforeach; ?>
+                    </datalist>
+                </div>
+                <div class="form-group col-md-8 mt-3" id="inputChoixInteretGroupe">
+                    <label for="groupe">Sur un groupe</label>
+                    <input type="text" class="form-control" name="interetGroupe" id="interetGroupe" list="getGroupes">
+                    <datalist id="getGroupes">
+                        <?php foreach ($clients as $client) : ?>
+                            <option value="<?php echo htmlspecialchars($client->getNom()); ?>"></option>
+                        <?php endforeach; ?>
+                    </datalist>
+                </div>
+                <input type="hidden" name="idContact" value="<?= (int) $idContact ?>">
+                <div class="form-group col-md-3 d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary small-button" id="ajoutInteretCreche">Envoyer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Boîte modale pour ajouter un intérêt sur une ville, un département, une région -->
+    <div id="popupAjoutInteretGeneral" class="modal" style="display: none;">
+        <div class="modal-content form-group d-flex flex-column align-items-center">
+            <span class="close" onclick="fermerPopup('popupAjoutInteretGeneral')">&times;</span>
+            <h3>Ajouter un interêt</h3>
+            <form class = "article justify-content-center col-md-12" id="addInterestGeneralForm" method="POST">
+                <div class="row col-md-12 ">
+                    <div class="radio-group d-flex justify-content-center">
+                        <div class="radio-item">
+                            <input type="radio" name="choixInteretGeneral" value="Interet Ville" id="choixInteretVille" checked>
+                            <label for="choixInteretVille">Ville</label>
+                        </div>
+                        <div class="radio-item ms-3">
+                            <input type="radio" name="choixInteretGeneral" value="Interet Departement" id="choixInteretDepartement">
+                            <label for="choixInteretDepartement">Département</label>
+                        </div>
+                        <div class="radio-item ms-3">
+                            <input type="radio" name="choixInteretGeneral" value="Interet Region" id="choixInteretRegion">
+                            <label for="choixInteretRegion">Région</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-row justify-content-center mt-3" id="inputChoixInteretVille">
+                    <div class="form-group col-md-5">
+                        <label for="villeInterest">Ville</label>
+                        <input class="form-control" list="villesInterest" id="villeInterest" name="villeInterest">
+                        <datalist id="villesInterest">
+                            <option value=""></option>
+                        </datalist>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="codePostalInterest">Code postal</label>
+                        <input class="form-control" id="codePostalInterest" name="codePostalInterest">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="rayonInterest">Rayon</label>
+                        <input class="form-control" id="rayonInterest" name="rayonInterest">
+                    </div>
+                </div>
+                <div class="form-group col-md-8 mt-3" id="inputChoixInteretDepartement">
+                    <label for="departementInterest">Département</label>
+                    <input class="form-control" list="departementsInterest" id="departementInterest" name="departementInterest">
+                    <datalist id="departementsInterest">
+                        <?php 
+                            foreach ($departements as $departement) : ?>
+                                <option value="<?php echo htmlspecialchars($departement -> getDepartement()); ?>"></option>
+                            <?php endforeach; 
+                        ?>
+                    </datalist>
+                </div>
+                <div class="form-group col-md-8 mt-3" id="inputChoixInteretRegion">
+                    <label for="regionInterest">Région</label>
+                    <input class="form-control w-100" list="regionsInterest" id="regionInterest" name="regionInterest">
+                    <datalist id="regionsInterest">
+                        <?php 
+                            foreach ($regions as $region) : ?>
+                                <option value="<?php echo htmlspecialchars($region -> getRegion()); ?>"></option>
+                            <?php endforeach; 
+                        ?>
+                    </datalist>
+                </div>
+                <input type="hidden" name="idContact" value="<?= (int) $idContact ?>">
+                <div class="form-group col-md-3 d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary small-button" id="ajoutInteretGeneral">Envoyer</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 <script src="js/popUp.js" defer> </script>
+<!--<script src="js/codePostal.js" defer></script>-->

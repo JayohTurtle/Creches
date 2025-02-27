@@ -122,11 +122,7 @@
                         <label for="villeInterest">Ville</label>
                         <input class="form-control" list="villesInterest" id="villeInterest" name="villeInterest[]">
                         <datalist id="villesInterest">
-                            <?php 
-                                foreach ($villes as $ville) : ?>
-                                    <option value="<?php echo htmlspecialchars($ville->getVille()); ?>"></option>
-                                <?php endforeach; 
-                            ?>
+                            <option value=""></option>
                         </datalist>
                     </div>
                     <div class="form-group col-md-2">

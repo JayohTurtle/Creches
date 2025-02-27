@@ -60,6 +60,16 @@ switch ($action) {
         $controller = new AddCommentController();
         $controller->handleAddComment();
         break;
+    
+    case 'ajoutInteretCreche':
+        $controller = new AddInteretCrecheController();
+        $controller->handleAddInteretCreche();
+        break;
+    
+    case 'ajoutInteretGeneral':
+        $controller = new AddInteretGeneralController();
+        $controller->handleAddInteretGeneral();
+        break;
 
     case 'userFormConnect':
         $controller = new UserFormConnectController();

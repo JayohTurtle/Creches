@@ -27,7 +27,8 @@ class ResearchResultVenteCrecheController{
             // Vérifier quel input a été rempli selon le bouton radio sélectionné
             if ($zoneType === "researchVille") {
                 $zoneVille = $this->sanitizeInput($_POST['zoneVille'] ?? null);
-                $rayon = (int) $this->sanitizeInput($_POST['zoneVilleRayon'] ?? null);
+                $rayon = $_POST['zoneVilleRayon'] ?? ''; // Récupérer la valeur ou une chaîne vide
+                $rayon = !empty($rayon) ? (int) $this->sanitizeInput($rayon) : 5;
                 $zoneValue = 'Recherche dans un rayon de ' . $rayon . ' kms autour de ' . $zoneVille;
                 
             } elseif ($zoneType === "researchDepartement") {

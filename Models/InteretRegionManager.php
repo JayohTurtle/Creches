@@ -9,10 +9,12 @@ class InteretRegionManager extends AbstractEntityManager{
     public function insertInteretRegion($idContact, $idRegionInterest) {
         $sql = 'INSERT INTO interetregions (idContact, idRegion) 
                 VALUES (:idContact, :idRegion)';
-        return $this->db->query($sql, [
+        $result = $this->db->query($sql, [
             'idContact' => $idContact,
             'idRegion' => $idRegionInterest,
         ]);
+
+        return $result;
     }
 
     public function getInteretRegionsByContact($idContact) {

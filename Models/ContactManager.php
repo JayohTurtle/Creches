@@ -154,11 +154,15 @@ class ContactManager extends AbstractEntityManager {
                 FROM contacts WHERE idContact = ?";
         $contactActuel = $this->db->query($sql, [$idContact])->fetch(PDO::FETCH_ASSOC);
         
+        if (!$contactActuel) {
+            return ["status" => "error", "message" => "Contact introuvable."];
+        }
+    
         // Comparer les anciennes et nouvelles valeurs
         $champsAChanger = [];
         foreach ($infosContact as $colonneBDD => $valeur) {
             $ancienneValeur = $contactActuel[$colonneBDD] ?? ""; // Gérer les NULL
-            if (isset($valeur) && $ancienneValeur !== $valeur) {
+            if ($ancienneValeur !== $valeur) {
                 $champsAChanger[$colonneBDD] = [
                     'ancien' => $ancienneValeur,
                     'nouveau' => $valeur
@@ -167,42 +171,53 @@ class ContactManager extends AbstractEntityManager {
         }
     
         if (empty($champsAChanger)) {
-            return ["status" => "error", "message" => "Aucune modification nécessaire."];
+            return ["status" => "no_change", "message" => "Aucune modification nécessaire."];
         }
     
-        return ["status" => "success", "modifications" => $champsAChanger];
+        return [
+            "status" => "success",
+            "modifications" => $champsAChanger,
+            "contactActuel" => $contactActuel // 🔥 On passe les données actuelles pour éviter une requête en double
+        ];
     }
-       
-    public function confirmerUpdateContact($idContact, $infosContact) {
-        // Récupérer les données actuelles du contact
-        $sql = "SELECT nom, contact, siren, telephone, email, sens, siteInternet 
-                FROM contacts WHERE idContact = ?";
-                
-        $contactActuel = $this->db->query($sql, [$idContact])->fetch(PDO::FETCH_ASSOC);
+    
+    public function confirmerUpdateContact($idContact, $infosContact, $contactActuel = null) {
+        // Vérification et récupération de idContact si nécessaire
+        if (empty($idContact)) {
+            if (!isset($_POST["idContact"])) {
+                $donnees = json_decode(file_get_contents("php://input"), true);
+                if (is_array($donnees) && isset($donnees["idContact"])) {
+                    $_POST["idContact"] = $donnees["idContact"];
+                }
+            }
+            $idContact = $_POST["idContact"] ?? null;
+        }
+    
+        // Vérifier si le contact existe déjà
+        if ($contactActuel === null) {
+            $sql = "SELECT nom, contact, siren, telephone, email, sens, siteInternet 
+                    FROM contacts WHERE idContact = ?";
+            $contactActuel = $this->db->query($sql, [$idContact])->fetch(PDO::FETCH_ASSOC);
+        }
     
         if (!$contactActuel) {
             return ["status" => "error", "message" => "Contact introuvable."];
         }
     
-        // Initialisation des tableaux
-        $champsAChanger = [];  
-        $champsAAjouter = [];  
-    
+        // 🛠 Déterminer les champs à mettre à jour
+        $champsAChanger = [];
         foreach ($infosContact as $champBdd => $valeur) {
-            $ancienneValeur = $contactActuel[$champBdd] ?? ""; 
-    
-            if ($ancienneValeur === $valeur) {
+            if (!isset($contactActuel[$champBdd])) {
+                error_log("🚨 ERREUR - Clé '$champBdd' absente du contact actuel !");
                 continue;
             }
-    
-            if (empty($ancienneValeur) && !empty($valeur)) {
-                $champsAAjouter[$champBdd] = $valeur;
-            } elseif (!empty($ancienneValeur) && $ancienneValeur !== $valeur) {
+            
+            if ($contactActuel[$champBdd] !== $valeur) {
                 $champsAChanger[$champBdd] = $valeur;
             }
         }
     
-        // Mettre à jour les champs confirmés
+        // 🔄 Effectuer la mise à jour si nécessaire
         if (!empty($champsAChanger)) {
             $setParts = [];
             $values = [];
@@ -214,33 +229,32 @@ class ContactManager extends AbstractEntityManager {
     
             $values[] = $idContact;
             $sqlUpdate = "UPDATE contacts SET " . implode(", ", $setParts) . " WHERE idContact = ?";
-    
             $stmt = $this->db->prepare($sqlUpdate);
-            $success = $stmt->execute($values);
-    
+            $stmt->execute($values);
         }
     
         return ["status" => "success", "message" => "Mise à jour effectuée avec succès."];
     }
-
+    
     function comparerContacts($localisationContacts,$idVendeurs) {
 
-        
         // Étape 1 : Filtrer les localisations en fonction des vendeurs
         $filteredLocalisations = array_filter($localisationContacts, function ($localisation) use ($idVendeurs) {
             return in_array($localisation['idContact'], $idVendeurs);
         });
+
         // Étape 2 : Transformer le tableau filtré en objets
         $localisations = [];
         foreach ($filteredLocalisations as $localisation) {
             $loc = new Localisation(); // Créer une nouvelle instance de Localisation
             $loc->setIdentifiant($localisation['identifiant']);
             $loc->setIdLocalisation($localisation['idLocalisation']);
-            $loc->setDistance($localisation['distance']);
+            $loc->setDistance($localisation['distance_km']);
+
         
             $localisations[] = $loc; // Ajouter l'objet Localisation au tableau
         }
-
+       
         return $localisations;
     }
     

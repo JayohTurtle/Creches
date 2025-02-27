@@ -67,7 +67,7 @@ class LocalisationManager extends AbstractEntityManager{
             $adresse = implode(' ', $adresse); // Convertit le tableau en string
         }
         
-        $adresse = trim($adresse);
+        //$adresse = trim($adresse);
         
         if (is_array($codePostal)) {
             $codePostal = implode(' ', $codePostal); // Convertit le tableau en string
@@ -121,9 +121,7 @@ class LocalisationManager extends AbstractEntityManager{
     public function insertLocation($idLocalisation, $lat, $lng) {
         echo "🔹 insertLocation appelée avec : ID = $idLocalisation, LAT = $lat, LNG = $lng<br>";
     
-        $sql = 'UPDATE localisations 
-                SET location = ST_GeomFromText(?, 4326) 
-                WHERE idLocalisation = ?';
+        $sql = "UPDATE localisations SET location = ST_GeomFromText(:point) WHERE idLocalisation = :idLocalisation";
     
         $point = "POINT($lng $lat)"; // Longitude en premier
     
@@ -214,12 +212,13 @@ class LocalisationManager extends AbstractEntityManager{
     
         return $idContacts; // Retourne un tableau contenant uniquement les idContact
     }
+
     public function getLocalisationsInRayon($coords, $rayon) {
         // Vérification des paramètres
         if (empty($coords['lng']) || empty($coords['lat']) || empty($rayon)) {
             throw new Exception("Les coordonnées et le rayon doivent être définis.");
         }
-    
+        
         // Construire la requête SQL
        $sql = "SELECT idLocalisation, idContact, identifiant,
             ST_Distance_Sphere(location, POINT(?, ?)) / 1000 AS distance_km
@@ -227,7 +226,6 @@ class LocalisationManager extends AbstractEntityManager{
             WHERE ST_Distance_Sphere(location, POINT(?, ?)) / 1000 <= ?
             ";
 
-    
         // Passer la requête SQL au DBManager qui s'occupe de la préparation et de l'exécution
         $result = $this->db->query($sql, [
             $coords['lng'],  // Longitude du point
@@ -249,19 +247,7 @@ class LocalisationManager extends AbstractEntityManager{
         if (empty($contacts)) {
             return [];
         }
-    
-        // Extraire les idContact et la distance des résultats
-        $localisationContacts = array_map(function($contact) {
-            return [
-                'identifiant' => $contact['identifiant'],
-                'idLocalisation' => $contact['idLocalisation'],
-                'idContact' => $contact['idContact'],
-                'distance' =>$contact['distance_km']
-            ];
-        }, $contacts);
-    
-        // Retourner les ids des contacts avec leurs distances
-        return $localisationContacts;
+        return $contacts;
     }
     
     public function getLocalisationsByVendeurAndDepartement(array $idContacts, $idDepartementArray): array
@@ -327,7 +313,16 @@ class LocalisationManager extends AbstractEntityManager{
         return $localisations;
     }
 
+    public function getLocalisationIdByIdentifiant($identifiant) {
+        $sql = "SELECT idLocalisation FROM localisations WHERE identifiant = '$identifiant' LIMIT 1";
+        $result = $this->db->query($sql)->fetch(PDO::FETCH_ASSOC); // 🔹 Récupérer la ligne
+    
+        return $result ? $result['idLocalisation'] : null; // 🔹 Retourner l'ID ou null
+    }
+    
+
 }
+
     
 
 

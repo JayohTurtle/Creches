@@ -9,10 +9,12 @@ class InteretDepartementManager extends AbstractEntityManager{
     public function insertInteretDepartement($idContact, $idDepartementInterest) {
         $sql = 'INSERT INTO interetdepartements (idContact, idDepartement) 
                 VALUES (:idContact, :idDepartement)';
-        return $this->db->query($sql, [
+        $result = $this->db->query($sql, [
             'idContact' => $idContact,
             'idDepartement' => $idDepartementInterest,
         ]);
+
+        return $result;
     }
 
     //Récupère le département par l'idContact

@@ -14,7 +14,17 @@ class InteretVilleManager extends AbstractEntityManager{
                 'idVille' => $idVilleInterest,
                 'rayon' => (int) $rayon,
             ]);
-    }
+
+            $result =$this->db->query($sql, [
+                'idContact' => $idContact,
+                'niveau' => $niveau,
+                'idIdentifiant' => $idIdentifiant
+            ]);
+
+            return $result;
+        }
+
+
      // Récupère les intérêts villes par contact
     public function getInteretVillesByContact($idContact) {
         try {

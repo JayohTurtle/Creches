@@ -24,6 +24,7 @@ class AddInfoContactController {
     
             // ⚡️ Préparation des modifications
             $champs = ["infoContact", "infoNomGroupe", "infoSIREN", "infoEmail", "infoTelephone", "infoSens", "infoSite"];
+ 
             $infosContact = [];
     
             foreach ($champs as $champ) {
@@ -57,37 +58,37 @@ class AddInfoContactController {
     
             // 🔥 Comparaison avec la BDD
             $modifications = $this->contactManager->updateContact($idContact, $infosContactMapped);
-    
-            if (!is_array($modifications)) {
-                echo json_encode(["status" => "error", "message" => "Erreur dans la récupération des modifications"]);
+
+            if ($modifications["status"] === "no_change") {
+                echo json_encode(["status" => "success"]);
                 exit();
             }
-    
+
             // ✅ Vérification : faut-il une confirmation ?
             $confirmationRequise = false;
-    
             foreach ($modifications["modifications"] as $champ => $modif) {
                 if (!empty($modif["ancien"])) {  // S'il y avait déjà une valeur en BDD, on demande confirmation
                     $confirmationRequise = true;
                     break;
                 }
             }
-    
+
             if (!$confirmationRequise) {
                 // 💾 Appliquer directement la mise à jour sans confirmation
-                $this->contactManager->confirmerUpdateContact($idContact, $infosContactMapped);
+                $this->contactManager->confirmerUpdateContact($idContact, $infosContactMapped, $modifications["contactActuel"]);
                 echo json_encode(["status" => "success"]);
                 exit();
             }
-    
-            // ❗ Sinon, demande confirmation
+
+            // ❗ Sinon, on demande confirmation
             echo json_encode([
                 "status" => "confirm_required",
-                "modifications" => $modifications["modifications"], // ✅ Corrige l'imbrication incorrecte
+                "modifications" => $modifications["modifications"],
                 "idContact" => $idContact
             ]);
             exit();
         }
+
     }
     
     public function confirmUpdateContact($infosContact, $idContact) {

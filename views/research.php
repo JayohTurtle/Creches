@@ -58,7 +58,7 @@
                         </div>
                         <div class="form-group d-none" id="inputEmail">
                             <label for="donneeEmail">Email</label>
-                            <input type="text" class="form-control" name="donneeEmail" id="donneeEmail" list="getEmails">
+                            <input type="email" class="form-control" name="donneeEmail" id="donneeEmail" list="getEmails">
                             <datalist id="getEmails">
                                 <?php foreach ($contacts as $contact) : ?>
                                     <option value="<?php echo htmlspecialchars($contact->getEmail()); ?>"></option>
@@ -67,7 +67,7 @@
                         </div>
                         <div class="form-group d-none" id="inputTelephone">
                             <label for="donneeTelephone">Téléphone</label>
-                            <input type="text" class="form-control" name="donneeTelephone" id="donneeTelephone" list="getTelephones">
+                            <input type="tel" class="form-control" name="donneeTelephone" id="donneeTelephone" list="getTelephones">
                             <datalist id="getTelephones">
                                 <?php foreach ($contacts as $contact) : ?>
                                     <option value="<?php echo htmlspecialchars($contact->getTelephone()); ?>"></option>

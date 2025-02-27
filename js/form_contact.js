@@ -161,10 +161,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 🔹 Gestion des recherches par crèches ou groupes
     const radioButtonsCrecheGroup = document.querySelectorAll('input[name="crecheGroup"]');
-    const inputCrecheGroup = {
-        Creche: "choixCreche",
-        Group: "choixGroup",
-    };
+    
 
     function updateVisibleInputCrecheGroup() {
         if (choixCreche.checked) {

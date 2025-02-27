@@ -15,11 +15,13 @@ public function insertInteretCreche($idContact, $niveau, $idIdentifiant) {
     }
         $sql = 'INSERT INTO interetcreches (idContact, niveau, idIdentifiant) 
                 VALUES (:idContact, :niveau, :idIdentifiant)';
-        $this->db->query($sql, [
+        $result =$this->db->query($sql, [
             'idContact' => $idContact,
             'niveau' => $niveau,
             'idIdentifiant' => $idIdentifiant
         ]);
+
+        return $result; // Assure que la fonction retourne un booléen
     }
 
     public function getInteretCrechesByContact($idContact) {
