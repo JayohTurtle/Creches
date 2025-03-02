@@ -7,7 +7,7 @@ class InteretGroupeManager extends AbstractEntityManager{
 
     // Insère les interets avec l'id contact
     public function insertInteretGroupe($idContact, $niveau, $nom) {
-        $sql = 'INSERT INTO interetgroupes(idContact, niveau, nom) 
+        $sql = 'INSERT INTO interetgroupe(idContact, niveau, nom) 
                 VALUES (:idContact, :niveau, :nom)';
         return $this->db->query($sql, [
             'idContact' => $idContact,
@@ -19,7 +19,7 @@ class InteretGroupeManager extends AbstractEntityManager{
     public function getInteretGroupesByContact($idContact) {
         try {
             $sql = "SELECT i.niveau, i.nom
-                    FROM interetgroupes i
+                    FROM interetgroupe i
                     JOIN contacts c ON i.idContact = c.idContact
                     WHERE i.idContact = :idContact";
     
@@ -46,7 +46,7 @@ class InteretGroupeManager extends AbstractEntityManager{
                 c.telephone, 
                 c.email, 
                 i.niveau
-            FROM interetGroupes i
+            FROM interetGroupe i
             JOIN contacts c ON i.idContact = c.idContact
             WHERE i.nom = :nom';
 

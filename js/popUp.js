@@ -277,20 +277,27 @@ if (formAjoutInteretCreche) {
             body: formData
         })
         .then(response => {
+            console.log("Réponse brute :", response);
+        
             if (!response.ok) {
-                throw new Error(`Erreur HTTP : ${response.status}`)
+                throw new Error(`Erreur HTTP : ${response.status}`);
             }
-            return response.text()  // Récupérer la réponse brute
+            return response.text();  // 🔥 Récupérer la réponse brute
         })
         .then(text => {
+            console.log("Texte brut reçu :", text);
+        
             try {
-                return JSON.parse(text)  // Tenter de parser en JSON
+                let jsonData = JSON.parse(text);
+                console.log("JSON parsé :", jsonData);
+                return jsonData;
             } catch (error) {
-                throw new Error("La réponse du serveur n'est pas un JSON valide : " + text)
+                console.error("❌ Erreur de parsing JSON :", error);
+                throw new Error("La réponse du serveur n'est pas un JSON valide : " + text);
             }
         })
         .then(data => {
-            if (data.status === "success") {
+            if (data.success) {
                 fermerPopup("popupAjoutInteretCreche")
                 afficherMessageSucces("Interet ajouté avec succès !")
                 window.location.reload(false)  // Rafraîchir la page
@@ -305,6 +312,12 @@ if (formAjoutInteretCreche) {
         })
     })
 }
+
+function afficherMessageErreur(message) {
+    console.error("Erreur : " + message);
+    alert("❌ Erreur : " + message); // Affiche une alerte (optionnel)
+}
+
 
 //Ajout de la gestion du popUp ajoutInteretGeneral
 

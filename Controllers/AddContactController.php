@@ -37,7 +37,7 @@ class AddContactController {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $postData = $_POST;
 
-            $operateur = $_SESSION['user_email'];
+            $operateur = $_SESSION['userEmail'];
 
             // Ajout du contact et récupération de son ID
             $idContact = $this->addContact($postData);
@@ -164,9 +164,8 @@ class AddContactController {
                 $taille = $postData['taille'][$key] ?? null;
                 
                 $idDepartement = $this->departementManager->getDepartementIdByCodePostal($codePostal);
-
                 $idVille = $this->villeManager->insertVilleIfNotExists($ville, $codePostal, $idDepartement);
-    
+                
                 $nom = $this->sanitizeInput($postData['nom']);
                 $identifiant = "$nom - $ville - $adresse";
     
@@ -276,7 +275,7 @@ class AddContactController {
         
         // Récupérer l'ID du département à partir du code postal
         $idDepartement = $this->departementManager->getDepartementIdByCodePostal($codePostalInterest);
-
+        
         // Vérifier si la ville existe, sinon l'ajouter
         $idVilleInterest = $this->villeManager->insertVilleIfNotExists($villeInterest, $codePostalInterest,$idDepartement);
         
@@ -293,23 +292,23 @@ class AddContactController {
 }
     private function addInteretDepartement($postData, $idContact) {
 
-        foreach ($postData['departementInterest'] as $key => $departementInterest) {
+        foreach ($postData['departementInterest'] as $departementInterest) {
             $departementInterest = $this->sanitizeInput($departementInterest);
-        
-        $interetDepartement = new InteretDepartement();
-        
-        // Récupérer l'ID du département à partir du nom
-        $idDepartementInterest = $this->departementManager->getDepartementIdByName($departementInterest);
-        
-        $interetDepartement->setIdContact($idContact);
-        $interetDepartement->setIdDepartement($idDepartementInterest);
+            
+            $interetDepartement = new InteretDepartement();
+            
+            // Récupérer l'ID du département à partir du nom
+            $idDepartementInterest = $this->departementManager->getDepartementIdByName($departementInterest);
+            $interetDepartement->setIdContact($idContact);
+            $interetDepartement->setIdDepartement($idDepartementInterest);
 
-        $this->interetDepartementManager->insertInteretDepartement(
-            $idContact,
-            $interetDepartement->getIdDepartement(),
-        );
+            $this->interetDepartementManager->insertInteretDepartement(
+                $idContact,
+                $interetDepartement->getIdDepartement()
+            );
+        }
+
     }
-}
     private function addInteretRegion($postData, $idContact) {
 
         foreach ($postData['regionInterest'] as $key => $regionInterest) {
@@ -355,15 +354,14 @@ class AddContactController {
         );
     }
     /**
-     * Fonction utilitaire pour nettoyer les entrées utilisateur.
+     * Fonction utilitaire pour nettoyer les entrées utilisateur destinées à la base de données.
      */
     private function sanitizeInput($input) {
         if (is_array($input)) {
-            return array_map([$this, 'sanitizeInput'], $input);
+            return array_map([$this, 'sanitizeInput'], $input); // Nettoie les entrées dans les tableaux
         }
-        return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
+        return trim($input); // Supprime simplement les espaces inutiles
     }
-    
 }
 
     

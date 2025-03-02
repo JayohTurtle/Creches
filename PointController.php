@@ -7,7 +7,7 @@ include_once ('config.php');
 $manager = new PointManager();
 
 // Exécuter la mise à jour des localisations
-$manager->updateAllLocations();
+$manager->updateAllCitiesLocations();
 
 echo "Mise à jour des localisations terminée.";
 ?>

@@ -25,7 +25,7 @@
                 <?php endif; ?>
             </div>
         </div>
-        <div class = "articles col-md-8">
+        <div class = "articles col-md-9">
             <div class="article">
                 <div class="row col-md-12">
                     <div class="mb-3 col-md-1">
@@ -36,8 +36,8 @@
                 <ul>
                     <?php if (!empty($commentaires)): ?>
                         <?php foreach ($commentaires as $comment): ?>
-                            <li>Le <?= htmlspecialchars($comment->getDateComment()) ?> 
-                                <?= htmlspecialchars($comment->getOperateur()) ?> a écrit:
+                            <li>Le <?php echo htmlspecialchars($comment->getDateCommentFormatFr()); ?> 
+                                , <?= htmlspecialchars($comment->getOperateur()) ?> a écrit :
                                 <?= htmlspecialchars($comment->getCommentaire()) ?>
                             </li>
                         <?php endforeach; ?>
@@ -110,7 +110,7 @@
                         <?php foreach ($interetCreches as $interet): ?>
                             <li>
                                 <strong>Identifiant :</strong> <?= htmlspecialchars($interet->getIdentifiant()) ?><br>
-                                <strong>Niveau :</strong> <?= htmlspecialchars($interet->getNiveau()) ?>
+                                <strong>Niveau :</strong> <?php echo htmlspecialchars($interet->getNiveau()); ?> <strong> le :</strong> <?php echo htmlspecialchars($interet->getDateColonneFormatFr()); ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>

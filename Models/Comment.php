@@ -41,6 +41,14 @@ class Comment extends AbstractEntity {
         return $this->dateComment;
     }
 
+    public function getDateCommentFormatFr(): string {
+        if ($this->dateComment) {
+            $date = DateTime::createFromFormat('Y-m-d', $this->dateComment);
+            return $date ? $date->format('d-m-Y') : "";
+        }
+        return "";
+    }
+
     public function setOperateur(string $operateur): void {
         $this->operateur = $operateur;
     }

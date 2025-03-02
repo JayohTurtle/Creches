@@ -6,12 +6,12 @@ class CommentManager extends AbstractEntityManager {
     
     public function insertComment($idContact, $commentaire, $dateComment, $operateur) {
         if (!empty($commentaire)) {
-            $sql = 'INSERT INTO commentaires (idContact, commentaire, date_comment, operateur) 
-                    VALUES (:idContact, :commentaire, :date_comment, :operateur)';
+            $sql = 'INSERT INTO commentaires (idContact, commentaire, dateComment, operateur) 
+                    VALUES (:idContact, :commentaire, :dateComment, :operateur)';
             return $this->db->query($sql, [
                 'idContact' => $idContact,
                 'commentaire' => $commentaire,
-                'date_comment' => $dateComment,
+                'dateComment' => $dateComment,
                 'operateur' => $operateur
             ]);
         }
@@ -32,7 +32,7 @@ class CommentManager extends AbstractEntityManager {
         foreach ($results as $row) {
             $comment = new Comment();
             $comment->setCommentaire($row['commentaire'] ?? '');
-            $comment->setDateComment($row['date_comment'] ?? '');
+            $comment->setDateComment($row['dateComment'] ?? '');
             $comment->setOperateur($row['operateur'] ?? '');
             
             $comments[] = $comment;

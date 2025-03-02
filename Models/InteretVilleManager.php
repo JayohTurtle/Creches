@@ -7,7 +7,7 @@ class InteretVilleManager extends AbstractEntityManager{
 
     // Insère les interets avec les id ville et contact
     public function insertInteretVille($idContact, $idVilleInterest, $rayon) {
-        $sql = 'INSERT INTO interetvilles (idContact, idVille, rayon) 
+        $sql = 'INSERT INTO interetville (idContact, idVille, rayon) 
                 VALUES (:idContact, :idVille, :rayon)';
                 return $this->db->query($sql, [
                 'idContact' => $idContact,
@@ -29,7 +29,7 @@ class InteretVilleManager extends AbstractEntityManager{
     public function getInteretVillesByContact($idContact) {
         try {
             $sql = "SELECT iv.idContact, iv.rayon, v.idVille, v.ville
-                    FROM interetvilles iv
+                    FROM interetville iv
                     JOIN villes v ON iv.idVille = v.idVille
                     WHERE iv.idContact = :idContact";
     
@@ -81,7 +81,7 @@ class InteretVilleManager extends AbstractEntityManager{
                     c.telephone, 
                     c.email, 
                     iv.rayon
-                    FROM interetVilles iv
+                    FROM interetVille iv
                     JOIN contacts c ON iv.idContact = c.idContact
                     WHERE iv.idVille = :idVille";
 

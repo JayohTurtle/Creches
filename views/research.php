@@ -198,14 +198,20 @@
                 </div>
                 <div class="row mt-2 align-items-end">
                     <div class="col-md-8">
-                        <div class="form-group" id ="inputVilleAchat">
-                            <label for="zoneVilleAchat">Ville</label>
-                            <input type="text" class="form-control" name="zoneVilleAchat" id="zoneVilleAchat" list="getZoneVillesAchat">
-                            <datalist id="getZoneVillesAchat">
-                            <?php foreach ($villes as $ville) : ?>
-                                <option value="<?php echo htmlspecialchars($ville->getVille()); ?>"></option>
-                            <?php endforeach; ?>
-                            </datalist>
+                        <div class="row form-row col-md-12" id ="inputVilleAchat">
+                            <div class="form-group col-md-9 ">
+                                <label for="zoneVilleAchat">Ville</label>
+                                <input type="text" class="form-control" name="zoneVilleAchat" id="zoneVilleAchat" list="getZoneVillesAchat">
+                                <datalist id="getZoneVillesAchat">
+                                <?php foreach ($villes as $ville) : ?>
+                                    <option value="<?php echo htmlspecialchars($ville->getVille()); ?>"></option>
+                                <?php endforeach; ?>
+                                </datalist>
+                            </div>
+                            <div class="form-group col-md-3" id ="inputVilleRayonAchat">
+                                <label for="zoneVilleRayonAchat">Rayon</label>
+                                <input class="form-control" type="number" name="zoneVilleRayonAchat" id="zoneVilleRayonAchat" min="0" step="5">
+                            </div>
                         </div>
                         <div class="form-group d-none" id ="inputDepartementAchat">
                             <label for="zoneDepartementAchat">Département</label>
@@ -231,7 +237,7 @@
                             <label for="researchNbreCreche">Nombre de crèches</label>
                             <input type="text" class="form-control" name="researchNbreCreche" id="researchNbreCreche">
                         </div>
-                        <div class="form-group col-md-3 d-flex justify-content-end ms-4">
+                        <div class="form-group col-md-7 d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary small-button align-self-end">Chercher</button>
                         </div>
                     </div>

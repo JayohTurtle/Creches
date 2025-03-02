@@ -56,7 +56,7 @@ class LocalisationManager extends AbstractEntityManager{
     }
 
     //Créer une adresse à partir du code postal, de la ville et de l'adresse
-    public function createAddress($codePostal, $ville, $adresse) {
+    public function createAddress($adresse, $codePostal, $ville) {
         // Vérifier si les paramètres ne sont pas vides
         if (empty($adresse) || empty($codePostal) || empty($ville)) {
             return false; // Ou lancer une exception
@@ -81,7 +81,7 @@ class LocalisationManager extends AbstractEntityManager{
         $ville = trim($ville);
     
         // Construire l'adresse complète
-        $result = "$adresse, $codePostal $ville";
+        $result = "$adresse, $codePostal, $ville";
     
         return $result;
     }
@@ -314,14 +314,21 @@ class LocalisationManager extends AbstractEntityManager{
     }
 
     public function getLocalisationIdByIdentifiant($identifiant) {
-        $sql = "SELECT idLocalisation FROM localisations WHERE identifiant = '$identifiant' LIMIT 1";
-        $result = $this->db->query($sql)->fetch(PDO::FETCH_ASSOC); // 🔹 Récupérer la ligne
+        $sql = "SELECT idLocalisation FROM localisations WHERE identifiant = :identifiant LIMIT 1";
+        
+        $stmt = $this->db->prepare($sql);  // 🔹 Préparer la requête
+        $stmt->execute([':identifiant' => $identifiant]);  // 🔹 Exécuter avec le paramètre
+    
+        $result = $stmt->fetch(PDO::FETCH_ASSOC); // 🔹 Récupérer la ligne au lieu de l'objet
     
         return $result ? $result['idLocalisation'] : null; // 🔹 Retourner l'ID ou null
     }
+}
+    
+    
     
 
-}
+
 
     
 

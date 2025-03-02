@@ -128,15 +128,15 @@ class ResultContactController {
             return $this->commentManager->extractComments($idContact);
         }
     
-        /**
-         * Fonction utilitaire pour nettoyer les entrées utilisateur.
-         */
-        private function sanitizeInput($input) {
-            if (is_array($input)) {
-                return array_map([$this, 'sanitizeInput'], $input);
-            }
-            return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
+    /**
+    * Fonction utilitaire pour nettoyer les entrées utilisateur.
+    */
+    private function sanitizeInput($input) {
+        if (is_array($input)) {
+            return array_map([$this, 'sanitizeInput'], $input); // Nettoie les entrées dans les tableaux
         }
+        return trim($input); // Supprime simplement les espaces inutiles
+    }
 }
 
 

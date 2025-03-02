@@ -22,12 +22,11 @@ $publicPages = ['userFormConnect', 'resetPassword', 'changePassword', 'forgotPas
 
 $action = $_GET['action'] ?? 'home';
 
-// Vérifier si l'utilisateur est connecté sauf pour les pages publiques
+//Vérifier si l'utilisateur est connecté sauf pour les pages publiques
 if (!isset($_SESSION['user']) && (!isset($_GET['action']) || !in_array($_GET['action'], $publicPages))) {
     header("Location: index.php?action=userFormConnect");
     exit;
 }
-
 
 // Récupération de l'action (par défaut : "dashboard")
 $action = $_REQUEST['action'] ?? 'dashboard';
@@ -44,6 +43,16 @@ switch ($action) {
     case 'newContactForm':
         $controller = new ContactFormController();
         $controller->showContactForm();
+        break;
+    
+    case 'createUser':
+        $controller = new ConnectController();
+        $controller->showCreateUser();
+        break;
+
+    case 'userCreated':
+        $controller = new ConnectController();
+        $controller->userCreated();
         break;
 
     case 'saveContact': // Ajout d'une action pour enregistrer un contact
@@ -72,17 +81,17 @@ switch ($action) {
         break;
 
     case 'userFormConnect':
-        $controller = new UserFormConnectController();
+        $controller = new ConnectController();
         $controller->showUserFormconnect();
         break;
 
     case 'login':
-        $controller = new UserFormConnectController();
+        $controller = new ConnectController();
         $controller->login();
         break;
     
     case 'logout':
-        $controller = new UserFormConnectController();
+        $controller = new ConnectController();
         $controller->logout();
         break;        
         

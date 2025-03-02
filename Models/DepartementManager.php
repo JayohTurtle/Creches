@@ -21,7 +21,7 @@ class DepartementManager extends AbstractEntityManager{
 
         // Extraire les deux premiers caractères du code postal
         $code= substr($codePostal, 0, 2);
-    
+        ;
         // Gestion des cas particuliers pour la Corse
         if ($code === '20') {
             if ($codePostal >= '20000' && $codePostal <= '20190') {
@@ -47,7 +47,6 @@ class DepartementManager extends AbstractEntityManager{
 
         return $result ? (int) $result['idDepartement'] : null;
     
-        return $query->fetchColumn(); // Retourne l'ID du département
     }
 
     public function getDepartementNameById($idDepartement){

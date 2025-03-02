@@ -2,7 +2,7 @@
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = trim($_POST['email']);
+    $email = $this->sanitizeInput($_POST['email']);
     $db = DBManager::getInstance();
 
     $stmt = $db->query("SELECT idUser FROM users WHERE email = ?", [$email]);
@@ -25,4 +25,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         echo "Aucun compte associé à cet email.";
     }
+
 }
+/**
+ * Fonction utilitaire pour nettoyer les entrées utilisateur destinées à la base de données.
+ */
+function sanitizeInput($input) {
+    if (is_array($input)) {
+        return array_map('sanitizeInput', $input); // Nettoie les entrées dans les tableaux
+    }
+    return trim($input); // Supprime simplement les espaces inutiles
+}
+
+

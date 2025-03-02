@@ -4,8 +4,8 @@ require __DIR__ . '/../includes/auth.php';// Vérifie si l'utilisateur est conne
 ?>
 
 <div class="container">
-    <?php if (isset($_SESSION['user_email'])) {
-        echo "<p>Utilisateur : " . htmlspecialchars($_SESSION['user_email']) . "</p>";
+    <?php if (isset($_SESSION['userEmail'])) {
+        echo "<p>Utilisateur : " . htmlspecialchars($_SESSION['userEmail']) . "</p>";
     } else {
         echo "<p>Utilisateur non connecté.</p>";
     }

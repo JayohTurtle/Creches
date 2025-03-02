@@ -40,10 +40,11 @@ class VilleManager extends AbstractEntityManager{
                 'codePostal' => $codePostal, 
                 'idDepartement' => $idDepartement
             ]);
-            $idVille = (int) $this->db->lastInsertId(); 
-    
+            $idVille = (int) $this->db->lastInsertId();
+            
             // Géocodage
             $coords = $this->geocodeCity($ville, $codePostal);
+            
             if ($coords) {
                 $this->updateAllCitiesLocations($coords, $idVille);
             } else {
@@ -72,7 +73,14 @@ class VilleManager extends AbstractEntityManager{
     public function geocodeCity($ville, $codePostal) {
         $apiKey = "e42f639a17dc40eebffcb9283aa34afe"; // Remplace avec ta clé API
         $address = urlencode("$ville, $codePostal");
-        $url = "https://api.opencagedata.com/geocode/v1/json?q=$address&key=$apiKey";
+        $queryParams = http_build_query([
+            'q' => $address,
+            'key' => $apiKey,
+            'limit' => 1, // Limite à un seul résultat
+            'no_annotations' => 1, // Désactive les annotations inutiles
+            'language' => 'fr' // Récupère les résultats en français
+        ]);
+        $url = "https://api.opencagedata.com/geocode/v1/json?$queryParams";
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);

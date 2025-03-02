@@ -13,7 +13,7 @@ class ResearchResultInteretCrecheController {
     
     public function showResultInteretCreche() {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $identifiant = $_POST['identifiant'];
+            $identifiant = $this-> sanitizeInput($_POST['identifiant']);
     
             // Récupérer les contacts intéressés par la crèche
             $contacts = $this->interetCrecheManager->getContactsByIdentifiant($identifiant);
@@ -60,6 +60,15 @@ class ResearchResultInteretCrecheController {
                 'identifiant' => $identifiant,
             ]);
         }
+    }
+    /**
+    * Fonction utilitaire pour nettoyer les entrées utilisateur.
+    */
+    private function sanitizeInput($input) {
+        if (is_array($input)) {
+            return array_map([$this, 'sanitizeInput'], $input); // Nettoie les entrées dans les tableaux
+        }
+        return trim($input); // Supprime simplement les espaces inutiles
     }
     
 }

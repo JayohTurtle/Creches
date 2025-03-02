@@ -22,15 +22,15 @@ class DBManager {
     }
 
 
-        public function query(string $sql, ?array $params = null) : PDOStatement
+    public function query(string $sql, ?array $params = null) : PDOStatement
     {
     $query = $this->db->prepare($sql);
 
+    // Exécuter la requête avec les paramètres (gestion automatique des apostrophes)
     $query->execute($params ?? []);
-    return $query;
 
-        return $query;
-    }
+    return $query;
+}
 
     public function lastInsertId() {
         return $this->db->lastInsertId();

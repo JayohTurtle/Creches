@@ -7,7 +7,7 @@ class InteretRegionManager extends AbstractEntityManager{
 
     // Insère les interets avec les id departement et contact
     public function insertInteretRegion($idContact, $idRegionInterest) {
-        $sql = 'INSERT INTO interetregions (idContact, idRegion) 
+        $sql = 'INSERT INTO interetregion (idContact, idRegion) 
                 VALUES (:idContact, :idRegion)';
         $result = $this->db->query($sql, [
             'idContact' => $idContact,
@@ -20,7 +20,7 @@ class InteretRegionManager extends AbstractEntityManager{
     public function getInteretRegionsByContact($idContact) {
         try {
             $sql = "SELECT ir.idContact, r.idRegion, r.region
-                    FROM interetRegions ir
+                    FROM interetRegion ir
                     JOIN regions r ON ir.idRegion = r.idRegion
                     WHERE ir.idContact = :idContact";
     

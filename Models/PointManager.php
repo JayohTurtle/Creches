@@ -30,6 +30,7 @@ class PointManager extends AbstractEntityManager {
 
     // Géocoder une adresse via OpenCage
     public function geocodeAdresse($adresse) {
+        var_dump('on appelle lAPI');
         $apiKey = "e42f639a17dc40eebffcb9283aa34afe"; // Remplace avec ta clé API
         $adresse = urlencode($adresse);
         $url = "https://api.opencagedata.com/geocode/v1/json?q=$adresse&key=$apiKey";
@@ -40,9 +41,15 @@ class PointManager extends AbstractEntityManager {
         curl_setopt($ch, CURLOPT_USERAGENT, "YouInvestCreche/1.0");
 
         $response = curl_exec($ch);
+        if ($response === false) {
+            echo "cURL Error: " . curl_error($ch);
+        }
+        
+        var_dump($response);
         curl_close($ch);
 
         $data = json_decode($response, true);
+        var_dump($data);
 
         if (!empty($data['results'])) {
             return [
@@ -103,8 +110,9 @@ class PointManager extends AbstractEntityManager {
         curl_setopt($ch, CURLOPT_USERAGENT, "YouInvestCreche/1.0");
 
         $response = curl_exec($ch);
-        curl_close($ch);
 
+        curl_close($ch);
+        
         $data = json_decode($response, true);
 
         if (!empty($data['results'])) {

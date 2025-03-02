@@ -18,6 +18,9 @@
     <div class="container-fluid container">
         <div class="d-flex justify-content-between align-items-center w-100">
             <div> <img src ="assets/images/logo-YouInvest.png"></div>
+            <?php if (isset($_SESSION['userId']) && $_SESSION['userRole'] === 'admin') : ?>
+            <div><a class="nav-link" href="index.php?action=createUser">🔐 Page Admin</a></div>
+            <?php endif; ?>
             <div><a class="nav-link" href="index.php?action=dashboard">Tableau de bord</a></div>
             <div><a class="nav-link" href="index.php?action=newContactForm">Nouveau contact</a></div>
             <div><a class="nav-link" href="index.php?action=research">Recherche</a></div>

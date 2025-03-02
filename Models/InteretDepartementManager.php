@@ -7,7 +7,7 @@ class InteretDepartementManager extends AbstractEntityManager{
 
     // Insère les interets avec les id departement et contact
     public function insertInteretDepartement($idContact, $idDepartementInterest) {
-        $sql = 'INSERT INTO interetdepartements (idContact, idDepartement) 
+        $sql = 'INSERT INTO interetDepartement (idContact, idDepartement) 
                 VALUES (:idContact, :idDepartement)';
         $result = $this->db->query($sql, [
             'idContact' => $idContact,
@@ -21,12 +21,14 @@ class InteretDepartementManager extends AbstractEntityManager{
     public function getInteretDepartementsByContact($idContact) {
         try {
             $sql = "SELECT id.idContact, d.idDepartement, d.departement
-                    FROM interetdepartements id
+                    FROM interetDepartement id
                     JOIN departements d ON id.idDepartement = d.idDepartement
                     WHERE id.idContact = :idContact";
     
             $query = $this->db->query($sql, ['idContact' => $idContact]);
             $result = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            
     
             $interetDepartements = [];
             foreach ($result as $row) {

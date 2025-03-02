@@ -81,13 +81,12 @@ class AddInteretGeneralController{
     }
 
     /**
-     * Fonction utilitaire pour nettoyer les entrées utilisateur.
+     * Fonction utilitaire pour nettoyer les entrées utilisateur destinées à la base de données.
      */
     private function sanitizeInput($input) {
         if (is_array($input)) {
-            return array_map([$this, 'sanitizeInput'], $input);
+            return array_map([$this, 'sanitizeInput'], $input); // Nettoie les entrées dans les tableaux
         }
-        return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
+        return trim($input); // Supprime simplement les espaces inutiles
     }
-
 }

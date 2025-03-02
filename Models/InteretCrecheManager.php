@@ -8,17 +8,18 @@ class InteretCrecheManager extends AbstractEntityManager {
 
     // Insère les interets avec les id identifiant et contact
     
-public function insertInteretCreche($idContact, $niveau, $idIdentifiant) {
+public function insertInteretCreche($idContact, $niveau, $localisationId) {
     // Vérifie si $niveau est vide (""), si oui, on arrête la fonction
     if ($niveau === "" || $niveau === null) {
         return; // Stoppe l'exécution
     }
-        $sql = 'INSERT INTO interetcreches (idContact, niveau, idIdentifiant) 
-                VALUES (:idContact, :niveau, :idIdentifiant)';
+        $sql = 'INSERT INTO interetcreche (idContact, niveau, idLocalisation) 
+                VALUES (:idContact, :niveau, :idLocalisation)';
+
         $result =$this->db->query($sql, [
             'idContact' => $idContact,
             'niveau' => $niveau,
-            'idIdentifiant' => $idIdentifiant
+            'idLocalisation' => $localisationId
         ]);
 
         return $result; // Assure que la fonction retourne un booléen
@@ -26,12 +27,11 @@ public function insertInteretCreche($idContact, $niveau, $idIdentifiant) {
 
     public function getInteretCrechesByContact($idContact) {
         try {
-            $sql = "SELECT i.niveau, l.identifiant
-                    FROM interetCreches i
-                    JOIN localisations l ON i.idIdentifiant = l.idLocalisation
+            $sql = "SELECT i.niveau, l.identifiant, i.date_colonne
+                    FROM interetCreche i
+                    JOIN localisations l ON i.idLocalisation = l.idLocalisation
                     WHERE i.idContact = :idContact";
 
-    
             $query = $this->db->query($sql, ['idContact' => $idContact]);
             $result = $query->fetchAll(PDO::FETCH_ASSOC);
     
@@ -57,9 +57,9 @@ public function insertInteretCreche($idContact, $niveau, $idIdentifiant) {
                     c.email, 
                     i.niveau, 
                     l.identifiant
-                FROM interetCreches i
+                FROM interetCreche i
                 JOIN contacts c ON i.idContact = c.idContact
-                JOIN localisations l ON i.idIdentifiant = l.idLocalisation
+                JOIN localisations l ON i.idLocalisation = l.idLocalisation
                 WHERE l.identifiant = :identifiant';
 
         $stmt = $this->db->query($sql, [':identifiant' => $identifiant]);
@@ -117,7 +117,7 @@ public function insertInteretCreche($idContact, $niveau, $idIdentifiant) {
             // Si on trouve un département, on vérifie dans la table interetdepartements si ce contact est intéressé
             $sql = "
                 SELECT COUNT(*) AS interestCount
-                FROM interetdepartements i
+                FROM interetdepartement i
                 WHERE i.idContact = :idContact
                   AND i.idDepartement = :idDepartement
             ";
@@ -142,7 +142,7 @@ public function insertInteretCreche($idContact, $niveau, $idIdentifiant) {
     public function isContactInterestedInDepartment($idContact, $idDepartement) {
         // Requête SQL pour vérifier si le contact est intéressé par ce département
         $sql = "SELECT COUNT(*) as interestCount 
-                FROM interetdepartements 
+                FROM interetdepartement
                 WHERE idContact = :idContact 
                 AND idDepartement = :idDepartement";
 
@@ -163,7 +163,7 @@ public function insertInteretCreche($idContact, $niveau, $idIdentifiant) {
     public function isContactInterestedInCity($idContact, $idVille) {
         // Requête SQL pour vérifier si le contact est intéressé par ce département
         $sql = "SELECT COUNT(*) as interestCount 
-                FROM interetvilles
+                FROM interetville
                 WHERE idContact = :idContact 
                 AND idVille = :idVille";
 

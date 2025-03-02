@@ -9,6 +9,7 @@ class InteretCreche extends AbstractEntity{
     private $niveau;
     private $idIdentifiant;
     private $identifiant;
+    private $dateColonne;
     
 
     public function setIdInteretCreche(int $idInteretCreche):void{
@@ -33,6 +34,22 @@ class InteretCreche extends AbstractEntity{
 
     public function getNiveau ():string{
         return $this -> niveau;
+    }
+
+    public function setDateColonne (string $dateColonne){
+        $this -> dateColonne = $dateColonne;
+    }
+
+    public function getDateColonne ():string{
+        return $this -> dateColonne;
+    }
+
+    public function getDateColonneFormatFr(): string {
+        if ($this->dateColonne) {
+            $date = DateTime::createFromFormat('Y-m-d', $this->dateColonne);
+            return $date ? $date->format('d-m-Y') : "";
+        }
+        return "";
     }
 
     public function setIdIdentifiant(int $idIdentifiant){
