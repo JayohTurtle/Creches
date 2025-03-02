@@ -297,7 +297,8 @@ if (formAjoutInteretCreche) {
             }
         })
         .then(data => {
-            if (data.success) {
+            console.log("🟢 Réponse du serveur :", data); // Debug
+            if (data.status === "success") {
                 fermerPopup("popupAjoutInteretCreche")
                 afficherMessageSucces("Interet ajouté avec succès !")
                 window.location.reload(false)  // Rafraîchir la page

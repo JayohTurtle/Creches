@@ -7,7 +7,7 @@
             <h6>Contacts intéressés</h6>
         </div>
         <?php if (!empty($contacts)): ?>
-            <div class="row g-3"> 
+            <div class="row g-3 mt-3"> 
                 <?php foreach ($contacts as $contact): ?>
                     <div class="col-md-4"> <!-- Ajout de w-100 pour éviter une réduction de largeur -->
                         <div class="article p-3 rounded shadow-sm">

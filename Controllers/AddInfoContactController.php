@@ -127,7 +127,7 @@ class AddInfoContactController {
     /**
      * Fonction utilitaire pour nettoyer les entrées utilisateur destinées à la base de données.
      */
-    private function sanitizeInput($input) {
+    public function sanitizeInput($input) {
         if (is_array($input)) {
             return array_map([$this, 'sanitizeInput'], $input); // Nettoie les entrées dans les tableaux
         }
