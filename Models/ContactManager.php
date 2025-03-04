@@ -68,14 +68,14 @@ class ContactManager extends AbstractEntityManager {
     }
 
     public function getContactById($id) {
-        $sql = 'SELECT * FROM contacts WHERE id = :id';
+        $sql = 'SELECT * FROM contacts WHERE idContact = :id';
         $result = $this->db->query($sql, ['id' => $id]);
     
         if ($result->rowCount() > 0) {
             $row = $result->fetch();
     
             $contact = new Contact();
-            $contact->setIdContact($row['id']);
+            $contact->setIdContact($row['idContact']);
             $contact->setNom($row['nom']);
             $contact->setContact($row['contact']);
             $contact->setSiren($row['siren']);

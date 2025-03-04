@@ -118,16 +118,22 @@ class LocalisationManager extends AbstractEntityManager{
         return $this->db->query($sql, ['idLocalisation' => $idLocalisation])->fetch();
     }
     
-    public function insertLocation($idLocalisation, $lat, $lng) {
-        echo "🔹 insertLocation appelée avec : ID = $idLocalisation, LAT = $lat, LNG = $lng<br>";
+    public function insertLocation($idLocalisation, $latitude, $longitude) {
+        $sql = "UPDATE localisations 
+                SET location = ST_GeomFromText(:point) 
+                WHERE idLocalisation = :idLocalisation";
     
-        $sql = "UPDATE localisations SET location = ST_GeomFromText(:point) WHERE idLocalisation = :idLocalisation";
+        $params = [
+            ':point' => "POINT($latitude $longitude)",
+            ':idLocalisation' => $idLocalisation
+        ];
     
-        $point = "POINT($lng $lat)"; // Longitude en premier
-    
-        return $this->db->query($sql, [$point, $idLocalisation]);
+        $query = $this->db->prepare($sql);
+        $success = $query->execute($params); // Retourne true ou false
+        
+        return $success;
     }
-
+    
     //Récupérer tous les points lat et lng
     public function getPoints() {
         try {
@@ -141,10 +147,9 @@ class LocalisationManager extends AbstractEntityManager{
             return ["error" => "Erreur SQL : " . $e->getMessage()];
         }
     }
-     //Récupérer les localisations d'un contact
-     public function getLocalisationByContact($idContact) {
+    public function getLocalisationByContact($idContact) {
         try {
-            $sql = "SELECT l.adresse, v.idVille, v.ville, d.idDepartement, d.departement 
+            $sql = "SELECT l.idLocalisation, l.adresse, v.idVille, v.ville, d.idDepartement, d.departement 
                     FROM localisations l
                     JOIN villes v ON l.idVille = v.idVille
                     JOIN departements d ON l.idDepartement = d.idDepartement
@@ -166,8 +171,9 @@ class LocalisationManager extends AbstractEntityManager{
                     'departement' => $row['departement']
                 ]);
     
-                // Création de l'objet Localisation
+                // Création de l'objet Localisation avec idLocalisation
                 $localisation = new Localisation([
+                    'idLocalisation' => (int) $row['idLocalisation'],  // ✅ Ajout de idLocalisation
                     'adresse' => $row['adresse'],
                 ]);
                 $localisation->setVille($ville);
@@ -176,7 +182,7 @@ class LocalisationManager extends AbstractEntityManager{
                 $localisations[] = $localisation;
             }
     
-            return $localisations; // ✅ Retourne des objets avec Ville et Departement
+            return $localisations; // ✅ Retourne des objets avec idLocalisation
     
         } catch (PDOException $e) {
             return ["error" => "Erreur SQL : " . $e->getMessage()];
@@ -323,6 +329,24 @@ class LocalisationManager extends AbstractEntityManager{
     
         return $result ? $result['idLocalisation'] : null; // 🔹 Retourner l'ID ou null
     }
+
+    //Récupére l'id d'une adresse
+    public function getIdLocalisationByAdresse(array $adresses) {
+        if (empty($adresses)) {
+            return []; // Retourne un tableau vide si aucune adresse n'est fournie
+        }
+        // Création des placeholders dynamiques pour le `IN (...)`
+        $placeholders = implode(', ', array_fill(0, count($adresses), '?'));
+    
+        $sql = "SELECT idLocalisation FROM localisations WHERE adresse IN ($placeholders)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($adresses);
+
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+        return array_column($results, 'idLocalisation');
+    }    
 }
     
     

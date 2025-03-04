@@ -8,6 +8,16 @@ class InteretGroupe extends AbstractEntity{
     private $idContact;
     private $niveau;
     private $nom;
+    private $dateInteret;
+    private ?Contact $contact = null; // ✅ Ajout de la propriété manquante
+
+    public function setContact(Contact $contact): void {
+        $this->contact = $contact;
+    }
+
+    public function getContact(): ?Contact {
+        return $this->contact;
+    }
 
     public function setIdInteretGroupe(int $idInteretGroupe):void{
         $this -> idInteretGroupe = $idInteretGroupe;
@@ -39,5 +49,20 @@ class InteretGroupe extends AbstractEntity{
 
     public function getNom ():string{
         return $this -> nom;
+    }
+
+    public function setDateInteret (string $dateInteret){
+        $this -> dateInteret = $dateInteret;
+    }
+
+    public function getDateInteret ():string{
+        return $this -> dateInteret;
+    }
+
+    public function getDateInteretFormatFr() {
+        if (!empty($this->dateInteret)) {
+            return date("d/m/Y", strtotime($this->dateInteret)); // Format JJ/MM/AAAA
+        }
+        return null; // Retourne null si la date est vide
     }
 }

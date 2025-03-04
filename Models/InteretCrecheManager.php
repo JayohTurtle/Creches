@@ -8,22 +8,40 @@ class InteretCrecheManager extends AbstractEntityManager {
 
     // Insère les interets avec les id identifiant et contact
     
-public function insertInteretCreche($idContact, $niveau, $localisationId) {
-    // Vérifie si $niveau est vide (""), si oui, on arrête la fonction
-    if ($niveau === "" || $niveau === null) {
-        return; // Stoppe l'exécution
+    public function insertInteretCreche($idContact, $niveau, $localisationId) {
+        if ($niveau === "" || $niveau === null) {
+            return;
+        }
+    
+        try {
+            $sql = 'INSERT INTO interetcreche (idContact, niveau, idLocalisation) 
+                    VALUES (:idContact, :niveau, :idLocalisation)
+                    ON DUPLICATE KEY UPDATE 
+                        niveau = VALUES(niveau), 
+                        date_colonne = IF(date_colonne IS NOT NULL, NOW(), date_colonne)';
+    
+            $query = $this->db->prepare($sql);
+            $success = $query->execute([
+                'idContact' => $idContact,
+                'niveau' => $niveau,
+                'idLocalisation' => $localisationId
+            ]);
+    
+            if ($success) {
+                return true;
+            } else {
+                throw new Exception("Échec de l'exécution SQL");
+            }
+        } catch (Exception $e) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => "Erreur SQL : " . $e->getMessage()
+            ]);
+            exit;
+        }
     }
-        $sql = 'INSERT INTO interetcreche (idContact, niveau, idLocalisation) 
-                VALUES (:idContact, :niveau, :idLocalisation)';
-
-        $result =$this->db->query($sql, [
-            'idContact' => $idContact,
-            'niveau' => $niveau,
-            'idLocalisation' => $localisationId
-        ]);
-
-        return $result; // Assure que la fonction retourne un booléen
-    }
+    
+    
 
     public function getInteretCrechesByContact($idContact) {
         try {
@@ -180,6 +198,37 @@ public function insertInteretCreche($idContact, $niveau, $localisationId) {
         return $result['interestCount'] > 0;
     }
 
+    public function getInteretsByIdLocalisations(array $idLocalisations) {
+        if (empty($idLocalisations)) {
+            return []; // Retourne un tableau vide si aucun idLocalisation n'est fourni
+        }
+    
+        // Création des placeholders dynamiques pour `IN (...)`
+        $placeholders = implode(', ', array_fill(0, count($idLocalisations), '?'));
+    
+        $sql = "SELECT idLocalisation, niveau, idContact, date_colonne
+                FROM interetCreche
+                WHERE idLocalisation IN ($placeholders)";
+    
+        // Exécuter la requête via `DBManager`
+        $result = $this->db->query($sql, $idLocalisations)->fetchAll(PDO::FETCH_ASSOC);
+    
+        // Organiser les données sous forme de tableau associatif
+        $interetsParLocalisation = [];
+        foreach ($result as $row) {
+            $idLoc = $row['idLocalisation'];
+            if (!isset($interetsParLocalisation[$idLoc])) {
+                $interetsParLocalisation[$idLoc] = [];
+            }
+            $interetsParLocalisation[$idLoc][] = [
+                'niveau' => $row['niveau'],
+                'idContact' => $row['idContact'],
+                'date_colonne' => $row['date_colonne']
+            ];
+        }
+    
+        return $interetsParLocalisation;
+    }
 }
 
 

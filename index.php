@@ -80,6 +80,11 @@ switch ($action) {
         $controller->handleAddInteretGeneral();
         break;
 
+    case 'ajoutNewLocalisation':
+        $controller = new AddLocalisationController();
+        $controller->handleAddLocalisation();
+        break;
+
     case 'userFormConnect':
         $controller = new ConnectController();
         $controller->showUserFormconnect();

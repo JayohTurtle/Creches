@@ -11,6 +11,7 @@ class Client extends AbstractEntity{
     private $commission;
     private $nom;
     private $identifiant;
+    private $dateStatut;
     
 
     public function setIdClient(int $idClient):void{
@@ -37,7 +38,6 @@ class Client extends AbstractEntity{
         return $this -> statut;
     }
     
-
     public function setValorisation (int $valorisation){
         $this -> valorisation = $valorisation;
     }
@@ -68,6 +68,22 @@ class Client extends AbstractEntity{
 
     public function getIdentifiant ():string{
         return $this -> identifiant;
+    }
+
+    public function setDateStatut(string $dateStatut){
+        $this -> dateStatut = $dateStatut;
+    }
+
+    public function getDateStatut ():string{
+        return $this -> dateStatut;
+    }
+
+    public function getDateStatutFormatFr(): string {
+        if ($this->dateStatut) {
+            $date = DateTime::createFromFormat('Y-m-d', $this->dateStatut);
+            return $date ? $date->format('d-m-Y') : "";
+        }
+        return "";
     }
 
     

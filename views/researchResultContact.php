@@ -109,7 +109,7 @@
                     <ul>
                         <?php foreach ($interetCreches as $interet): ?>
                             <li>
-                                <strong>Identifiant :</strong> <?= htmlspecialchars($interet->getIdentifiant()) ?><br>
+                                <strong>Crèche :</strong> <?= htmlspecialchars($interet->getIdentifiant()) ?><br>
                                 <strong>Niveau :</strong> <?php echo htmlspecialchars($interet->getNiveau()); ?> <strong> le :</strong> <?php echo htmlspecialchars($interet->getDateColonneFormatFr()); ?>
                             </li>
                         <?php endforeach; ?>
@@ -122,8 +122,8 @@
                     <ul>
                         <?php foreach ($interetGroupe as $interet): ?>
                             <li>
-                                <strong>Niveau :</strong> <?= htmlspecialchars($interet->getNiveau()) ?> <br>
-                                <strong>Nom :</strong> <?= htmlspecialchars($interet->getNom()) ?>
+                                <strong>Nom :</strong> <?= htmlspecialchars($interet->getNom()) ?><br>
+                                <strong>Niveau :</strong> <?php echo htmlspecialchars($interet->getNiveau()); ?> <strong> le :</strong> <?php echo htmlspecialchars($interet->getDateInteretFormatFr()); ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>
@@ -142,7 +142,7 @@
     <div class = "articles mt-3 col-md-12">
         <div class = "article">
             <div class=" mb-3">
-                <button type="button" class="btn btn-primary">Ajouter une localisation</button>
+                <button id="boutonAjoutInteretCreche" type="button" class="btn btn-primary" onclick="ouvrirPopup('popupAjoutLocalisation')">Ajouter une localisation</button>
             </div>
             <?php if (!empty($localisations)): ?>
                 <h5>Localisation des crèches</h5>
@@ -172,15 +172,15 @@
                             <input type="checkbox" name="choixInfoContact" value="contact" id="checkContact">
                             <label for="checkContact">Contact</label>
                         </div>
-                        <div class="radio-item ms-2">
+                        <div class="radio-item ms-4">
                             <input type="checkbox" name="choixInfoContact" value="nom" id="checkNom">
                             <label for="checkNom">Nom</label>
                         </div>
-                        <div class="radio-item ms-2">
+                        <div class="radio-item ms-4">
                             <input type="checkbox" name="choixInfoContact" value="email" id="checkEmail">
                             <label for="checkEmail">Email</label>
                         </div>
-                        <div class="radio-item ms-2">
+                        <div class="radio-item ms-4">
                             <input type="checkbox" name="choixInfoContact" value="telephone" id="checkTelephone">
                             <label for="checkTelephone">Téléphone</label>
                         </div>
@@ -188,15 +188,15 @@
                 </div>
                 <div class="row w-100 mt-3 form-group d-flex flex-column align-items-center">
                     <div class="radio-group">
-                        <div class="radio-item ms-4">
+                        <div class="radio-item ms-5">
                             <input type="checkbox" name="choixInfoContact" value="sens" id="checkSens">
                             <label for="checkSens">Sens</label>
                         </div>
-                        <div class="radio-item ms-4">
+                        <div class="radio-item ms-5">
                             <input type="checkbox" name="choixInfoContact" value="site" id="checkSite">
                             <label for="checkSite">Site Internet</label>
                         </div>
-                        <div class="radio-item ms-4">
+                        <div class="radio-item ms-5">
                             <input type="checkbox" name="choixInfoContact" value="siren" id="checkSiren">
                             <label for="checkSiren">SIREN</label>
                         </div>
@@ -336,15 +336,15 @@
                 <div class="row col-md-12 ">
                     <div class="radio-group d-flex justify-content-center">
                         <div class="radio-item">
-                            <input type="radio" name="choixInteretGeneral" value="Interet Ville" id="choixInteretVille" checked>
+                            <input type="radio" name="choixInteretGeneral" value="interetVille" id="choixInteretVille" checked>
                             <label for="choixInteretVille">Ville</label>
                         </div>
                         <div class="radio-item ms-3">
-                            <input type="radio" name="choixInteretGeneral" value="Interet Departement" id="choixInteretDepartement">
+                            <input type="radio" name="choixInteretGeneral" value="interetDepartement" id="choixInteretDepartement">
                             <label for="choixInteretDepartement">Département</label>
                         </div>
                         <div class="radio-item ms-3">
-                            <input type="radio" name="choixInteretGeneral" value="Interet Region" id="choixInteretRegion">
+                            <input type="radio" name="choixInteretGeneral" value="interetRegion" id="choixInteretRegion">
                             <label for="choixInteretRegion">Région</label>
                         </div>
                     </div>
@@ -352,23 +352,23 @@
                 <div class="row form-row justify-content-center mt-3" id="inputChoixInteretVille">
                     <div class="form-group col-md-5">
                         <label for="villeInterest">Ville</label>
-                        <input class="form-control" list="villesInterest" id="villeInterest" name="villeInterest">
+                        <input class="form-control general-input" list="villesInterest" id="villeInterest" name="villeInterest">
                         <datalist id="villesInterest">
                             <option value=""></option>
                         </datalist>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="codePostalInterest">Code postal</label>
-                        <input class="form-control" id="codePostalInterest" name="codePostalInterest">
+                        <input class="form-control general-input" id="codePostalInterest" name="codePostalInterest">
                     </div>
                     <div class="form-group col-md-2">
                         <label for="rayonInterest">Rayon</label>
-                        <input class="form-control" id="rayonInterest" name="rayonInterest">
+                        <input class="form-control general-input" id="rayonInterest" name="rayonInterest">
                     </div>
                 </div>
                 <div class="form-group col-md-8 mt-3" id="inputChoixInteretDepartement">
                     <label for="departementInterest">Département</label>
-                    <input class="form-control" list="departementsInterest" id="departementInterest" name="departementInterest">
+                    <input class="form-control general-input" list="departementsInterest" id="departementInterest" name="departementInterest">
                     <datalist id="departementsInterest">
                         <?php 
                             foreach ($departements as $departement) : ?>
@@ -379,7 +379,7 @@
                 </div>
                 <div class="form-group col-md-8 mt-3" id="inputChoixInteretRegion">
                     <label for="regionInterest">Région</label>
-                    <input class="form-control w-100" list="regionsInterest" id="regionInterest" name="regionInterest">
+                    <input class="form-control w-100 general-input" list="regionsInterest" id="regionInterest" name="regionInterest">
                     <datalist id="regionsInterest">
                         <?php 
                             foreach ($regions as $region) : ?>
@@ -391,6 +391,47 @@
                 <input type="hidden" name="idContact" value="<?= (int) $idContact ?>">
                 <div class="form-group col-md-3 d-flex justify-content-center">
                     <button type="submit" class="btn btn-primary small-button" id="ajoutInteretGeneral">Envoyer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Boîte modale pour ajouter une localisation -->
+    <div id="popupAjoutLocalisation" class="modal" style="display: none;">
+        <div class="modal-content form-group d-flex flex-column align-items-center">
+            <span class="close" onclick="fermerPopup('popupAjoutLocalisation')">&times;</span>
+            <h3>Ajouter une localisation</h3>
+            <form class = "article justify-content-center col-md-12" id="addNewLocalisationForm" method="POST">
+                <div class="row form-row mt-3" id="location">
+                    <div class="form-group col-md-3">
+                        <label for="ville">Ville</label>
+                        <input class="form-control" list="villes" id="ville" name="ville" autocomplete="off">
+                        <datalist id="villes"></datalist>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="codePostal">Code postal</label>
+                        <input class="form-control" type="text" id="codePostal" list="codePostaux" name="codePostal" autocomplete="off">
+                        <datalist id="codePostaux"></datalist>
+                    </div>
+                    <div class="form-group col-md-5">
+                        <label for="adresse">Adresse</label>
+                        <input class="form-control" id="adresse" name="adresse">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="taille">Taille</label>
+                        <select class="form-control" name="taille" id="taille">
+                            <option value="Micro-crèche">Micro-crèche</option>
+                            <option value="Crèche">Crèche</option>
+                        </select>
+                    </div>
+                </div>
+                <?php
+                    $nom = isset($contact) ? $contact->getNom() : ''; // Vérification de l'existence de $contact
+                ?>
+                <input type="hidden" name="nom" value="<?= htmlspecialchars($nom) ?>">
+
+                <input type="hidden" name="idContact" value="<?= (int) $idContact ?>">
+                <div class="form-group col-md-3 d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary small-button mt-3">Envoyer</button>
                 </div>
             </form>
         </div>

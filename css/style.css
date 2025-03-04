@@ -42,7 +42,7 @@ body{
 }
 
 /*Les titres*/
-h5, h3 {
+h5, h3, h6 {
     color: #E0E0E0;
     font-weight: 600;
     border-bottom: 2px solid #E0E0E0;
@@ -259,7 +259,7 @@ input[type="checkbox"] {
     margin: 15% auto;
     padding: 20px;
     border-radius: 10px;
-    width: 40%;
+    width: 50%;
     text-align: center;
 }
 .modal-content form {

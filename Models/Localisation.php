@@ -14,6 +14,15 @@ class Localisation extends AbstractEntity {
     private ?Ville $ville = null;   
     private ?Departement $departement = null;
     private $distance;
+    private array $interets = []; // Stocke les intérêts
+
+    public function setInterets(array $interets) {
+        $this->interets = $interets;
+    }
+
+    public function getInterets(): array {
+        return $this->interets;
+    }
 
     public function setIdLocalisation(int $idLocalisation): void {
         $this->idLocalisation = $idLocalisation;

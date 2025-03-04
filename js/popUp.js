@@ -315,38 +315,12 @@ if (formAjoutInteretCreche) {
 }
 
 function afficherMessageErreur(message) {
-    console.error("Erreur : " + message);
-    alert("❌ Erreur : " + message); // Affiche une alerte (optionnel)
+    console.error("Erreur : " + message)
+    alert("❌ Erreur : " + message)
 }
 
-
-//Ajout de la gestion du popUp ajoutInteretGeneral
-
-// 🔹 Fonction pour mettre à jour la visibilité des inputs
-function updateVisibleInputChoixInteretGeneral() {
-    const inputChoixInteretVille = document.getElementById("inputChoixInteretVille")
-    const inputChoixInteretDepartement = document.getElementById("inputChoixInteretDepartement")
-    const inputChoixInteretRegion = document.getElementById("inputChoixInteretRegion")
-    const choixInteretVille = document.getElementById("choixInteretVille")
-    const choixInteretDepartement = document.getElementById("choixInteretDepartement")
-    const choixInteretRegion = document.getElementById("choixInteretRegion")
-
-    if (choixInteretVille.checked) {
-        inputChoixInteretVille.classList.remove("d-none")
-        inputChoixInteretDepartement.classList.add("d-none")
-        inputChoixInteretRegion.classList.add("d-none")
-    } else if (choixInteretDepartement.checked) {
-        inputChoixInteretVille.classList.add("d-none")
-        inputChoixInteretDepartement.classList.remove("d-none")
-        inputChoixInteretRegion.classList.add("d-none")
-    } else if(choixInteretRegion.checked){
-        inputChoixInteretVille.classList.add("d-none")
-        inputChoixInteretDepartement.classList.add("d-none")
-        inputChoixInteretRegion.classList.remove("d-none")
-    }
-}
-
-// 🔹 Événement sur le bouton d'ouverture du popup ajoutInteretGeneral
+//Ajout de la gestion du pop up ajoutInteretGeneral
+//Événement sur le bouton d'ouverture du popup ajoutInteretGeneral
 document.getElementById("boutonAjoutInteretGeneral").addEventListener("click", function() {
     setTimeout(() => {
         let element = document.getElementById("popupAjoutInteretGeneral")
@@ -357,24 +331,28 @@ document.getElementById("boutonAjoutInteretGeneral").addEventListener("click", f
         }
     }, 100) // Petit délai pour s'assurer que le DOM est mis à jour
 
-    // Sélection des boutons radio
-    const radioButtonsChoixInteretGeneral = document.querySelectorAll('input[name="choixInteretGeneral"]')
-    const choixInteretVille = document.getElementById("choixInteretVille")
-    const choixInteretDepartement = document.getElementById("choixInteretDepartement")
-    const choixInteretRegion = document.getElementById("choixInteretRegion")
+    // Gestion des recherches de crèches par zone
+    const radioButtonsGeneral = document.querySelectorAll('input[name="choixInteretGeneral"]')
+    const inputGroupsGeneral = {
+        interetVille: "inputChoixInteretVille",
+        interetDepartement: "inputChoixInteretDepartement",
+        interetRegion: "inputChoixInteretRegion",
+    }
 
-    // Ajout des écouteurs d'événements
-    radioButtonsChoixInteretGeneral.forEach(radio => 
-        radio.addEventListener("change", updateVisibleInputChoixInteretGeneral)
-    )
-    choixInteretVille.addEventListener("change", updateVisibleInputChoixInteretGeneral)
-    choixInteretDepartement.addEventListener("change", updateVisibleInputChoixInteretGeneral)
-    choixInteretRegion.addEventListener("change", updateVisibleInputChoixInteretGeneral)
+    // 🔹 Fonction pour mettre à jour la visibilité des inputs
+    function updateVisibleInputChoixInteretGeneral() {
+        const selectedValue = document.querySelector('input[name="choixInteretGeneral"]:checked').value
+        document.querySelectorAll('.general-input').forEach(input => input.value = "")
+        Object.values(inputGroupsGeneral).forEach(id => document.getElementById(id).classList.add('d-none'))
+        
+        document.getElementById(inputGroupsGeneral[selectedValue]).classList.remove('d-none')
+    }
 
-    updateVisibleInputChoixInteretGeneral() 
+    radioButtonsGeneral.forEach(radio => radio.addEventListener("change", updateVisibleInputChoixInteretGeneral));
+    updateVisibleInputChoixInteretGeneral() // Exécuter au chargement
 })
 
-//fermeture de la popup et envoi des données
+//fermeture de la popup interetGeneral et envoi des données
 const formAjoutInteretGeneral = document.querySelector("#addInterestGeneralForm")
 
 if (formAjoutInteretGeneral) {
@@ -405,6 +383,50 @@ if (formAjoutInteretGeneral) {
         .then(data => {
             if (data.status === "success") {
                 fermerPopup("popupAjoutInteretGeneral")
+                afficherMessageSucces("Interet ajouté avec succès !")
+                window.location.reload(false)  // Rafraîchir la page
+            } else {
+                console.error("❌ Erreur serveur :", data.message)
+                afficherMessageErreur(data.message)
+            }
+        })
+        .catch(error => {
+            console.error("❌ Problème avec la requête fetch :", error)
+            afficherMessageErreur("Une erreur est survenue. Veuillez réessayer.")
+        })
+    })
+}
+
+//fermeture de la popup ajoutLocalisation et envoi des données
+const formAjoutLocalisation = document.querySelector("#addNewLocalisationForm")
+
+if (formAjoutLocalisation) {
+    formAjoutLocalisation.addEventListener("submit", function (e) {
+        e.preventDefault() // Empêcher le rechargement de la page par défaut
+
+        // Récupérer les données du formulaire
+        let formData = new FormData(this)
+
+        fetch("index.php?action=ajoutNewLocalisation", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP : ${response.status}`)
+            }
+            return response.text()  // Récupérer la réponse brute
+        })
+        .then(text => {
+            try {
+                return JSON.parse(text)  // Tenter de parser en JSON
+            } catch (error) {
+                throw new Error("La réponse du serveur n'est pas un JSON valide : " + text)
+            }
+        })
+        .then(data => {
+            if (data.status === "success") {
+                fermerPopup("popupAjoutLocalisation")
                 afficherMessageSucces("Interet ajouté avec succès !")
                 window.location.reload(false)  // Rafraîchir la page
             } else {

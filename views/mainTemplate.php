@@ -22,8 +22,8 @@
             <div><a class="nav-link" href="index.php?action=createUser">🔐 Page Admin</a></div>
             <?php endif; ?>
             <div><a class="nav-link" href="index.php?action=dashboard">Tableau de bord</a></div>
-            <div><a class="nav-link" href="index.php?action=newContactForm">Nouveau contact</a></div>
             <div><a class="nav-link" href="index.php?action=research">Recherche</a></div>
+            <div><a class="nav-link" href="index.php?action=newContactForm">Nouveau contact</a></div>
             <div><a href="index.php?action=logout" class='btn btn-secondary'>Déconnexion</a></div>
         </div>
     </div>

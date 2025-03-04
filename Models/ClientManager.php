@@ -38,5 +38,27 @@ class ClientManager extends AbstractEntityManager {
         
             return $clientList;
         }
-        
+
+        // on récupère les données dans clients avec idContact
+        public function getDataClientsById($idContact){
+
+            $sql = "SELECT commission, valorisation,statut, dateStatut
+            FROM clients
+            WHERE idContact = ?";
+
+            $result = $this->db->query($sql, [$idContact]);
+
+            if ($result->rowCount() > 0) {
+                $row = $result->fetch();
+
+                $clientData = new Client();
+                $clientData->setValorisation($row['valorisation']);
+                $clientData->setCommission($row['commission']);
+                $clientData->setStatut($row['statut']);
+                $clientData->setDateStatut($row['dateStatut']);
+
+                return $clientData;
+            }
+            return null;
+        }
 }
