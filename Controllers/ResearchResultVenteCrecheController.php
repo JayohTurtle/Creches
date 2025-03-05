@@ -18,7 +18,6 @@ class ResearchResultVenteCrecheController{
 
     public function showResultVenteCreche() {
 
-         // Stoppe l'exécution ici pour tester
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $zoneType = $_POST['localResearch'] ?? null;
             $zoneValue = null;

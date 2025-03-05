@@ -220,7 +220,7 @@ input[type="checkbox"] {
     background: #252525;
     padding: 15px;
     border-radius: 8px;
-    box-shadow: 0px 0px 8px rgba(0, 255, 128, 0.1);
+    box-shadow: 0px 0px 8px rgba(rgba(0, 255, 128, 0.5));
     max-width: 100%;
     flex-grow: 1; /* Permet d'occuper la largeur correcte */
 }

@@ -6,9 +6,9 @@
  * @param {string} message 
  */
 function fieldError(elem, message) {
-  elem.classList.add('error'); // Ajoute la bordure rouge
-  elem.setAttribute("placeholder", message); // Affiche le message dans l'input
-  elem.value = ""; // Efface la valeur incorrecte
+  elem.classList.add('error') // Ajoute la bordure rouge
+  elem.setAttribute("placeholder", message) // Affiche le message dans l'input
+  elem.value = "" // Efface la valeur incorrecte
 }
 
 /**
@@ -16,8 +16,8 @@ function fieldError(elem, message) {
 * @param {HTMLElement} elem 
 */
 function clearFieldError(elem) {
-  elem.classList.remove('error'); // Supprime la bordure rouge
-  elem.setAttribute("placeholder", ""); // Efface le message d'erreur
+  elem.classList.remove('error') // Supprime la bordure rouge
+  elem.setAttribute("placeholder", "") // Efface le message d'erreur
 }
 
 

@@ -345,7 +345,27 @@ class LocalisationManager extends AbstractEntityManager{
 
 
         return array_column($results, 'idLocalisation');
-    }    
+    }
+    
+    public function getIdContactByIdDepartement(array $idDepartements) {
+        if (empty($idDepartements)) {
+            return [];
+        }
+        // Générer les placeholders dynamiquement (ex: ":id1, :id2, :id3")
+        $placeholders = implode(',', array_map(fn($key) => ":id$key", array_keys($idDepartements)));
+    
+        $sql = "SELECT idContact FROM localisations WHERE idDepartement IN ($placeholders)";
+    
+        // Associer chaque département à un paramètre nommé (ex: [":id0" => 1, ":id1" => 2, ":id2" => 3])
+        $params = [];
+        foreach ($idDepartements as $key => $id) {
+            $params[":id$key"] = $id;
+        }
+    
+        $result = $this->db->query($sql, $params);
+        return $result->fetchAll(PDO::FETCH_COLUMN); // Retourne un tableau d'idContact
+    }
+    
 }
     
     

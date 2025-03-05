@@ -194,6 +194,10 @@
                             <input type="radio" id="researchRegionAchat" name="localResearchAchat" value="researchRegionAchat">
                             <label for="researchRegionAchat">Région</label>
                         </div>
+                        <div class="radio-item">
+                            <input type="radio" id="researchFranceAchat" name="localResearchAchat" value="researchFranceAchat">
+                            <label for="researchFranceAchat">France</label>
+                        </div>
                     </div>
                 </div>
                 <div class="row mt-2 align-items-end">

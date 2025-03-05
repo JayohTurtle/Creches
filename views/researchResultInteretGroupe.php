@@ -10,7 +10,7 @@
             <div class="row g-3">
                 <?php foreach ($contacts as $contact): ?>
                     <div class="col-md-4">
-                        <div class="article p-3 rounded shadow-sm"> 
+                        <div class="article p-3 rounded"> 
                             <p><strong>Contact :</strong> <?= htmlspecialchars($contact->getContact()) ?></p>
                             <p><strong>Nom :</strong> <?= htmlspecialchars($contact->getNom()) ?></p>
                             <p><strong>Téléphone :</strong> <?= htmlspecialchars($contact->getTelephone()) ?></p>

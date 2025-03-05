@@ -1,18 +1,18 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const successMessage = document.getElementById("success-message");
-    const formInputs = document.querySelectorAll("input, textarea, select");
-    const choixCreche = document.getElementById("choixCreche");
-    const choixGroup = document.getElementById("choixGroup");
-    const inputChoixCreche = document.getElementById("inputChoixCreche");
-    const inputChoixGroup = document.getElementById("inputChoixGroup");
+    const successMessage = document.getElementById("success-message")
+    const formInputs = document.querySelectorAll("input, textarea, select")
+    const choixCreche = document.getElementById("choixCreche")
+    const choixGroup = document.getElementById("choixGroup")
+    const inputChoixCreche = document.getElementById("inputChoixCreche")
+    const inputChoixGroup = document.getElementById("inputChoixGroup")
 
     if (successMessage) {
         formInputs.forEach(input => {
             input.addEventListener("focus", function () {
-                successMessage.classList.add("hidden");
-                setTimeout(() => successMessage.style.display = "none", 500);
-            });
-        });
+                successMessage.classList.add("hidden")
+                setTimeout(() => successMessage.style.display = "none", 500)
+            })
+        })
     }
 
     let counters = {
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
         interestVille: 0,
         interestDept: 0,
         interestRegion: 0
-    };
+    }
 
     const elements = {
         choiceBuyer: document.getElementById("buyer"),
@@ -38,46 +38,46 @@ document.addEventListener("DOMContentLoaded", function () {
         addInterestVille: document.getElementById("add-interestVille"),
         addInterestDepartement: document.getElementById("add-interestDepartement"),
         addInterestRegion: document.getElementById("add-interestRegion"),
-    };
+    }
 
     // 🔹 Gestion affichage acheteur/vendeur
-    elements.choiceSeller.addEventListener("click", () => toggleSellerBuyer(true));
-    elements.choiceBuyer.addEventListener("click", () => toggleSellerBuyer(false));
+    elements.choiceSeller.addEventListener("click", () => toggleSellerBuyer(true))
+    elements.choiceBuyer.addEventListener("click", () => toggleSellerBuyer(false))
 
     function toggleSellerBuyer(isSeller) {
         ["statutVendeur", "valoVendeur", "commVendeur"].forEach(id => 
             elements[id].classList.toggle("d-none", !isSeller)
-        );
+        )
         ["interest", "buyerTitle", "crecheSizeChoice"].forEach(id => 
             elements[id].classList.toggle("d-none", isSeller)
-        );
+        )
     
         document.querySelectorAll(`[id^="new-row"], [id^="seller-choice"]`).forEach(el => {
-            el.classList.add("d-none");
-            if (!isSeller) el.nextElementSibling?.remove();
-        });
+            el.classList.add("d-none")
+            if (!isSeller) el.nextElementSibling?.remove()
+        })
     
         // Assure que le bouton reste visible
-        document.getElementById("contactEnvoi").classList.remove("d-none");
+        document.getElementById("contactEnvoi").classList.remove("d-none")
     }
 
     // 🔹 Fonction générique d'ajout d'élément
     function addNewRow(container, type, template) {
-        counters[type]++;
-        const newRow = document.createElement("div");
-        newRow.classList.add("row", "form-row", "mt-3");
-        newRow.id = `${type}-row-${counters[type]}`;
-        newRow.innerHTML = template(counters[type]);
-        container.appendChild(newRow);
+        counters[type]++
+        const newRow = document.createElement("div")
+        newRow.classList.add("row", "form-row", "mt-3")
+        newRow.id = `${type}-row-${counters[type]}`
+        newRow.innerHTML = template(counters[type])
+        container.appendChild(newRow)
     }
 
     // 🔹 Fonction générique de suppression
     document.addEventListener("click", (event) => {
-        const target = event.target.closest(".remove-item");
+        const target = event.target.closest(".remove-item")
         if (target) {
-            document.getElementById(target.dataset.id)?.remove();
+            document.getElementById(target.dataset.id)?.remove()
         }
-    });
+    })
 
     // 🔹 Ajout de lignes
     elements.addLocation.addEventListener("click", () => {
@@ -106,8 +106,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
-        `);
-    });
+        `)
+    })
 
     elements.addInterestVille.addEventListener("click", () => {
         addNewRow(elements.villeInterest, "interestVille", (id) => `
@@ -128,8 +128,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
-        `);
-    });
+        `)
+    })
 
     elements.addInterestDepartement.addEventListener("click", () => {
         addNewRow(elements.departementInterest, "interestDept", (id) => `
@@ -142,8 +142,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
-        `);
-    });
+        `)
+    })
 
     elements.addInterestRegion.addEventListener("click", () => {
         addNewRow(elements.regionInterest, "interestRegion", (id) => `
@@ -156,30 +156,30 @@ document.addEventListener("DOMContentLoaded", function () {
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
-        `);
-    });
+        `)
+    })
 
     // 🔹 Gestion des recherches par crèches ou groupes
-    const radioButtonsCrecheGroup = document.querySelectorAll('input[name="crecheGroup"]');
+    const radioButtonsCrecheGroup = document.querySelectorAll('input[name="crecheGroup"]')
     
 
     function updateVisibleInputCrecheGroup() {
         if (choixCreche.checked) {
-            inputChoixCreche.classList.remove("d-none");
-            inputChoixGroup.classList.add("d-none");
+            inputChoixCreche.classList.remove("d-none")
+            inputChoixGroup.classList.add("d-none")
         } else if (choixGroup.checked) {
-            inputChoixCreche.classList.add("d-none");
-            inputChoixGroup.classList.remove("d-none");
+            inputChoixCreche.classList.add("d-none")
+            inputChoixGroup.classList.remove("d-none")
         }
     }
 
     radioButtonsCrecheGroup.forEach(radio => 
         radio.addEventListener("change", updateVisibleInputCrecheGroup)
-    );
+    )
     // Ajout des écouteurs d'événements
-    choixCreche.addEventListener("change", updateVisibleInputCrecheGroup);
-    choixGroup.addEventListener("change", updateVisibleInputCrecheGroup);
+    choixCreche.addEventListener("change", updateVisibleInputCrecheGroup)
+    choixGroup.addEventListener("change", updateVisibleInputCrecheGroup)
     
-    updateVisibleInputCrecheGroup(); 
+    updateVisibleInputCrecheGroup() 
 });
 

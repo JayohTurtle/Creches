@@ -147,6 +147,32 @@ class ContactManager extends AbstractEntityManager {
         }
         return $contactList;
     }
+
+    public function getAcheteursById($idContact) {
+        // Requête SQL avec toutes les colonnes nécessaires
+        $sql = "SELECT idContact, nom, contact, siren, email, telephone, siteInternet, sens 
+                FROM contacts 
+                WHERE sens = 'acheteur' AND idContact = :idContact";
+        
+        // Exécution de la requête via DBManager
+        $result = $this->db->query($sql, ['idContact' => $idContact]);
+    
+        if ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+            $contact = new Contact();
+            $contact->setIdContact($row['idContact']);
+            $contact->setNom($row['nom']);
+            $contact->setContact($row['contact']);
+            $contact->setSiren($row['siren']);
+            $contact->setEmail($row['email']);
+            $contact->setTelephone($row['telephone']);
+            $contact->setSiteInternet($row['siteInternet']);
+            $contact->setSens($row['sens']);
+    
+            return $contact;
+        }
+        
+        return null;
+    }    
     
     public function updateContact($idContact, $infosContact) {
         // Récupérer les données actuelles du contact

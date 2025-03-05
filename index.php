@@ -134,6 +134,11 @@ switch ($action) {
         $controller->showResultVenteCreche();
         break;
 
+    case 'researchResultZoneAchat':
+        $controller = new ResearchResultAchatCrecheController();
+        $controller->showResultAchatCreche();
+        break;
+
     case 'researchResultTaille':
         $controller = new ResearchResultTailleController();
         $controller->showResultTaille();

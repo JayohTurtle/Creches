@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(response => response.text()) // ← Affiche la réponse en texte brut
         .then(text => {
-            console.log("🔍 Réponse après confirmation :", text); // // <-- AJOUTE CETTE LIGNE
+            console.log("🔍 Réponse après confirmation :", text) // // <-- AJOUTE CETTE LIGNE
             return JSON.parse(text) // ← Puis convertit en JSON
         })
         .then(data => {
@@ -79,18 +79,18 @@ document.addEventListener("DOMContentLoaded", function () {
 let modificationsGlobales = null
 
 function afficherPopupConfirmation(modifications, idContact) {
-    let popup = document.querySelector("#popupConfirmation"); // Cibler le bon élément
+    let popup = document.querySelector("#popupConfirmation") // Cibler le bon élément
 
     if (!popup) {  
-        console.error("❌ Erreur : le popup de confirmation est introuvable !");
-        return;  // On arrête l'exécution pour éviter l'erreur
+        console.error("❌ Erreur : le popup de confirmation est introuvable !")
+        return  // On arrête l'exécution pour éviter l'erreur
     }
 
     // Stocker globalement les modifications
     modificationsGlobales = modifications
 
     let popupContent = document.getElementById("popupConfirmationInfoContactContent")
-    console.log("popupContent trouvé ?", popupContent);
+    console.log("popupContent trouvé ?", popupContent)
     popupContent.innerHTML = "<h3>Confirmer les modifications ?</h3><ul>"
 
     for (const champ in modifications) {
@@ -106,7 +106,7 @@ function afficherPopupConfirmation(modifications, idContact) {
         </div>
         `
 
-        popup.style.display = "block"; // Ou "flex" selon ton CSS
+        popup.style.display = "block" // Ou "flex" selon ton CSS
 
 }
 
@@ -119,7 +119,7 @@ function confirmerModifications(idContact) {
         console.error("❌ Aucune modification détectée !")
         return
     }
-    console.log("🔍 ID Contact récupéré dans confirmerModifications :", idContact);
+    console.log("🔍 ID Contact récupéré dans confirmerModifications :", idContact)
 
     let formData = new FormData()
     formData.append("confirm", "true")
@@ -135,7 +135,7 @@ function confirmerModifications(idContact) {
     })
     .then(response => response.text())
     .then(text => {
-        console.log("🔍 Réponse après confirmation :", text); // ← Vérifie si HTML 
+        console.log("🔍 Réponse après confirmation :", text) // ← Vérifie si HTML 
         return JSON.parse(text)
     })
     .then(data => {
@@ -277,27 +277,27 @@ if (formAjoutInteretCreche) {
             body: formData
         })
         .then(response => {
-            console.log("Réponse brute :", response);
+            console.log("Réponse brute :", response)
         
             if (!response.ok) {
-                throw new Error(`Erreur HTTP : ${response.status}`);
+                throw new Error(`Erreur HTTP : ${response.status}`)
             }
-            return response.text();  // 🔥 Récupérer la réponse brute
+            return response.text()  // 🔥 Récupérer la réponse brute
         })
         .then(text => {
-            console.log("Texte brut reçu :", text);
+            console.log("Texte brut reçu :", text)
         
             try {
-                let jsonData = JSON.parse(text);
-                console.log("JSON parsé :", jsonData);
-                return jsonData;
+                let jsonData = JSON.parse(text)
+                console.log("JSON parsé :", jsonData)
+                return jsonData
             } catch (error) {
-                console.error("❌ Erreur de parsing JSON :", error);
-                throw new Error("La réponse du serveur n'est pas un JSON valide : " + text);
+                console.error("❌ Erreur de parsing JSON :", error)
+                throw new Error("La réponse du serveur n'est pas un JSON valide : " + text)
             }
         })
         .then(data => {
-            console.log("🟢 Réponse du serveur :", data); // Debug
+            console.log("🟢 Réponse du serveur :", data) // Debug
             if (data.status === "success") {
                 fermerPopup("popupAjoutInteretCreche")
                 afficherMessageSucces("Interet ajouté avec succès !")
@@ -348,7 +348,7 @@ document.getElementById("boutonAjoutInteretGeneral").addEventListener("click", f
         document.getElementById(inputGroupsGeneral[selectedValue]).classList.remove('d-none')
     }
 
-    radioButtonsGeneral.forEach(radio => radio.addEventListener("change", updateVisibleInputChoixInteretGeneral));
+    radioButtonsGeneral.forEach(radio => radio.addEventListener("change", updateVisibleInputChoixInteretGeneral))
     updateVisibleInputChoixInteretGeneral() // Exécuter au chargement
 })
 

@@ -22,8 +22,6 @@ document.addEventListener("DOMContentLoaded", function () {
         
     }
 
-    radioButtonsContact.forEach(radio => radio.addEventListener("change", updateVisibleInputContact));
-    updateVisibleInputContact() // Exécuter au chargement
 
     // Gestion des recherches de crèches par zone
     const radioButtonsLocal = document.querySelectorAll('input[name="localResearch"]')
