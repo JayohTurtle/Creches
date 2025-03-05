@@ -9,8 +9,8 @@ class ResearchResultVenteCrecheController{
     private $regionManager;
 
     public function __construct() {
-        $this->villeManager = new VilleManager;
-        $this->departementManager = new DepartementManager;
+        $this->villeManager = new VilleManager();
+        $this->departementManager = new DepartementManager();
         $this->localisationManager = new LocalisationManager();
         $this->contactManager = new ContactManager();
         $this->regionManager = new RegionManager();

@@ -13,10 +13,10 @@ require __DIR__ . '/../includes/auth.php';// Vérifie si l'utilisateur est conne
     <div class="row d-flex align-items-start">
         <!-- Colonne de gauche -->
         <article class="col-md-3 mt-3 creches">
-            <p class="ms-3 mt-3 fs-4">A vendre</p>
+        <p class="ms-3 mt-3 fs-4">A vendre</p>
             <ul class="ms-3 mt-3 list-unstyled">
-                <li>Nombre de crèches:</li>
-                <li>PNB potentiel:</li>
+                <li>Nombre de crèches: <strong><?= $nbCrecheAvendre; ?></strong></li>
+                <li>PNB potentiel: <strong><?= number_format($totalCommission, 2, ',', ' '); ?> €</strong></li>
             </ul>
             <p class="ms-3 mt-3 fs-4">Sous offre</p>
             <ul class="ms-3 mt-3 list-unstyled">

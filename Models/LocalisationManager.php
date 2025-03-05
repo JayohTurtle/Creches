@@ -365,6 +365,22 @@ class LocalisationManager extends AbstractEntityManager{
         $result = $this->db->query($sql, $params);
         return $result->fetchAll(PDO::FETCH_COLUMN); // Retourne un tableau d'idContact
     }
+
+    public function countCrechesAVendre($idClients){
+        if (empty($idClients)) {
+            return 0; // Si la liste est vide, on retourne 0
+        }
+    
+        // Construction d'une chaîne de placeholders "?, ?, ?" pour une requête préparée
+        $placeholders = implode(',', array_fill(0, count($idClients), '?'));
+        
+        $sql = "SELECT COUNT(*) FROM localisations WHERE idContact IN ($placeholders)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($idClients);
+    
+        return $stmt->fetchColumn(); 
+    }
+    
     
 }
     

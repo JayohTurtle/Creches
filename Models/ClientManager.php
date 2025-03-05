@@ -61,4 +61,22 @@ class ClientManager extends AbstractEntityManager {
             }
             return null;
         }
+
+        public function getDataClients(){
+            $sql = "SELECT idContact, commission FROM clients";
+            $result = $this->db->query($sql);
+            $clientsData = [];
+        
+            while ($row = $result->fetch()) {
+                $client = new Client(); // Création d'un objet Client
+                $client->setIdContact($row['idContact']);
+                $client->setCommission($row['commission']);
+        
+                $clientsData[] = $client;
+            }
+        
+            return $clientsData; // Retourne un tableau d'objets Client
+        }
+        
+        
 }

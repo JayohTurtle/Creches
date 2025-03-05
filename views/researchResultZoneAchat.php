@@ -29,8 +29,8 @@
 
                                 <!-- Intérêts Crèche -->
                                 <?php if (!empty($item['interetsCreche'])): ?>
+                                    <p><strong>Intérêts Crèche:</strong></p>
                                     <div class="d-flex flex-wrap gap-3">
-                                        <p><strong>Intérêts Crèche:</strong></p>
                                         <?php foreach ($item['interetsCreche'] as $interet): ?>
                                             <p><strong>Niveau:</strong> <?= htmlspecialchars($interet->getNiveau()) ?></p>
                                             <p><strong>Identifiant:</strong> <?= htmlspecialchars($interet->getIdentifiant()) ?></p>
