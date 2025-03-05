@@ -168,10 +168,10 @@
                     <div class="form-group col-md-1 d-flex justify-content-end">
                         <i class="fas fa-plus-circle text-secondary" style="font-size: 1.5rem; cursor: pointer;" id="add-interestRegion"></i>
                     </div>
-                    <div>
-                        <label for="franceInterest">Toute la France</label>
-                        <input type="checkbox" id="franceInterest" name="franceInterest" value="franceInterest">
-                    </div>
+                </div>
+                <div>
+                    <label for="franceInterest">Toute la France</label>
+                    <input type="checkbox" id="franceInterest" name="franceInterest" value="franceInterest">
                 </div>
                 <h6 class = "mt-3">Intérêt précis</h6>
                 <div class="form-group col-md-4" id="crecheGroupChoice">

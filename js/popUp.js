@@ -413,6 +413,7 @@ if (formAjoutLocalisation) {
         })
         .then(response => {
             if (!response.ok) {
+                console.log(response)
                 throw new Error(`Erreur HTTP : ${response.status}`)
             }
             return response.text()  // Récupérer la réponse brute

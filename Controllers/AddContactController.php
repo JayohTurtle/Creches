@@ -190,22 +190,28 @@ class AddContactController {
     private function addLocation($idLocalisations, $villes, $codesPostaux, $adresses) {
         if (!empty($idLocalisations)) {
             foreach ($idLocalisations as $key => $idLocalisation) {
-                // On récupère la valeur correspondant à chaque localisation
                 $ville = $villes[$key] ?? '';
                 $codePostal = $codesPostaux[$key] ?? '';
                 $adresse = $adresses[$key] ?? '';
     
                 $adresseComplete = $this->localisationManager->createAddress($adresse, $codePostal, $ville);
     
+                // Appel à geocodeAdresse
                 $coords = $this->localisationManager->geocodeAdresse($adresseComplete);
                 if ($coords) {
                     $latitude = $coords['lat'];
                     $longitude = $coords['lng'];
+    
                     $this->localisationManager->insertLocation($idLocalisation, $latitude, $longitude);
+                } else {
+                    echo "<pre>Échec de la géolocalisation pour : " . htmlspecialchars($adresseComplete) . "</pre>";
                 }
             }
+        } else {
+            echo "<pre>Aucune localisation à traiter.</pre>";
         }
     }
+    
     
     private function addClient($postData, $idContact){
 

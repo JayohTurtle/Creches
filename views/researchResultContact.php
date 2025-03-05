@@ -70,13 +70,13 @@
                 <?php endif; ?>
                 <h6>Département(s) :</h6>
                 <?php if (!empty($interetDepartements)): ?>
-                <ul>
-                    <?php foreach ($interetDepartements as $interetDepartement): ?>
-                        <li>
-                            Département : <?= htmlspecialchars($interetDepartement->getDepartement()->getDepartement()) ?>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
+                    <ul>
+                        <?php foreach ($interetDepartements as $interetDepartement): ?>
+                            <li>
+                                Département : <?= htmlspecialchars($interetDepartement->getDepartement()->getDepartement()) ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
                 <?php else: ?>
                     <p>Aucun département d'intérêt trouvé.</p>
                 <?php endif; ?>
@@ -115,7 +115,7 @@
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
-                    <p>Ce contact n’a pas d’intérêts spécifiques pour une de nos crèches en vente.</p>
+                <p>Ce contact n’a pas d’intérêts spécifiques pour une de nos crèches en vente.</p>
                 <?php endif; ?>
                 <h6>Groupe(s) :</h6>
                 <?php if (!empty($interetGroupe)): ?>

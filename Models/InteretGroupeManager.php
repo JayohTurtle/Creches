@@ -105,6 +105,6 @@ class InteretGroupeManager extends AbstractEntityManager{
         }
 
         return $contacts;
-}
+    }
 
 }

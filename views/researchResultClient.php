@@ -42,8 +42,8 @@
                                     <div class="row">
                                         <?php foreach ($localisation->getInterets() as $interet): ?>
                                             <div class="col-md-12 mb-2">
-                                                <div class="article">
-                                                    <li>
+                                                <div class="card text-white bg-secondary ws-100">
+                                                    <li class="ps-3 no-style">
                                                         <strong>Niveau:</strong> <?= htmlspecialchars($interet->getNiveau()) ?> -
                                                         <strong>Date:</strong> <?= date_format(date_create($interet->getDateInteret()), 'd-m-Y') ?><br>
                                                         <?php if ($interet->getContact() instanceof Contact): ?>
@@ -82,8 +82,8 @@
                             <div class="row"> 
                                 <?php foreach ($interetsGroupe as $interet): ?> 
                                     <div class="col-md-12 mb-2">
-                                        <div class="article">
-                                            <li>
+                                        <div class="card text-white bg-secondary ws-100">
+                                            <li class="ps-3 no-style">
                                                 <strong>Niveau:</strong> <?= htmlspecialchars($interet->getNiveau() ?? 'Non défini') ?> - 
                                                 <strong>Date:</strong> <?= $interet->getDateInteret() ? date_format(date_create($interet->getDateInteret()), 'd-m-Y') : 'Non définie' ?><br>
 

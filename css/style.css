@@ -225,6 +225,13 @@ input[type="checkbox"] {
     flex-grow: 1; /* Permet d'occuper la largeur correcte */
 }
 
+.no-style {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    }
+
+
 
 /*formulaire de connexion*/
 /* Modifier la couleur du lien */

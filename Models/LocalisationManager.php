@@ -50,8 +50,8 @@ class LocalisationManager extends AbstractEntityManager{
     //Récupére l'id d'un identifiant
     public function getIdLocalisationByIdentifiant($identifiant) {
         $sql = "SELECT idLocalisation FROM localisations WHERE identifiant = :identifiant LIMIT 1";
-        $stmt = $this->db->prepare($sql);  // Prépare la requête SQL
-        $stmt->execute(['identifiant' => $identifiant]);  // Exécute avec la valeur de l'identifiant
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['identifiant' => $identifiant]);
         return $stmt->fetchColumn();  // Retourne l'ID de la localisation
     }
 
@@ -59,24 +59,21 @@ class LocalisationManager extends AbstractEntityManager{
     public function createAddress($adresse, $codePostal, $ville) {
         // Vérifier si les paramètres ne sont pas vides
         if (empty($adresse) || empty($codePostal) || empty($ville)) {
-            return false; // Ou lancer une exception
+            return false;
         }
     
-        // Nettoyer les espaces inutiles
         if (is_array($adresse)) {
             $adresse = implode(' ', $adresse); // Convertit le tableau en string
         }
         
-        //$adresse = trim($adresse);
-        
         if (is_array($codePostal)) {
-            $codePostal = implode(' ', $codePostal); // Convertit le tableau en string
+            $codePostal = implode(' ', $codePostal);
         }
         
         $codePostal = trim($codePostal);
 
         if (is_array($ville)) {
-            $ville = implode(' ', $ville); // Convertit le tableau en string
+            $ville = implode(' ', $ville);
         }
         $ville = trim($ville);
     
@@ -88,25 +85,20 @@ class LocalisationManager extends AbstractEntityManager{
 
     //Récupérer les coordonnées géographiques d'une adresse
     public function geocodeAdresse($adresse) {
-        $apiKey = "e42f639a17dc40eebffcb9283aa34afe"; // Remplace par ta clé API OpenCage
-        $adresse = urlencode($adresse);
-        $url = "https://api.opencagedata.com/geocode/v1/json?q=$adresse&key=$apiKey";
+
+        $geocoder = new \OpenCage\Geocoder\Geocoder('e42f639a17dc40eebffcb9283aa34afe');
+        try {
+            $result = $geocoder->geocode($adresse . ", France", ['language' => 'fr', 'countrycode' => 'fr']);
+        } catch (\Exception $e) {
+            echo "Erreur lors de la géolocalisation : " . $e->getMessage();
+            return false;
+        }
     
-        // Initialisation de cURL
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_USERAGENT, "YouInvestCreche/1.0"); // Obligatoire pour OpenCage
-    
-        // Exécuter la requête et récupérer la réponse
-        $response = curl_exec($ch);
-        curl_close($ch);
-    
-        $data = json_decode($response, true);
-    
-        if (!empty($data['results'])) {
-            $latitude = $data['results'][0]['geometry']['lat'];
-            $longitude = $data['results'][0]['geometry']['lng'];
+         // Pas besoin de json_decode ici, car $result est déjà un tableau
+        if (!empty($result['results'])) {
+            $latitude = $result['results'][0]['geometry']['lat'];
+            $longitude = $result['results'][0]['geometry']['lng'];
+
             return ['lat' => $latitude, 'lng' => $longitude];
         } else {
             return false; // Adresse introuvable
@@ -119,20 +111,27 @@ class LocalisationManager extends AbstractEntityManager{
     }
     
     public function insertLocation($idLocalisation, $latitude, $longitude) {
+        // Correction de la requête SQL en utilisant les paramètres correctement dans ST_GeomFromText
         $sql = "UPDATE localisations 
-                SET location = ST_GeomFromText(:point) 
+                SET location = ST_GeomFromText(:point)
                 WHERE idLocalisation = :idLocalisation";
-    
-        $params = [
-            ':point' => "POINT($latitude $longitude)",
-            ':idLocalisation' => $idLocalisation
-        ];
-    
-        $query = $this->db->prepare($sql);
-        $success = $query->execute($params); // Retourne true ou false
         
-        return $success;
+        // Construire le point géospatial sous forme de chaîne WKT
+        $point = "POINT($longitude $latitude)";
+        
+        // Paramètres à passer à la requête
+        $params = [
+            ':point' => $point,               // Point en format WKT
+            ':idLocalisation' => $idLocalisation // L'ID de la localisation à mettre à jour
+        ];
+        
+        // Exécution de la requête avec la méthode query
+        $query = $this->db->query($sql, $params);
+        
+        // Retourne true si la requête a réussi, sinon false
+        return $query !== false;
     }
+    
     
     //Récupérer tous les points lat et lng
     public function getPoints() {

@@ -28,17 +28,17 @@ fetch('http://localhost/creches/API.php')
       data.forEach(point => {
           
           // Nettoyer la donnée (supprimer espaces avant/après et mettre en minuscule)
-          let sens = point.sens.trim().toLowerCase();
+          let sens = point.sens.trim().toLowerCase()
 
           // Vérification de la condition
-          let icon = (sens === "vendeur") ? redIcon : blueIcon;
+          let icon = (sens === "vendeur") ? redIcon : blueIcon
 
           L.marker([point.lat, point.lng], { icon: icon })
             .addTo(map)
-            .bindPopup(`<b>Identifiant: ${point.identifiant}</b>`);
+            .bindPopup(`<b>Identifiant: ${point.identifiant}</b>`)
       });
   })
-  .catch(error => console.error('Erreur lors du chargement des points:', error));
+  .catch(error => console.error('Erreur lors du chargement des points:', error))
 
 
 

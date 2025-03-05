@@ -24,6 +24,10 @@ class ComposerStaticInit43f04f8ab298ae680223494104e06cf9
             'PhpOption\\' => 10,
             'PHPMailer\\PHPMailer\\' => 20,
         ),
+        'O' => 
+        array (
+            'OpenCage\\Geocoder\\' => 18,
+        ),
         'G' => 
         array (
             'GrahamCampbell\\ResultType\\' => 26,
@@ -54,6 +58,10 @@ class ComposerStaticInit43f04f8ab298ae680223494104e06cf9
         'PHPMailer\\PHPMailer\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
+        ),
+        'OpenCage\\Geocoder\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/opencage/geocode/src',
         ),
         'GrahamCampbell\\ResultType\\' => 
         array (

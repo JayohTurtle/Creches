@@ -24,6 +24,7 @@ class AddLocalisationController{
         }
 
         $idLocalisations = $this->addLocalisation($idContact, $nom, $ville, $codePostal, $adresse, $taille);
+
         $this->addLocation($idLocalisations, $ville, $codePostal, $adresse);
         
     }
@@ -46,31 +47,26 @@ class AddLocalisationController{
     }
         
     private function addLocation($idLocalisation, $ville, $codePostal, $adresse) {
-
+        
+        $result = false;
+    
         $adresseComplete = $this->localisationManager->createAddress($adresse, $codePostal, $ville);
-
+    
         $coords = $this->localisationManager->geocodeAdresse($adresseComplete);
+    
         if ($coords) {
             $latitude = $coords['lat'];
             $longitude = $coords['lng'];
             $result = $this->localisationManager->insertLocation($idLocalisation, $latitude, $longitude);
         }
-
+    
         header('Content-Type: application/json');
-
-        if ($result) {
-            echo json_encode([
-                'status' => 'success',
-                'message' => 'Localisation ajoutée avec succès',
-                'result' => true
-            ]);
-        } else {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Erreur lors de l\'ajout de la localisation',
-                'result' => false
-            ]);
-        }
+    
+        echo json_encode([
+            'status' => $result ? 'success' : 'error',
+            'message' => $result ? 'Localisation ajoutée avec succès' : 'Erreur lors de l\'ajout de la localisation',
+            'result' => $result
+        ]);
         exit;
     }
     
