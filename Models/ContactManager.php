@@ -97,16 +97,8 @@ class ContactManager extends AbstractEntityManager {
         return $stmt->fetchColumn();  // Retourne l'ID du contact
     }
 
-    // Liste des colonnes autorisées pour éviter l'injection SQL
-    private $allowedColumns = ['contact', 'nom', 'email', 'telephone', 'siren', 'siteInternet'];
-
     // Extrait les résultats sous forme d'objets ResearchContact
     public function extractResearchContact($donneeRecherchee, $valeurRecherchee) {
-        // Vérifier si la colonne demandée est autorisée
-        if (!in_array($donneeRecherchee, $this->allowedColumns)) {
-            throw new Exception("Colonne non autorisée");
-        }
-    
         // Requête SQL sécurisée avec LIKE
         $sql = 'SELECT * FROM contacts WHERE ' . $donneeRecherchee . ' = :value';
         $statement = $this->db->prepare($sql);
@@ -131,6 +123,40 @@ class ContactManager extends AbstractEntityManager {
         }
     
         return null; // ❌ Retourne null si aucun résultat trouvé
+    }
+
+    // Extrait les résultats sous forme d'objets ResearchClient
+    public function extractResearchClient($donneeRecherchee, $valeurRecherchee) {
+        // Requête SQL sécurisée avec LIKE et filtrage sur 'sens'
+        $sql = 'SELECT idContact, nom, contact, siren, email, telephone, siteInternet, sens 
+                FROM contacts 
+                WHERE ' . $donneeRecherchee . ' = :value 
+                AND sens = :sens';
+    
+        // Appel du dbManager pour exécuter la requête
+        $contactData = $this->db->executeQuery($sql, [
+            'value' => $valeurRecherchee,
+            'sens' => 'Vendeur' // Filtrer par "Vendeur"
+        ]);
+    
+        // Vérifier si un contact est trouvé
+        if ($contactData) {
+            $contactData = $contactData[0]; // On prend le premier (et unique) résultat
+    
+            $contact = new Contact();
+            $contact->setIdContact($contactData['idContact']);
+            $contact->setNom($contactData['nom']);
+            $contact->setContact($contactData['contact']);
+            $contact->setSiren($contactData['siren']);
+            $contact->setEmail($contactData['email']);
+            $contact->setTelephone($contactData['telephone']);
+            $contact->setSiteInternet($contactData['siteInternet']);
+            $contact->setSens($contactData['sens']);
+    
+            return $contact; // Retourne l'objet Contact unique
+        }
+    
+        return null; // Retourne null si aucun résultat n'est trouvé
     }
 
     public function getVendeurs(): array {

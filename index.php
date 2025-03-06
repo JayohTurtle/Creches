@@ -28,16 +28,21 @@ if (!isset($_SESSION['user']) && (!isset($_GET['action']) || !in_array($_GET['ac
     exit;
 }
 
-// Récupération de l'action (par défaut : "dashboard")
-$action = $_REQUEST['action'] ?? 'dashboard';
+// Récupération de l'action (par défaut : "accueil")
+$action = $_REQUEST['action'] ?? 'accueil';
 
 // Définition du contrôleur en fonction de l'action demandée
 $controller = null;
 
 switch ($action) {
-    case 'dashboard':
-        $controller = new DashboardController();
-        $controller->showDashboard();
+    case 'clients':
+        $controller = new clientsController();
+        $controller->showclients();
+        break;
+
+    case 'accueil':
+        $controller = new AccueilController();
+        $controller->showAccueil();
         break;
 
     case 'newContactForm':
@@ -119,14 +124,19 @@ switch ($action) {
         }
         break;
 
-    case 'research':
-        $controller = new ResearchController();
-        $controller->showResearch();
+    case 'contacts':
+        $controller = new ContactsController();
+        $controller->showContacts();
         break;
 
     case 'researchResultContact':
         $controller = new ResultContactController();
         $controller->handleResearchContact();
+        break;
+
+    case 'researchResultClient':
+        $controller = new ResultClientController();
+        $controller->handleResearchClient();
         break;
 
     case 'researchResultZoneVente':

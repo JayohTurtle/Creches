@@ -42,7 +42,7 @@ class ClientManager extends AbstractEntityManager {
         // on récupère les données dans clients avec idContact
         public function getDataClientsById($idContact){
 
-            $sql = "SELECT commission, valorisation,statut, dateStatut
+            $sql = "SELECT commission, valorisation, statut, dateStatut
             FROM clients
             WHERE idContact = ?";
 
@@ -63,7 +63,7 @@ class ClientManager extends AbstractEntityManager {
         }
 
         public function getDataClients(){
-            $sql = "SELECT idContact, commission FROM clients";
+            $sql = "SELECT idContact, commission, statut, dateStatut FROM clients";
             $result = $this->db->query($sql);
             $clientsData = [];
         
@@ -71,11 +71,37 @@ class ClientManager extends AbstractEntityManager {
                 $client = new Client(); // Création d'un objet Client
                 $client->setIdContact($row['idContact']);
                 $client->setCommission($row['commission']);
+                $client->setDateStatut($row['dateStatut']);
+                $client->setStatut($row['statut']);
         
                 $clientsData[] = $client;
             }
         
             return $clientsData; // Retourne un tableau d'objets Client
+        }
+
+        public function getAllClients() {
+            // Requête SQL pour récupérer tous les clients
+            $sql = 'SELECT * FROM clients';
+            
+            // Appel du dbManager pour exécuter la requête
+            $clientsData = $this->db->query($sql);
+            
+            // Créer des objets Client à partir des données
+            $clients = [];
+            foreach ($clientsData as $clientData) {
+                $client = new Client();
+                $client->setIdContact($clientData['idContact']);
+                $client->setIdClient($clientData['idClient']);
+                $client->setStatut($clientData['statut']);
+                $client->setDateStatut($clientData['dateStatut']);
+                $client->setCommission($clientData['commission']);
+                $client->setValorisation($clientData['valorisation']);
+                // Ajoute d'autres attributs si nécessaire
+                $clients[] = $client;
+            }
+            
+            return $clients; // Retourne un tableau d'objets Client
         }
         
         

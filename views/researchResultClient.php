@@ -20,11 +20,13 @@
                         </a>
                     </p>
                 <?php endif; ?>
-                <?php if ($client instanceof Client): ?>
-                    <p><strong>Statut: </strong> <?= htmlspecialchars($client->getStatut()) ?></p>
-                    <p><strong>Date: </strong> <?= htmlspecialchars($client->getDateStatutFormatFr()) ?></p>
-                    <p><strong>Valorisation: </strong> <?= htmlspecialchars($client->getValorisation()) ?></p>
-                    <p><strong>Commission: </strong> <?= htmlspecialchars($client->getCommission()) ?></p>
+                <?php if ($clients instanceof Client): ?>
+                    <div class="client">
+                        <p><strong>Statut: </strong> <?= htmlspecialchars($client->getStatut()) ?></p>
+                        <p><strong>Date Statut: </strong> <?= htmlspecialchars($clients->getDateStatut()) ?></p>
+                        <p><strong>Valorisation: </strong> <?= htmlspecialchars($clients->getValorisation()) ?></p>
+                        <p><strong>Commission: </strong> <?= htmlspecialchars($clients->getCommission()) ?></p>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>
@@ -33,36 +35,62 @@
                 <?php if (!empty($localisations)): ?>
                     <h5>Localisation des crèches</h5>
                     <?php foreach ($localisations as $localisation): ?>
-                        <div class="localisation">
-                            <h6 class="col-md-12 mt-4">Adresse : <?= htmlspecialchars($localisation->getAdresse()) ?>,
-                            <?= htmlspecialchars($localisation->getVille()->getVille()) ?>,
-                            <?= htmlspecialchars($localisation->getDepartement()->getDepartement()) ?></h6>
-                            <ul>
-                                <?php if (!empty($localisation->getInterets())): ?>
-                                    <div class="row">
-                                        <?php foreach ($localisation->getInterets() as $interet): ?>
-                                            <div class="col-md-12 mb-2">
-                                                <div class="card text-white bg-secondary ws-100">
-                                                    <li class="ps-3 no-style">
-                                                        <strong>Niveau:</strong> <?= htmlspecialchars($interet->getNiveau()) ?> -
-                                                        <strong>Date:</strong> <?= date_format(date_create($interet->getDateInteret()), 'd-m-Y') ?><br>
-                                                        <?php if ($interet->getContact() instanceof Contact): ?>
-                                                            <strong>Contact:</strong> <?= htmlspecialchars($interet->getContact()->getContact()) ?><br>
-                                                            <strong>Nom:</strong> <?= htmlspecialchars($interet->getContact()->getNom()) ?><br>
-                                                            <strong>Email:</strong> <?= htmlspecialchars($interet->getContact()->getEmail()) ?><br>
-                                                            <strong>Téléphone:</strong> <?= htmlspecialchars($interet->getContact()->getTelephone()) ?><br>
-                                                        <?php else: ?>
-                                                            <strong>Contact:</strong> Non trouvé
-                                                        <?php endif; ?>
-                                                    </li>
-                                                </div>
-                                            </div>
-                                        <?php endforeach; ?>
+                        <div class="row">
+                            <div class="col-md-10 mt-4">
+                                <h6 >Adresse : <?= htmlspecialchars($localisation->getAdresse()) ?>,
+                                <?= htmlspecialchars($localisation->getVille()->getVille()) ?>,
+                                <?= htmlspecialchars($localisation->getDepartement()->getDepartement()) ?></h6>
+                            </div>
+                            <div class="col-md-1 mt-4">
+                                <?php if ($clientData instanceof Client): ?>
+                                    <button id="modifStatut-<?= $clientData->getIdContact(); ?>" class="btn-statut btn btn-primary">
+                                        Statut
+                                    </button>
+                                    <div id="popupModifStatut-<?= $clientData->getIdContact(); ?>" class="popupModifStatut" style="display: none;">
+                                        <div class="popup-content">
+                                            <h5>Modifier le statut</h5>
+                                            <form action="modifierStatut.php" method="POST">
+                                                <label for="statut">Nouveau statut:</label>
+                                                <select name="statut" id="statut">
+                                                    <option value="Mandat signé">Mandat signé</option>
+                                                    <option value="Mandat envoyé">Mandat envoyé</option>
+                                                    <option value="Négociation">Négociation</option>
+                                                    <option value="Approche">Approche</option>
+                                                    <option value="Sous offre">Sous offre</option>
+                                                    <option value="Vendu">Vendu</option>
+                                                </select>
+                                                <button type="submit" class="btn btn-success">Enregistrer</button>
+                                            </form>
+                                        </div>
                                     </div>
-                                <?php else: ?>
-                                    <li>Aucun intérêt trouvé pour cette localisation.</li>
                                 <?php endif; ?>
-                            </ul>
+                            </div>
+                        </div>
+                        <div>
+                            <?php if (!empty($localisation->getInterets())): ?>
+                                <div class="row">
+                                    <?php foreach ($localisation->getInterets() as $interet): ?>
+                                        <div class="col-md-12 mb-2">
+                                            <div class="card text-white bg-secondary ws-100">
+                                                <li class="ps-3 no-style">
+                                                    <strong>Niveau:</strong> <?= htmlspecialchars($interet->getNiveau()) ?> -
+                                                    <strong>Date:</strong> <?= date_format(date_create($interet->getDateInteret()), 'd-m-Y') ?><br>
+                                                    <?php if ($interet->getContact() instanceof Contact): ?>
+                                                        <strong>Contact:</strong> <?= htmlspecialchars($interet->getContact()->getContact()) ?><br>
+                                                        <strong>Nom:</strong> <?= htmlspecialchars($interet->getContact()->getNom()) ?><br>
+                                                        <strong>Email:</strong> <?= htmlspecialchars($interet->getContact()->getEmail()) ?><br>
+                                                        <strong>Téléphone:</strong> <?= htmlspecialchars($interet->getContact()->getTelephone()) ?><br>
+                                                    <?php else: ?>
+                                                        <strong>Contact:</strong> Non trouvé
+                                                    <?php endif; ?>
+                                                </li>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else: ?>
+                                <li>Aucun intérêt trouvé pour cette localisation.</li>
+                            <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -113,7 +141,7 @@
         <div class="article">
             <div class="row col-md-12">
                 <div class="mb-3 col-md-1">
-                    <button type="button" class="btn btn-primary" onclick="ouvrirPopup('popupAjoutComment')">Ajouter</button>
+                    <button id="boutonAjoutComment" type="button" class="btn btn-primary" onclick="ouvrirPopup('popupAjoutComment')">Ajouter</button>
                 </div>
             </div>
             <h5 >Commentaires</h5>
@@ -132,3 +160,5 @@
         </div>
     </div>
 </div>
+
+<script src="js/clients.js" defer> </script>

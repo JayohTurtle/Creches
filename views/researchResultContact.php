@@ -1,7 +1,7 @@
 <div class="container">
     <div class = "row">            
         <div class = "articles col-md-3">
-            <div class="article">
+            <div class="article contact-article">
                 <div class="row col-md-12">
                     <div class="mb-3 col-md-5">
                         <button type="button" class="btn btn-primary" id= "ajoutContact" onclick="ouvrirPopup('popupModifContact')">Modifier</button>
@@ -25,32 +25,8 @@
                 <?php endif; ?>
             </div>
         </div>
-        <div class = "articles col-md-9">
-            <div class="article">
-                <div class="row col-md-12">
-                    <div class="mb-3 col-md-1">
-                        <button type="button" class="btn btn-primary" onclick="ouvrirPopup('popupAjoutComment')">Ajouter</button>
-                    </div>
-                </div>
-                <h5 >Commentaires</h5>
-                <ul>
-                    <?php if (!empty($commentaires)): ?>
-                        <?php foreach ($commentaires as $comment): ?>
-                            <li>Le <?php echo htmlspecialchars($comment->getDateCommentFormatFr()); ?> 
-                                , <?= htmlspecialchars($comment->getOperateur()) ?> a écrit :
-                                <?= htmlspecialchars($comment->getCommentaire()) ?>
-                            </li>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <li>Aucun commentaire trouvé.</li>
-                    <?php endif; ?>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class = "articles mt-3 col-md-5">
-            <div class = "article">
+        <div class = "articles col-md-3">
+            <div class = "article contact-article">
                 <div class="mb-3 col-md-3">
                     <button id ="boutonAjoutInteretGeneral" type="button" class="btn btn-primary" onclick="ouvrirPopup('popupAjoutInteretGeneral')">Ajouter</button>
                 </div>
@@ -98,8 +74,8 @@
                 <?php endif; ?>
             </div>
         </div>
-        <div class = "articles mt-3 col-md-7">
-            <div class = "article">
+        <div class = "articles col-md-6">
+            <div class = "article contact-article">
                 <div class="mb-3 col-md-2">
                     <button id="boutonAjoutInteretCreche" type="button" class="btn btn-primary" onclick="ouvrirPopup('popupAjoutInteretCreche')">Ajouter</button>
                 </div>
@@ -137,6 +113,28 @@
                     <p>Aucune taille renseignée</p>
                 <?php endif; ?>
             </div>
+        </div>
+    </div>
+    <div class = "articles col-md-12 mt-3">
+        <div class="article">
+            <div class="row col-md-9">
+                <div class="mb-3 col-md-1">
+                    <button type="button" class="btn btn-primary" onclick="ouvrirPopup('popupAjoutComment')">Ajouter</button>
+                </div>
+            </div>
+            <h5 >Commentaires</h5>
+            <ul>
+                <?php if (!empty($commentaires)): ?>
+                    <?php foreach ($commentaires as $comment): ?>
+                        <li>Le <?php echo htmlspecialchars($comment->getDateCommentFormatFr()); ?> 
+                            , <?= htmlspecialchars($comment->getOperateur()) ?> a écrit :
+                            <?= htmlspecialchars($comment->getCommentaire()) ?>
+                        </li>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <li>Aucun commentaire trouvé.</li>
+                <?php endif; ?>
+            </ul>
         </div>
     </div>
     <div class = "articles mt-3 col-md-12">

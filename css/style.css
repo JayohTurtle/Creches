@@ -195,22 +195,50 @@ input[type="checkbox"] {
 }
 
 
-/*index*/
-.creches{
-    width: 300px;
-    height: 500px;
-    border: solid 1px black;
+/*Clients*/
+.clients{
+    width: 100%;
+    height: 170px;
+    border: solid 1px white;
     border-radius: 10px;
 }
 
-/*Research*/
+.btn-liste{
+    width:40px;
+    height:25px;
+    font-size: 12px;
+}
+
+
+/*Accueil*/
+.calendar{
+    width: 300px;
+    height: 250px;
+    border: solid 1px white;
+    border-radius: 10px;
+
+}
+
+.mailbox{
+    width: 300px;
+    height: 50px;
+    border: solid 1px white;
+    border-radius: 10px;
+
+}
+
+/*Contacts*/
 .small-button {
     height: 38px; /* Ajuste la hauteur selon celle des inputs */
     padding: 5px 10px; /* Ajuste le padding */
     font-size: 16px; /* Ajuste la taille du texte */
 }
 
-/*researchResult*/
+.contact-article{
+    height:450px;
+}
+
+/*ContactsResult*/
 .articles {
     gap: 20px; 
     justify-content: center;
@@ -231,6 +259,14 @@ input[type="checkbox"] {
     margin: 0;
     }
 
+/*reseachResultClient*/
+
+.btn-statut{
+    height:20px;
+    width:50px;
+    font-size:12px;
+    background-color:#42A5F5;
+}
 
 
 /*formulaire de connexion*/
@@ -259,6 +295,18 @@ input[type="checkbox"] {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
 }
+
+.small-modal{
+    display: none; /* Caché par défaut */
+    position: fixed;
+    z-index: 1000;
+    left: 5;
+    top: 3;
+    width: 30%;
+    height: 30%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
 
 /* Contenu du popup */
 .modal-content {

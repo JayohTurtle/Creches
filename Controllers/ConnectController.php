@@ -40,7 +40,7 @@ class ConnectController{
                     $view->render("changePassword", []);
                     exit();
                 }
-                header("Location: index.php?action=dashboard");
+                header("Location: index.php?action=accueil");
                 exit();
             } else {
                 echo "Email ou mot de passe incorrect.";

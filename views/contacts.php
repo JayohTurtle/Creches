@@ -118,67 +118,8 @@
                 </div>
             </form>
         </div>
-        <div class = "articles col-md-6">
-            <h5 class = "mt-3">Rechercher des crèches à vendre</h5>
-            <form class = "article" id="formResearchVente" method="POST" action="index.php?action=researchResultZoneVente">
-                <div class="row">
-                    <div class="radio-group col-md-12">
-                        <div class="radio-item">
-                            <input type="radio" id="researchVille" name="localResearch" value="researchVille" checked>
-                            <label for="researchVille">Ville</label>
-                        </div>
-                        <div class="radio-item">
-                            <input type="radio" id="researchDepartement" name="localResearch" value="researchDepartement">
-                            <label for="researchDepartement">Departement</label>
-                        </div>
-                        <div class="radio-item">
-                            <input type="radio" id="researchRegion" name="localResearch" value="researchRegion">
-                            <label for="researchRegion">Région</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-2 align-items-end">
-                    <div class="row form-row col-md-8">
-                        <div class="row form-row col-md-12" id ="inputVille">
-                            <div class="form-group col-md-9 ">
-                                <label for="zoneVille">Ville</label>
-                                <input type="text" class="form-control vente-input" name="zoneVille" id="zoneVille" list="getZoneVilles">
-                                <datalist id="getZoneVilles">
-                                <?php foreach ($villes as $ville) : ?>
-                                    <option value="<?php echo htmlspecialchars($ville->getVille()); ?>"></option>
-                                <?php endforeach; ?>
-                                </datalist>
-                            </div>
-                            <div class="form-group col-md-3" id ="inputVilleRayon">
-                                <label for="zoneVilleRayon">Rayon</label>
-                                <input class="form-control vente-input" type="number" name="zoneVilleRayon" id="zoneVilleRayon" min="0" step="5">
-                            </div>
-                        </div>
-                        <div class="form-group d-none" id ="inputDepartement">
-                            <label for="zoneDepartement">Département</label>
-                            <input type="text" class="form-control vente-input" name="zoneDepartement" id="zoneDepartement" list="getZoneDepartements">
-                            <datalist id="getZoneDepartements">
-                            <?php foreach ($departements as $departement) : ?>
-                                <option value="<?php echo htmlspecialchars($departement->getDepartement()); ?>"></option>
-                            <?php endforeach; ?>
-                            </datalist>
-                        </div>
-                        <div class="form-group d-none" id = "inputRegion">
-                            <label for="zoneRegion">Région</label>
-                            <input type="text" class="form-control vente-input" name="zoneRegion" id="zoneRegion" list="getZoneRegions">
-                            <datalist id="getZoneRegions">
-                            <?php foreach ($regions as $region) : ?>
-                                <option value="<?php echo htmlspecialchars($region->getRegion()); ?>"></option>
-                            <?php endforeach; ?>
-                            </datalist>
-                        </div>
-                    </div>
-                    <div class="form-group col-md-3 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary small-button align-self-end">Chercher</button>
-                    </div>
-                </div>
-            </form>
-            <h5>Rechercher des acheteurs par zone</h5>
+        <div class="articles col-md-6">
+            <h5 class="mt-3">Rechercher des acheteurs par zone</h5>
             <form class="article" id="formResearchZoneAchat" method="POST" action="index.php?action=researchResultZoneAchat">
                 <div class="row">
                     <div class="radio-group col-md-12">
@@ -250,5 +191,5 @@
         </div>
     </div>
 </div>
-<script src="js/research.js" defer> </script>
-<script src="js/validate_form_research.js" defer> </script>
+<script src="js/contacts.js" defer> </script>
+<script src="js/validate_form_contacts.js" defer> </script>

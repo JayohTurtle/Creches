@@ -1,6 +1,6 @@
 <?php
 
-class ResearchController {
+class ContactsController {
     private $contactManager;
     private $localisationManager;
     private $clientManager;
@@ -17,22 +17,24 @@ class ResearchController {
         $this->regionManager = new RegionManager();
     }
 
-    public function showResearch() {
+    public function showContacts() {
         $contacts = $this->contactManager->getContacts();
         $localisations = $this->localisationManager->getLocalisations();
         $clients = $this->clientManager->getClientsWithContacts();
         $villes = $this->villeManager->getVilles();
         $departements = $this->departementManager->getDepartements();
         $regions = $this->regionManager->getRegions();
+        $clientsList = $this->clientManager->getAllClients();
 
         $view = new View();
-        $view -> render('research', [
+        $view -> render('contacts', [
             'contacts' => $contacts,
             'localisations' => $localisations,
             'clients' => $clients,
             'villes' => $villes,
             'departements' => $departements,
-            'regions' => $regions
+            'regions' => $regions,
+            'clientList' => $clientsList,
         ]);
     }
 }
