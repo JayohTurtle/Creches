@@ -124,15 +124,7 @@ class AddContactController {
         $contact->setSiteInternet($this->sanitizeInput(($postData['site']?? null)));
         $contact->setSens(isset($postData['directionChoice']) ? ($postData['directionChoice']) : null);
 
-        return $this->contactManager->insertContact(
-            $contact->getNom(),
-            $contact->getContact(),
-            $contact->getSiren(),
-            $contact->getEmail(),
-            $contact->getTelephone(),
-            $contact->getSiteInternet(),
-            $contact->getSens()
-        );
+        return $this->contactManager->insertContact($contact);
             
     }
     
@@ -144,12 +136,7 @@ class AddContactController {
             $comment->setDateComment(date("Y/m/d"));
             $comment->setOperateur($operateur);
 
-            $this->commentManager->insertComment(
-                $idContact,
-                $comment->getCommentaire(),
-                $comment->getDateComment(),
-                $comment->getOperateur(),
-            );
+            $this->commentManager->insertComment($comment);
         }
     }
 
@@ -168,15 +155,16 @@ class AddContactController {
                 
                 $nom = $this->sanitizeInput($postData['nom']);
                 $identifiant = "$nom - $ville - $adresse";
-    
-                $idLocalisation = $this->localisationManager->insertLocalisation(
-                    $idContact,
-                    $idVille,
-                    $adresse,
-                    $idDepartement,
-                    $identifiant,
-                    $taille
-                );
+                
+                $localisation = new Localisation;
+                $localisation->setIdContact($idContact);
+                $localisation->setIdVille($idVille);
+                $localisation->setIdDepartement($idDepartement);
+                $localisation->setAdresse($adresse);
+                $localisation->setIdentifiant($identifiant);
+                $localisation->setTaille($taille);
+
+                $idLocalisation = $this->localisationManager->insertLocalisation($localisation);
     
                 if ($idLocalisation) {
                     $idLocalisations[] = $idLocalisation;
@@ -203,55 +191,42 @@ class AddContactController {
                     $longitude = $coords['lng'];
     
                     $this->localisationManager->insertLocation($idLocalisation, $latitude, $longitude);
-                } else {
-                    echo "<pre>Échec de la géolocalisation pour : " . htmlspecialchars($adresseComplete) . "</pre>";
+
                 }
             }
-        } else {
-            echo "<pre>Aucune localisation à traiter.</pre>";
         }
     }
     
-    
     private function addClient($postData, $idContact){
+
+        // Vérifier si la valorisation est un nombre, sinon mettre 0
+        $valorisation = $this->sanitizeInput($postData['valorisation'] ?? null);
+        // Vérifier si la commission est un nombre, sinon mettre 0
+        $commission = $this->sanitizeInput($postData['commission'] ?? null);
 
         $client = new Client;
         $client->setIdContact($idContact);
         $client->setStatut($this->sanitizeInput(($postData['statut'])));
-        // Vérifier si la valorisation est un nombre, sinon mettre 0
-        $valorisation = $this->sanitizeInput($postData['valorisation'] ?? null);
         $client->setValorisation(is_numeric($valorisation) ? (int) $valorisation : 0);
-
-        // Vérifier si la commission est un nombre, sinon mettre 0
-        $commission = $this->sanitizeInput($postData['commission'] ?? null);
         $client->setcommission(is_numeric($commission) ? (int) $commission : 0);
 
-        $this->clientManager->insertClient(
-            $idContact,
-            $client->getStatut(),
-            $client->getValorisation(),
-            $client->getCommission()
-        );
+        $this->clientManager->insertClient($client);
+
     }
 
     private function addInteretCreche($postData, $idContact) {
             
         // Récupérer l'ID de la localisation correspondant à l'identifiant
         $identifiantInterest = $this->sanitizeInput($postData['identifiantInterest'] ?? null);
-        $idIdentifiant = $this->localisationManager->getIdLocalisationByIdentifiant($identifiantInterest);
+        $idLocalisation= $this->localisationManager->getIdLocalisationByIdentifiant($identifiantInterest);
 
-
-        if ($idIdentifiant) { // Vérifier si un ID a bien été trouvé
+        if ($idLocalisation) { // Vérifier si un ID a bien été trouvé
             $interetCreche = new InteretCreche();
             $interetCreche->setIdContact($idContact);
             $interetCreche->setNiveau($this->sanitizeInput($postData['niveau'] ?? null));
-            $interetCreche->setIdIdentifiant($idIdentifiant);
+            $interetCreche->setIdLocalisation($idLocalisation);
 
-            $this->interetCrecheManager->insertInteretCreche(
-                $idContact,
-                $interetCreche->getNiveau(),
-                $interetCreche->getIdIdentifiant()
-            );
+            $this->interetCrecheManager->insertInteretCreche($interetCreche);
         }
     }
     private function addInteretGroupe($postData, $idContact) {
@@ -261,11 +236,7 @@ class AddContactController {
         $interetGroupe->setNiveau($this->sanitizeInput($postData['niveau'] ?? null));
         $interetGroupe->setNom($this->sanitizeInput ($postData['groupeInterest']));
 
-        $this->interetGroupeManager->insertInteretGroupe(
-            $idContact,
-            $interetGroupe->getNiveau(),
-            $interetGroupe->getNom()
-        );
+        $this->interetGroupeManager->insertInteretGroupe($interetGroupe);
     }
 
     private function addInteretVille($postData, $idContact) {
@@ -289,11 +260,8 @@ class AddContactController {
         $interetVille->setIdVille($idVilleInterest);
         $interetVille->setRayon($rayonInterest ?? 0);
     
-        $this->interetVilleManager->insertInteretVille(
-            $idContact,
-            $interetVille->getIdVille(),
-            $interetVille->getRayon(),
-        );
+        $this->interetVilleManager->insertInteretVille($interetVille);
+
     }
 }
     private function addInteretDepartement($postData, $idContact) {
@@ -308,10 +276,8 @@ class AddContactController {
             $interetDepartement->setIdContact($idContact);
             $interetDepartement->setIdDepartement($idDepartementInterest);
 
-            $this->interetDepartementManager->insertInteretDepartement(
-                $idContact,
-                $interetDepartement->getIdDepartement()
-            );
+            $this->interetDepartementManager->insertInteretDepartement($interetDepartement);
+
         }
 
     }
@@ -328,10 +294,7 @@ class AddContactController {
         $interetRegion->setIdContact($idContact);
         $interetRegion->setIdRegion($idRegionInterest);
 
-        $this->interetRegionManager->insertInteretRegion(
-            $idContact,
-            $interetRegion->getIdRegion(),
-        );
+        $this->interetRegionManager->insertInteretRegion($interetRegion);
     }
 }
     private function addInteretFrance($idContact) {
@@ -340,9 +303,8 @@ class AddContactController {
 
         $interetFrance->setIdContact($idContact);
 
-        $this->interetFranceManager->insertInteretFrance(
-            $idContact,
-        );
+        $this->interetFranceManager->insertInteretFrance($interetFrance);
+
     }
 
     private function addInteretTaille($postData, $idContact) {
@@ -354,10 +316,8 @@ class AddContactController {
         $interetTaille->setIdContact($idContact);
         $interetTaille->setTaille($tailleInterest);
 
-        $this->interetTailleManager->insertInteretTaille(
-            $idContact,
-            $interetTaille->getTaille(),
-        );
+        $this->interetTailleManager->insertInteretTaille($interetTaille);
+
     }
     /**
      * Fonction utilitaire pour nettoyer les entrées utilisateur destinées à la base de données.

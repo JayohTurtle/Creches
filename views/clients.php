@@ -1,4 +1,3 @@
-
 <div class="container">
     <h4>Gestion clients</h4>
     <div class="row d-flex align-items-start">
@@ -6,7 +5,15 @@
             <?php if (!empty($data['clients'])) : // On n'affiche que les statuts ayant des clients ?>
                 <div class="col-md-2">
                     <article class="mt-3 clients">
-                        <p class="ms-3 mt-2 fs-5"><?= ucfirst(str_replace('_', ' ', $statut)); ?></p>
+                        <p class="ms-3 mt-2 fs-5">
+                        <?php 
+                            // Inverser le tableau pour retrouver le texte lisible à partir de la valeur stockée
+                            $niveauMappingInverse = array_flip($statutMapping);
+
+                            // Vérifier si $niveau existe dans le tableau inversé, sinon formater par défaut
+                            echo $niveauMappingInverse[$statut] ?? ucwords(str_replace('_', ' ', $statut));
+                        ?>
+                        </p>
                         <ul class="ms-3 mt-2 list-unstyled">
                             <li>Nombre de crèches: <strong><?= $data['nbCreches']; ?></strong></li>
                             <li>PNY potentiel: <strong><?= number_format($data['totalCommission'], 2, ',', ' '); ?> €</strong></li>
@@ -53,45 +60,45 @@
                             <label for="donneeclient">Contact</label>
                             <input type="text" class="form-control client-input" name="donneeContact" id="donneeContact" list="getContacts">
                             <datalist id="getContacts">
-                                <?php foreach ($clients as $client) : ?>
-                                    <option value="<?php echo htmlspecialchars($client->getContact()); ?>"></option>
-                                <?php endforeach; ?>
+                            <?php foreach ($clients as $client) : ?>
+                                <option value="<?php echo htmlspecialchars($client->getContact()); ?>"></option>
+                            <?php endforeach; ?>
                             </datalist>
                         </div>
                         <div class="form-group d-none" id="inputNomGroupe">
                             <label for="donneeNomGroupe">Nom du groupe</label>
                             <input type="text" class="form-control client-input" name="donneeNomGroupe" id="donneeNomGroupe" list="getNoms">
                             <datalist id="getNoms">
-                                <?php foreach ($clients as $client) : ?>
-                                    <option value="<?php echo htmlspecialchars($client->getNom()); ?>"></option>
-                                <?php endforeach; ?>
+                            <?php foreach ($clients as $client) : ?>
+                                <option value="<?php echo htmlspecialchars($client->getNom()); ?>"></option>
+                            <?php endforeach; ?>
                             </datalist>
                         </div>
                         <div class="form-group d-none" id="inputSIREN">
                             <label for="donneeSIREN">SIREN</label>
                             <input type="text" class="form-control client-input" name="donneeSIREN" id="donneeSIREN" list="getSirens">
                             <datalist id="getSirens">
-                                <?php foreach ($clients as $client) : ?>
-                                    <option value="<?php echo htmlspecialchars($client->getSiren()); ?>"></option>
-                                <?php endforeach; ?>
+                            <?php foreach ($clients as $client) : ?>
+                                <option value="<?php echo htmlspecialchars($client->getSiren()); ?>"></option>
+                            <?php endforeach; ?>
                             </datalist>
                         </div>
                         <div class="form-group d-none" id="inputEmail">
                             <label for="donneeEmail">Email</label>
                             <input type="email" class="form-control client-input" name="donneeEmail" id="donneeEmail" list="getEmails">
                             <datalist id="getEmails">
-                                <?php foreach ($clients as $client) : ?>
-                                    <option value="<?php echo htmlspecialchars($client->getEmail()); ?>"></option>
-                                <?php endforeach; ?>
+                            <?php foreach ($clients as $client) : ?>
+                                <option value="<?php echo htmlspecialchars($client->getEmail()); ?>"></option>
+                            <?php endforeach; ?>
                             </datalist>
                         </div>
                         <div class="form-group d-none" id="inputTelephone">
                             <label for="donneeTelephone">Téléphone</label>
                             <input type="tel" class="form-control client-input" name="donneeTelephone" id="donneeTelephone" list="getTelephones">
                             <datalist id="getTelephones">
-                                <?php foreach ($clients as $client) : ?>
-                                    <option value="<?php echo htmlspecialchars($client->getTelephone()); ?>"></option>
-                                <?php endforeach; ?>
+                            <?php foreach ($clients as $client) : ?>
+                                <option value="<?php echo htmlspecialchars($client->getTelephone()); ?>"></option>
+                            <?php endforeach; ?>
                             </datalist>
                         </div>
                     </div>
@@ -159,6 +166,45 @@
                             <?php endforeach; ?>
                             </datalist>
                         </div>
+                    </div>
+                    <div class="form-group col-md-3 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary small-button align-self-end">Chercher</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <h5>Rechercher les intérêts</h5>
+        <div class = "articles col-md-6 mt-5">
+            <form class = "article" id="formResearchIdentifiant" method="POST" action="index.php?action=researchResultInteretCreche">
+                <div class="row form-row mt-3 align-items-end">
+                    <div class="form-group col-md-8">
+                        <label for="identifiant">Sur une crèche</label>
+                        <input type="text" class="form-control" name="identifiant" id="identifiant" list="getIdentifiants">
+                        <datalist id="getIdentifiants">
+                        <?php foreach ($identifiants as $identifiant) : ?>
+                            <option value="<?php echo htmlspecialchars($identifiant); ?>"></option>
+                        <?php endforeach; ?>
+                        </datalist>
+                    </div>
+                    <div class="form-group col-md-3 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary small-button align-self-end">Chercher</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class = "articles col-md-6 mt-5">
+            <form class = "article" id="formResearchGroupe" method="POST" action="index.php?action=researchResultInteretGroupe">
+                <div class="row form-row mt-2 align-items-end">
+                    <div class="form-group col-md-8">
+                        <label for="groupe">Sur un groupe</label>
+                        <input type="text" class="form-control" name="groupe" id="groupe" list="getGroupes">
+                        <datalist id="getGroupes">
+                            <?php foreach ($clients as $client) : ?>
+                                <option value="<?php echo htmlspecialchars($client->getNom()); ?>"></option>
+                            <?php endforeach; ?>
+                        </datalist>
                     </div>
                     <div class="form-group col-md-3 d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary small-button align-self-end">Chercher</button>

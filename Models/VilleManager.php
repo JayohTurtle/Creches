@@ -3,18 +3,6 @@
 include_once('AbstractEntityManager.php');
 
 class VilleManager extends AbstractEntityManager{
-
-    function getVilles(){
-        $request = "select * from villes";
-        $statement = $this -> db -> query($request);
-
-        $villeList=[];
-        while ($ville = $statement -> fetch()){
-            $villeList[] = new Ville ($ville);
-        }
-        return $villeList;
-        
-    }
     
     public function getVilleIdByName($ville) {
         $sql = 'SELECT idVille FROM villes WHERE ville = :ville';
@@ -24,6 +12,30 @@ class VilleManager extends AbstractEntityManager{
         return $result ? (int) $result['idVille'] : null;
     }
     
+    public function updateAllCitiesLocations($coords, $idVille) {
+        // Suppression du var_dump qui bloquait
+        $this->insertLocationVille($idVille, $coords['lat'], $coords['lng']);
+    }
+    
+    public function getVilleIdByIdentifiant($identifiant) {
+        // Préparer la requête pour récupérer l'idVille pour l'identifiant donné
+        $sql = "SELECT idVille FROM localisations WHERE identifiant = :identifiant";
+        $stmt = $this->db->query($sql, ['identifiant' => $identifiant]);
+    
+        // Récupérer le résultat
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // Retourner l'ID du département ou null si aucun résultat
+        return $result ? $result['idVille'] : null;
+    }
+
+    public function getVilleNameById($idVille){
+        $sql = 'SELECT ville FROM villes WHERE idVille = :idVille';
+        $query = $this->db->query($sql, ['idVille' => $idVille]);
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+
+        return $result ? $result['ville'] : null;
+    }
 
     public function insertVilleIfNotExists($ville, $codePostal, $idDepartement) {
         $sql = 'SELECT idVille FROM villes WHERE ville = :ville AND codePostal = :codePostal AND idDepartement = :idDepartement';
@@ -52,21 +64,6 @@ class VilleManager extends AbstractEntityManager{
             }
         }
         return $idVille;
-    }
-    
-    public function updateAllCitiesLocations($coords, $idVille) {
-        // Suppression du var_dump qui bloquait
-        $this->insertLocationVille($idVille, $coords['lat'], $coords['lng']);
-    }
-    
-    public function insertLocationVille($idVille, $lat, $lng) {
-        $sql = "UPDATE villes SET location = ST_GeomFromText(:point) WHERE idVille = :idVille";
-        $point = "POINT($lng $lat)"; // Longitude en premier
-    
-        $this->db->query($sql, [
-            'idVille' => $idVille,
-            'point' => $point
-        ]);
     }
 
     // Géocoder une ville et son code postal via OpenCage
@@ -101,24 +98,25 @@ class VilleManager extends AbstractEntityManager{
         return false;
     }
 
-    public function getVilleIdByIdentifiant($identifiant) {
-        // Préparer la requête pour récupérer l'idVille pour l'identifiant donné
-        $sql = "SELECT idVille FROM localisations WHERE identifiant = :identifiant";
-        $stmt = $this->db->query($sql, ['identifiant' => $identifiant]);
+    public function insertLocationVille($idVille, $lat, $lng) {
+        $sql = "UPDATE villes SET location = ST_GeomFromText(:point) WHERE idVille = :idVille";
+        $point = "POINT($lng $lat)"; // Longitude en premier
     
-        // Récupérer le résultat
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        // Retourner l'ID du département ou null si aucun résultat
-        return $result ? $result['idVille'] : null;
+        $this->db->query($sql, [
+            'idVille' => $idVille,
+            'point' => $point
+        ]);
     }
+    
+    function getVilles(){
+        $request = "select * from villes";
+        $statement = $this -> db -> query($request);
 
-    public function getVilleNameById($idVille){
-        $sql = 'SELECT ville FROM villes WHERE idVille = :idVille';
-        $query = $this->db->query($sql, ['idVille' => $idVille]);
-        $result = $query->fetch(PDO::FETCH_ASSOC);
-
-        return $result ? $result['ville'] : null;
+        $villeList=[];
+        while ($ville = $statement -> fetch()){
+            $villeList[] = new Ville ($ville);
+        }
+        return $villeList;
     }
 
     public function getCoordsByName($ville){
@@ -129,7 +127,7 @@ class VilleManager extends AbstractEntityManager{
         $coords = $this->db->query($sql, [$ville])->fetch(); 
 
         return $coords ?: null; // Retourne null si aucun résultat
-    }   
+    }
     
 }
     

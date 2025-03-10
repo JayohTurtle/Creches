@@ -4,66 +4,7 @@ include_once('AbstractEntityManager.php');
 
 class InteretCrecheManager extends AbstractEntityManager {
 
-    public $db;
-
-    // Insère les interets avec les id identifiant et contact
     
-    public function insertInteretCreche($idContact, $niveau, $localisationId) {
-        if ($niveau === "" || $niveau === null) {
-            return;
-        }
-    
-        try {
-            $sql = 'INSERT INTO interetcreche (idContact, niveau, idLocalisation) 
-                    VALUES (:idContact, :niveau, :idLocalisation)
-                    ON DUPLICATE KEY UPDATE 
-                        niveau = VALUES(niveau), 
-                        date_colonne = IF(date_colonne IS NOT NULL, NOW(), date_colonne)';
-    
-            $query = $this->db->prepare($sql);
-            $success = $query->execute([
-                'idContact' => $idContact,
-                'niveau' => $niveau,
-                'idLocalisation' => $localisationId
-            ]);
-    
-            if ($success) {
-                return true;
-            } else {
-                throw new Exception("Échec de l'exécution SQL");
-            }
-        } catch (Exception $e) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => "Erreur SQL : " . $e->getMessage()
-            ]);
-            exit;
-        }
-    }
-    
-    
-
-    public function getInteretCrechesByContact($idContact) {
-        try {
-            $sql = "SELECT i.niveau, l.identifiant, i.date_colonne
-                    FROM interetCreche i
-                    JOIN localisations l ON i.idLocalisation = l.idLocalisation
-                    WHERE i.idContact = :idContact";
-
-            $query = $this->db->query($sql, ['idContact' => $idContact]);
-            $result = $query->fetchAll(PDO::FETCH_ASSOC);
-    
-            $interets = [];
-            foreach ($result as $row) {
-                $interets[] = new InteretCreche($row); // 🔥 On passe un tableau
-            }
-    
-            return $interets;
-    
-        } catch (PDOException $e) {
-            return [];
-        }
-    }
 
     public function getContactsByIdentifiant($identifiant)
     {
@@ -119,11 +60,10 @@ class InteretCrecheManager extends AbstractEntityManager {
      // Méthode pour vérifier si un contact est intéressé par le département de la crèche
      public function isContactInterestedInCrecheDepartment($idContact, $identifiantCreche) {
         // Requête pour obtenir l'ID du département associé à la crèche
-        $sql = "
-            SELECT l.idDepartement
-            FROM localisations l
-            WHERE l.identifiant = :identifiant
-        ";
+        $sql = "SELECT l.idDepartement
+                FROM localisations l
+                WHERE l.identifiant = :identifiant
+            ";
 
         // Exécuter la requête pour récupérer l'ID du département
         $this->db->query($sql, ['identifiant' => $identifiantCreche]);
@@ -133,12 +73,11 @@ class InteretCrecheManager extends AbstractEntityManager {
 
         if ($departement) {
             // Si on trouve un département, on vérifie dans la table interetdepartements si ce contact est intéressé
-            $sql = "
-                SELECT COUNT(*) AS interestCount
-                FROM interetdepartement i
-                WHERE i.idContact = :idContact
-                  AND i.idDepartement = :idDepartement
-            ";
+            $sql = "SELECT COUNT(*) as interestCount
+                    FROM interetdepartement i
+                    WHERE i.idContact = :idContact
+                    AND i.idDepartement = :idDepartement
+                ";
 
             // Exécuter la requête de vérification d'intérêt du contact pour ce département
             $stmt = $this->db->query($sql, [
@@ -197,37 +136,96 @@ class InteretCrecheManager extends AbstractEntityManager {
         // Si interestCount > 0, cela signifie que le contact est intéressé par ce département
         return $result['interestCount'] > 0;
     }
+    
+    public function getCrecheData(){
+        $sql = "SELECT idContact, niveau, idLocalisation, date_colonne FROM interetCreche";
+        return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC); // Récupère les données sous forme de tableau associatif
+    }
 
-    public function getInteretsByIdLocalisations(array $idLocalisations) {
-        if (empty($idLocalisations)) {
-            return []; // Retourne un tableau vide si aucun idLocalisation n'est fourni
+    // Insère les interets avec les id identifiant et contact
+    
+    public function insertInteretCreche(InteretCreche $interetCreche) {
+        // Vérifier si le niveau est vide ou null
+        $niveau = $interetCreche->getNiveau();
+        if ($niveau === "" || $niveau === null) {
+            return;
         }
-    
-        // Création des placeholders dynamiques pour `IN (...)`
-        $placeholders = implode(', ', array_fill(0, count($idLocalisations), '?'));
-    
-        $sql = "SELECT idLocalisation, niveau, idContact, date_colonne
-                FROM interetCreche
-                WHERE idLocalisation IN ($placeholders)";
-    
-        // Exécuter la requête via `DBManager`
-        $result = $this->db->query($sql, $idLocalisations)->fetchAll(PDO::FETCH_ASSOC);
-    
-        // Organiser les données sous forme de tableau associatif
-        $interetsParLocalisation = [];
+        
+        // Récupérer les valeurs à partir de l'objet InteretCreche
+        $idContact = $interetCreche->getIdContact();
+        $idLocalisation = $interetCreche->getIdLocalisation();
+
+        // Requête SQL pour insertion ou mise à jour
+        $sql = 'INSERT INTO interetcreche (idContact, niveau, idLocalisation) 
+                VALUES (:idContact, :niveau, :idLocalisation)
+                ON DUPLICATE KEY UPDATE 
+                    niveau = VALUES(niveau), 
+                    date_colonne = IF(date_colonne IS NOT NULL, NOW(), date_colonne)';
+
+        // Passer directement la requête à ton dbManager
+        $result = $this->db->query($sql, [
+            'idContact' => $idContact,
+            'niveau' => $niveau,
+            'idLocalisation' => $idLocalisation
+        ]);
+
+        return $result;
+    }
+
+    public function getInteretsCrechesByIdContact($idContact) {
+
+        $sql = "SELECT i.niveau, l.identifiant, i.date_colonne
+                FROM interetCreche i
+                JOIN localisations l ON i.idLocalisation = l.idLocalisation
+                WHERE i.idContact = :idContact";
+
+        $query = $this->db->query($sql, ['idContact' => $idContact]);
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!$result) {
+            return null;
+        }
+
+        $interetsCreches = [];
         foreach ($result as $row) {
-            $idLoc = $row['idLocalisation'];
-            if (!isset($interetsParLocalisation[$idLoc])) {
-                $interetsParLocalisation[$idLoc] = [];
-            }
-            $interetsParLocalisation[$idLoc][] = [
-                'niveau' => $row['niveau'],
-                'idContact' => $row['idContact'],
-                'date_colonne' => $row['date_colonne']
-            ];
+            $interetsCreches[] = new InteretCreche($row); // On passe un tableau
+        }
+
+        return $interetsCreches;
+
+    }
+
+    public function getInteretsByIdLocalisation(array $idLocalisations) {
+        if (empty($idLocalisations)) {
+            return []; // Retourner un tableau vide si aucun ID n'est fourni
         }
     
-        return $interetsParLocalisation;
+        // Création de placeholders sécurisés (:id1, :id2, etc.)
+        $placeholders = implode(',', array_map(fn($key) => ":id$key", array_keys($idLocalisations)));
+    
+        // Requête SQL avec IN (...)
+        $sql = "SELECT * FROM interetCreche WHERE idLocalisation IN ($placeholders)";
+    
+        // Associer chaque valeur aux placeholders
+        $params = [];
+        foreach ($idLocalisations as $key => $id) {
+            $params["id$key"] = (int) $id; // Forcer en int pour sécurité
+        }
+        
+        // Exécuter la requête
+        $stmt = $this->db->query($sql, $params);
+
+        $interets = [];
+        while ($row = $stmt->fetch()) {
+            $interet = new InteretCreche([
+               'idLocalisation'=>$row['idLocalisation'],
+                'idContact'=>$row['idContact']
+            ]);
+            $interets[] = $interet;
+        
+        }
+    
+        return $interets;
     }
 }
 

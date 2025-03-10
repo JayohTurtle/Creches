@@ -35,16 +35,47 @@ $action = $_REQUEST['action'] ?? 'accueil';
 $controller = null;
 
 switch ($action) {
-    case 'clients':
-        $controller = new clientsController();
-        $controller->showclients();
-        break;
 
     case 'accueil':
         $controller = new AccueilController();
         $controller->showAccueil();
         break;
 
+    case 'clients':
+        $controller = new ClientsController();
+        $controller->showclients();
+        break;
+
+    case 'resultClient':
+        $controller = new ResultClientController();
+        $controller->handleResearchClient();
+        break;
+
+    case 'researchResultClient':
+        $controller = new ResultClientController();
+        $controller->handleResearchClient();
+        break;
+
+    case 'acheteurs':
+        $controller = new AcheteursController();
+        $controller->showAcheteurs();
+        break;
+
+    case 'resultAcheteur':
+        $controller = new ResultAcheteursController();
+        $controller->handleResearchAcheteur();
+        break;
+
+    case 'resultContacts':
+        $controller = new ContactsController();
+        $controller->showContacts();
+        break;
+
+    case 'researchResultContacts':
+        $controller = new ResultContactsController();
+        $controller->handleResearchContacts();
+        break;
+    
     case 'newContactForm':
         $controller = new ContactFormController();
         $controller->showContactForm();
@@ -124,28 +155,13 @@ switch ($action) {
         }
         break;
 
-    case 'contacts':
-        $controller = new ContactsController();
-        $controller->showContacts();
-        break;
-
-    case 'researchResultContact':
-        $controller = new ResultContactController();
-        $controller->handleResearchContact();
-        break;
-
-    case 'researchResultClient':
-        $controller = new ResultClientController();
-        $controller->handleResearchClient();
-        break;
-
     case 'researchResultZoneVente':
         $controller = new ResearchResultVenteCrecheController();
         $controller->showResultVenteCreche();
         break;
 
-    case 'researchResultZoneAchat':
-        $controller = new ResearchResultAchatCrecheController();
+    case 'resultZoneAchat':
+        $controller = new resultAchatCrecheController();
         $controller->showResultAchatCreche();
         break;
 

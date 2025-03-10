@@ -5,27 +5,62 @@ class clientsController {
     private $clientManager;
     private $localisationManager;
     private $contactManager;
-
+    private $villeManager;
+    private $departementManager;
+    private $regionManager;
+    
     public function __construct() {
         $this->clientManager = new ClientManager();
         $this->localisationManager = new LocalisationManager();
         $this->contactManager = new ContactManager();
+        $this->villeManager = new VilleManager();
+        $this->departementManager = new DepartementManager();
+        $this->regionManager = new RegionManager();
+
     }
 
     public function showclients() {
-        $clientsData = $this->clientManager->getDataClients(); 
+        // Récupérer les données des clients
+        $clientsData = $this->clientManager->getDataClients();
 
-        $clients = []; // Tableau pour stocker les contacts
+        $clients = [];  // Tableau pour stocker les clients avec leurs informations
+        $localisationsAVendre = [];  // Tableau pour stocker les localisations à vendre
 
         foreach ($clientsData as $client) {
-            $idContact = $client->getIdContact(); // ✅ Utiliser la méthode getter
-            $contact = $this->contactManager->getContactById($idContact);
-            if ($contact) {
-                $clients[] = $contact;
+            // Récupérer l'idContact pour chaque client
+            $idContact = $client->getIdContact();
+            
+            // Récupérer les informations du client associées à cet idContact
+            $contact = $this->contactManager->getContactById($idContact);  // Méthode qui récupère les informations du client depuis la table contacts
+            
+            // Ajouter les données du client dans le tableau clientsData
+            $clients[$idContact] = $contact;  // Stocke l'objet Contact sous la clé idContact
+            
+            // Récupérer les localisations à vendre pour cet idContact
+            $localisationsVendeurs = $this->localisationManager->getLocalisationsAVendre($idContact);
+
+            // Ajouter les localisations à vendre dans le tableau localisationsAVendre
+            foreach ($localisationsVendeurs as $localisationData) {
+                $identifiant = $localisationData->getIdentifiant();
+                
+                // Ajouter l'identifiant au tableau $localisationsAVendre sous la clé correspondant à idContact
+                $localisationsAVendre[$idContact][] = $identifiant;
             }
         }
 
-        // Assurez-vous que vous avez bien la correspondance des statuts
+        $identifiants = [];  // Tableau pour stocker tous les identifiants
+        foreach ($localisationsAVendre as $localisationArray) {
+            foreach ($localisationArray as $localisation) {
+                // Ajouter chaque identifiant au tableau
+                $identifiants[] = $localisation;
+            }
+        }
+
+        $villes = $this->villeManager->getVilles();
+        $departements = $this->departementManager->getDepartements();
+        $regions = $this->regionManager->getRegions();
+
+        // S'assurer de la correspondance des statuts
         $statutMapping = [
             "Mandat signé" => "mandats_signes",
             "Mandat envoyé" => "mandats_envoyes",
@@ -53,7 +88,7 @@ class clientsController {
             "sous_offre" => [],
             "vendu" => []
         ];
-        
+    
         // Trier les clients par statut
         foreach ($clientsData as $client) {
             $statut = $client->getStatut();  // Récupérer le statut du client
@@ -116,10 +151,15 @@ class clientsController {
         // Passer les données à la vue
         $view = new View();
         $view->render("clients", [
+            'localisationsAVendre' => $localisationsAVendre,
+            'identifiants' => $identifiants,
             'clients' => $clients,
             'clientsByStatut' => $clientsByStatut,
             'clientsData' => $clientsData,
-        
+            'statutMapping' => $statutMapping,
+            'villes' => $villes,
+            'departements' => $departements,
+            'regions' => $regions
         ]);
     }
     

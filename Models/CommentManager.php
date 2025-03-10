@@ -4,15 +4,15 @@ include_once('AbstractEntityManager.php');
 
 class CommentManager extends AbstractEntityManager {
     
-    public function insertComment($idContact, $commentaire, $dateComment, $operateur) {
-        if (!empty($commentaire)) {
+    public function insertComment(Comment $comment) {
+        if (!empty($comment->getCommentaire())) {
             $sql = 'INSERT INTO commentaires (idContact, commentaire, dateComment, operateur) 
                     VALUES (:idContact, :commentaire, :dateComment, :operateur)';
             return $this->db->query($sql, [
-                'idContact' => $idContact,
-                'commentaire' => $commentaire,
-                'dateComment' => $dateComment,
-                'operateur' => $operateur
+                'idContact' => $comment->getIdContact(),
+                'commentaire' => $comment->getCommentaire(),
+                'dateComment' => $comment->getDateComment(),
+                'operateur' => $comment->getOperateur()
             ]);
         }
     }
@@ -27,7 +27,7 @@ class CommentManager extends AbstractEntityManager {
             return []; // Aucun commentaire
         }
     
-        // Transformer en objets `Comment`
+        // Transformer en tableau d'objets comment`
         $comments = [];
         foreach ($results as $row) {
             $comment = new Comment();
@@ -40,5 +40,4 @@ class CommentManager extends AbstractEntityManager {
     
         return $comments;
     }
-    
 }

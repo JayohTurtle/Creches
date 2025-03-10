@@ -1,6 +1,6 @@
 <?php
 
-class ResearchResultAchatCrecheController{
+class ResultAchatCrecheController{
 
     private $localisationManager;
     private $contactManager;
@@ -23,6 +23,7 @@ class ResearchResultAchatCrecheController{
     public function showResultAchatCreche(){
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $zoneType = $_POST['localResearchAchat'] ?? null;
+            $nombreCreche = $_POST['researchNbreCreche'] ?? 0;
             $zoneValue = null;
             $idDepartementList = [];
 
@@ -84,10 +85,6 @@ class ResearchResultAchatCrecheController{
                     // On s'assure que idDepartementList est un tableau
                     $idDepartementArray = [];
                     foreach ($idDepartementList as $dep) {
-                        if (!$dep instanceof Departement) {
-                            var_dump($dep);
-                            die("🚨 Erreur : un élément de idDepartementList n'est pas un objet Departement !");
-                        }
                         $idDepartementArray[] = $dep->getIdDepartement();
                     }
                 
@@ -103,29 +100,30 @@ class ResearchResultAchatCrecheController{
             foreach ($idContacts as $idContact) {
                 
                 $contact = $this->contactManager->getAcheteursById($idContact);
+                $nombreCrecheContact = $this->localisationManager->countCreches($idContact);
+                if($nombreCrecheContact >= $nombreCreche){
                 
-                if ($contact !== null) {
-                    // Récupérer les intérêts des crèches pour ce contact
-                    $interetsCreche = $this->interetCrecheManager->getInteretCrechesByContact($idContact);
+                    if ($contact !== null) {
+                        // Récupérer les intérêts des crèches pour ce contact
+                        $interetsCreche = $this->interetCrecheManager->getInteretsCrechesByIdContact($idContact);
 
-                    // Récupérer les intérêts des groupes pour ce contact
-                    $interetsGroupe = $this->interetGroupeManager->getInteretGroupesByContact($idContact);
+                        // Récupérer les intérêts des groupes pour ce contact
+                        $interetsGroupe = $this->interetGroupeManager->getInteretsGroupesByIdContact($idContact);
 
-                    // Ajouter les intérêts sous forme de tableau associatif ou dans un tableau spécifique
-                    $contacts[] = [
-                        'contact' => $contact,
-                        'interetsCreche' => $interetsCreche,
-                        'interetsGroupe' => $interetsGroupe
-                    ];
-                };
+                        // Ajouter les intérêts sous forme de tableau associatif ou dans un tableau spécifique
+                        $contacts[] = [
+                            'contact' => $contact,
+                            'interetsCreche' => $interetsCreche,
+                            'interetsGroupe' => $interetsGroupe
+                        ];
+                    };
+                }
             }
-            
-
         }
 
         // Passer les résultats à la vue
         $view = new View();
-        $view->render('researchResultZoneAchat', [
+        $view->render('resultZoneAchat', [
             'contacts' => $contacts,
             'zoneValue' => $zoneValue ?? '',
             'rayon' => $rayon ?? null

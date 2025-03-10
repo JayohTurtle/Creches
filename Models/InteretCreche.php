@@ -7,7 +7,7 @@ class InteretCreche extends AbstractEntity{
     private $idInteretCreche;
     private $idContact;
     private $niveau;
-    private $idIdentifiant;
+    private $idLocalisation;
     private $identifiant;
     private $dateColonne;
     
@@ -52,12 +52,12 @@ class InteretCreche extends AbstractEntity{
         return "";
     }
 
-    public function setIdIdentifiant(int $idIdentifiant){
-        $this -> idIdentifiant = $idIdentifiant;
+    public function setIdLocalisation(int $idLocalisation){
+        $this -> idLocalisation = $idLocalisation;
     }
 
-    public function getIdIdentifiant ():int{
-        return $this -> idIdentifiant;
+    public function getIdLocalisation ():int{
+        return $this -> idLocalisation;
     }
 
     public function setIdentifiant (string $identifiant){

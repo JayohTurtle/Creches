@@ -2,9 +2,20 @@
 
 class AccueilController {
 
+    private $contactManager;
+
+    public function __construct() {
+        $this->contactManager = new ContactManager();
+
+    }
     public function showAccueil(){
-        $view = new View();
-        $view->render("accueil", [
-        ]);
+
+    $contacts = $this->contactManager->getContacts();
+    
+    $view = new View();
+    $view->render("accueil", [ 
+        'contacts' => $contacts,
+    ]);
     }
 }
+

@@ -42,14 +42,21 @@ body{
 }
 
 /*Les titres*/
-h5, h3, h6 {
+h5, h3, h4 {
     color: #E0E0E0;
     font-weight: 600;
     border-bottom: 2px solid #E0E0E0;
     padding-bottom: 5px;
 }
 
-/*Header*/
+h6{
+    color: #E0E0E0;
+    font-size: 20px;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+/*Main Template*/
 .custom-container {
     max-width: 1200px;
 }
@@ -69,6 +76,11 @@ h5, h3, h6 {
 .navbar .nav-link:hover {
     color: #90CAF9; /* Bleu clair pour l'interaction */
 }
+
+.navbar.nav-link:active, .nav-link[href*="index.php"]:hover {
+    color: #90CAF9; /* Couleur du lien actif */
+}
+  
 .btn-secondary {
     background-color: #424242;
     border: none;
@@ -236,6 +248,16 @@ input[type="checkbox"] {
 
 .contact-article{
     height:450px;
+}
+
+.client-article{
+    height:550px;
+}
+
+.zone-achat-article{
+    border : 1px solid;
+    border-radius:10px;
+    padding:10px;
 }
 
 /*ContactsResult*/

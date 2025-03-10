@@ -16,37 +16,7 @@ class LocalisationManager extends AbstractEntityManager{
         }
         return $localisationList;
     }
-
-    // Insère la localisation avec les ID ville et département
-    public function insertLocalisation($idContact, $idVille, $adresse, $idDepartement, $identifiant, $taille) {
-        // Vérifier si l'identifiant existe déjà
-        
-        $sqlCheck = 'SELECT COUNT(*) FROM localisations WHERE identifiant = :identifiant';
-        $stmt = $this->db->query($sqlCheck, ['identifiant' => $identifiant]);
-        $exists = $stmt->fetchColumn();
     
-        if ($exists > 0) {
-            return; // Évite l'insertion d'un doublon
-        }
-        
-        // Insérer si l'identifiant n'existe pas encore
-        $sql = 'INSERT INTO localisations (idContact, idVille, adresse, idDepartement, identifiant, taille) 
-                VALUES (:idContact, :idVille, :adresse, :idDepartement, :identifiant, :taille)';
-        
-        $this->db->query($sql, [
-            'idContact' => $idContact,
-            'idVille' => $idVille,
-            'adresse' => $adresse,
-            'idDepartement' => $idDepartement,
-            'identifiant' => $identifiant,
-            'taille' => $taille
-        ]);
-
-        $idLocalisation = $this->db->lastInsertId();
-        return $idLocalisation;
-
-    }
-
     //Récupére l'id d'un identifiant
     public function getIdLocalisationByIdentifiant($identifiant) {
         $sql = "SELECT idLocalisation FROM localisations WHERE identifiant = :identifiant LIMIT 1";
@@ -146,48 +116,7 @@ class LocalisationManager extends AbstractEntityManager{
             return ["error" => "Erreur SQL : " . $e->getMessage()];
         }
     }
-    public function getLocalisationByContact($idContact) {
-        try {
-            $sql = "SELECT l.idLocalisation, l.adresse, v.idVille, v.ville, d.idDepartement, d.departement 
-                    FROM localisations l
-                    JOIN villes v ON l.idVille = v.idVille
-                    JOIN departements d ON l.idDepartement = d.idDepartement
-                    WHERE l.idContact = :idContact";
-            
-            $query = $this->db->query($sql, ['idContact' => $idContact]);
-            $result = $query->fetchAll(PDO::FETCH_ASSOC);
     
-            $localisations = [];
-            foreach ($result as $row) {
-                // Création des objets Ville et Departement
-                $ville = new Ville([
-                    'idVille' => $row['idVille'],
-                    'ville' => $row['ville']
-                ]);
-    
-                $departement = new Departement([
-                    'idDepartement' => $row['idDepartement'],
-                    'departement' => $row['departement']
-                ]);
-    
-                // Création de l'objet Localisation avec idLocalisation
-                $localisation = new Localisation([
-                    'idLocalisation' => (int) $row['idLocalisation'],  // ✅ Ajout de idLocalisation
-                    'adresse' => $row['adresse'],
-                ]);
-                $localisation->setVille($ville);
-                $localisation->setDepartement($departement);
-    
-                $localisations[] = $localisation;
-            }
-    
-            return $localisations; // ✅ Retourne des objets avec idLocalisation
-    
-        } catch (PDOException $e) {
-            return ["error" => "Erreur SQL : " . $e->getMessage()];
-        }
-    }
-
     public function getContactsByIdVille($idVille): array
     {
         $sql = 'SELECT c.idContact
@@ -216,43 +145,6 @@ class LocalisationManager extends AbstractEntityManager{
         $idContacts = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
     
         return $idContacts; // Retourne un tableau contenant uniquement les idContact
-    }
-
-    public function getLocalisationsInRayon($coords, $rayon) {
-        // Vérification des paramètres
-        if (empty($coords['lng']) || empty($coords['lat']) || empty($rayon)) {
-            throw new Exception("Les coordonnées et le rayon doivent être définis.");
-        }
-        
-        // Construire la requête SQL
-       $sql = "SELECT idLocalisation, idContact, identifiant,
-            ST_Distance_Sphere(location, POINT(?, ?)) / 1000 AS distance_km
-            FROM localisations
-            WHERE ST_Distance_Sphere(location, POINT(?, ?)) / 1000 <= ?
-            ";
-
-        // Passer la requête SQL au DBManager qui s'occupe de la préparation et de l'exécution
-        $result = $this->db->query($sql, [
-            $coords['lng'],  // Longitude du point
-            $coords['lat'],  // Latitude du point
-            $coords['lng'],  // Longitude du point (pour le calcul de distance)
-            $coords['lat'],  // Latitude du point (pour le calcul de distance)
-            $rayon           // Rayon en kilomètres
-        ]);
-    
-        // Vérifier si on a bien récupéré des résultats sous forme de tableau
-        if (!$result) {
-            throw new Exception("Aucun résultat trouvé.");
-        }
-    
-        // Utiliser fetchAll pour obtenir les résultats sous forme de tableau
-        $contacts = $result->fetchAll(PDO::FETCH_ASSOC);
-    
-        // Si aucun résultat n'est trouvé, retourner un tableau vide
-        if (empty($contacts)) {
-            return [];
-        }
-        return $contacts;
     }
     
     public function getLocalisationsByVendeurAndDepartement(array $idContacts, $idDepartementArray): array
@@ -346,7 +238,174 @@ class LocalisationManager extends AbstractEntityManager{
 
         return array_column($results, 'idLocalisation');
     }
+
+    public function countCreches($idContact){
+        if (empty($idContact)) {
+            return 0; // Si l'idContact est vide, on retourne 0
+        }
     
+        // Requête SQL pour compter les crèches à vendre pour un seul idContact
+        $sql = "SELECT COUNT(*) FROM localisations WHERE idContact = :idContact";
+    
+        // Appel à la méthode du dbManager qui se charge de préparer et exécuter la requête
+        $result = $this->db->query($sql, [':idContact' => $idContact]);
+
+    
+        // Si le résultat est valide, retourner l'entier (COUNT(*))
+        $nombreCreches = (int) $result->fetchColumn();
+
+        return $nombreCreches;
+    }
+    
+
+    public function getIdContactByLocalisations() {
+        $sql = "SELECT idContact FROM localisations";
+        return $this->db->fetchAll($sql, [], PDO::FETCH_COLUMN);
+    }
+
+    public function getLocalisationsByIdContacts($idContacts) {
+        // Supposons que $idContacts est un tableau d'IDs de contacts
+        if (is_array($idContacts) && count($idContacts) > 0) {
+            // Implode les ID pour une utilisation dans une clause IN
+            $idContactsStr = implode(',', $idContacts);
+
+            // Exécuter la requête SQL pour récupérer les localisations associées aux contacts
+            $sql = "SELECT idLocalisation, identifiant FROM localisations WHERE idContact IN ($idContactsStr)";
+
+            $result = $this->db->query($sql);
+            
+            // Récupérer toutes les lignes sous forme de tableau associatif
+            return $result->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return [];
+    }
+
+    // Insère la localisation avec les ID ville et département
+    public function insertLocalisation(Localisation $localisation) {
+        // Vérifier si l'identifiant existe déjà
+        $sqlCheck = 'SELECT COUNT(*) FROM localisations WHERE identifiant = :identifiant';
+        $stmt = $this->db->query($sqlCheck, ['identifiant' => $localisation->getIdentifiant()]);
+        $exists = $stmt->fetchColumn();
+    
+        if ($exists > 0) {
+            return; // Évite l'insertion d'un doublon
+        }
+    
+        // Insérer si l'identifiant n'existe pas encore
+        $sql = 'INSERT INTO localisations (idContact, idVille, adresse, idDepartement, identifiant, taille) 
+                VALUES (:idContact, :idVille, :adresse, :idDepartement, :identifiant, :taille)';
+    
+        $this->db->query($sql, [
+            'idContact' => $localisation->getIdContact(),
+            'idVille' => $localisation->getIdVille(),
+            'adresse' => $localisation->getAdresse(),
+            'idDepartement' => $localisation->getIdDepartement(),
+            'identifiant' => $localisation->getIdentifiant(),
+            'taille' => $localisation->getTaille()
+        ]);
+    
+        return $this->db->lastInsertId();
+    }
+
+    public function getLocalisationsByIdContact($idContact) {
+    
+        $sql = "SELECT l.idLocalisation, l.identifiant, l.adresse, v.idVille, v.ville, d.idDepartement, d.departement 
+                FROM localisations l
+                JOIN villes v ON l.idVille = v.idVille
+                JOIN departements d ON l.idDepartement = d.idDepartement
+                WHERE l.idContact = :idContact";
+        
+        $query = $this->db->query($sql, ['idContact' => $idContact]);
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+        $localisations = [];
+        foreach ($result as $row) {
+            // Création des objets Ville et Departement
+            $ville = new Ville([
+                'idVille' => $row['idVille'],
+                'ville' => $row['ville']
+            ]);
+
+            $departement = new Departement([
+                'idDepartement' => $row['idDepartement'],
+                'departement' => $row['departement']
+            ]);
+
+            // Création de l'objet Localisation avec idLocalisation
+            $localisation = new Localisation([
+                'idLocalisation' => (int) $row['idLocalisation'],
+                "identifiant" => $row['identifiant'],
+                'adresse' => $row['adresse'],
+            ]);
+            $localisation->setVille($ville);
+            $localisation->setDepartement($departement);
+
+            $localisations[] = $localisation;
+        }
+        
+        return $localisations;
+    }
+
+    public function getLocalisationsAVendre($idContact): array {
+        // Requête pour récupérer uniquement les données de la table localisations
+        $sql = "SELECT * 
+                FROM localisations
+                WHERE idContact = :idContact";
+        
+        $query = $this->db->query($sql, ['idContact' => $idContact]);
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+    
+        // Initialisation du tableau des localisations
+        $localisationsAVendre = [];
+        
+        // Créer des objets Localisation à partir des résultats
+        foreach ($result as $row) {
+            $localisation = new Localisation($row);  // Créer un objet Localisation
+    
+            // Ajouter l'objet Localisation au tableau final
+            $localisationsAVendre[] = $localisation;
+        }
+    
+        return $localisationsAVendre;
+    }
+    
+    public function getLocalisationsInRayon($coords, $rayon) {
+        // Vérification des paramètres
+        if (empty($coords['lng']) || empty($coords['lat']) || empty($rayon)) {
+            throw new Exception("Les coordonnées et le rayon doivent être définis.");
+        }
+        
+        // Construire la requête SQL
+       $sql = "SELECT idLocalisation, idContact, identifiant,
+            ST_Distance_Sphere(location, POINT(?, ?)) / 1000 AS distance_km
+            FROM localisations
+            WHERE ST_Distance_Sphere(location, POINT(?, ?)) / 1000 <= ?
+            ";
+
+        // Passer la requête SQL au DBManager qui s'occupe de la préparation et de l'exécution
+        $result = $this->db->query($sql, [
+            $coords['lng'],  // Longitude du point
+            $coords['lat'],  // Latitude du point
+            $coords['lng'],  // Longitude du point (pour le calcul de distance)
+            $coords['lat'],  // Latitude du point (pour le calcul de distance)
+            $rayon           // Rayon en kilomètres
+        ]);
+    
+        // Vérifier si on a bien récupéré des résultats sous forme de tableau
+        if (!$result) {
+            throw new Exception("Aucun résultat trouvé.");
+        }
+    
+        // Utiliser fetchAll pour obtenir les résultats sous forme de tableau
+        $contacts = $result->fetchAll(PDO::FETCH_ASSOC);
+    
+        // Si aucun résultat n'est trouvé, retourner un tableau vide
+        if (empty($contacts)) {
+            return [];
+        }
+        return $contacts;
+    }
     public function getIdContactByIdDepartement(array $idDepartements) {
         if (empty($idDepartements)) {
             return [];
@@ -373,16 +432,14 @@ class LocalisationManager extends AbstractEntityManager{
     
         // Construction d'une chaîne de placeholders "?, ?, ?" pour une requête préparée
         $placeholders = implode(',', array_fill(0, count($idClients), '?'));
-        
         $sql = "SELECT COUNT(*) FROM localisations WHERE idContact IN ($placeholders)";
         $stmt = $this->db->prepare($sql);
+        
         $stmt->execute($idClients);
     
         return $stmt->fetchColumn(); 
     }
-    
-    
-}
+}    
     
     
     

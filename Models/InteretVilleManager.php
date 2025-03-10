@@ -3,61 +3,6 @@
 include_once('AbstractEntityManager.php');
 
 class InteretVilleManager extends AbstractEntityManager{
-    public $db;
-
-    // Insère les interets avec les id ville et contact
-    public function insertInteretVille($idContact, $idVilleInterest, $rayon) {
-        $sql = 'INSERT INTO interetville (idContact, idVille, rayon) 
-                VALUES (:idContact, :idVille, :rayon)';
-                return $this->db->query($sql, [
-                'idContact' => $idContact,
-                'idVille' => $idVilleInterest,
-                'rayon' => (int) $rayon,
-            ]);
-
-            $result =$this->db->query($sql, [
-                'idContact' => $idContact,
-                'niveau' => $niveau,
-                'idIdentifiant' => $idIdentifiant
-            ]);
-
-            return $result;
-        }
-
-
-     // Récupère les intérêts villes par contact
-    public function getInteretVillesByContact($idContact) {
-        try {
-            $sql = "SELECT iv.idContact, iv.rayon, v.idVille, v.ville
-                    FROM interetville iv
-                    JOIN villes v ON iv.idVille = v.idVille
-                    WHERE iv.idContact = :idContact";
-    
-            $query = $this->db->query($sql, ['idContact' => $idContact]);
-            $result = $query->fetchAll(PDO::FETCH_ASSOC);
-    
-            $interetVilles = [];
-            foreach ($result as $row) {
-                // Création d'un objet Ville
-                $ville = new Ville();
-                $ville->setIdVille($row['idVille']);
-                $ville->setVille($row['ville']);
-    
-                // Création d'un objet InteretVille
-                $interetVille = new InteretVille();
-                $interetVille->setIdContact($row['idContact']);
-                $interetVille->setRayon($row['rayon']);
-                $interetVille->setVille($ville);
-    
-                $interetVilles[] = $interetVille;
-            }
-    
-            return $interetVilles;
-    
-        } catch (PDOException $e) {
-            return ["error" => "Erreur SQL : " . $e->getMessage()];
-        }
-    }
 
     public function getIdVilleByName($ville){
 
@@ -101,7 +46,59 @@ class InteretVilleManager extends AbstractEntityManager{
                     'email' => $row['email'],
                 ]);
             }
-
     }
+
+    public function insertInteretVille(InteretVille $interetVille) {
+        // Récupérer les valeurs à partir de l'objet InteretVille
+        $idContact = $interetVille->getIdContact();
+        $idVilleInterest = $interetVille->getIdVille();
+        $rayon = $interetVille->getRayon();
     
+        // Requête SQL pour insérer les données
+        $sql = 'INSERT INTO interetville (idContact, idVille, rayon) 
+                VALUES (:idContact, :idVille, :rayon)';
+    
+        // Passer directement la requête à ton dbManager
+        $result = $this->db->query($sql, [
+            'idContact' => $idContact,
+            'idVille' => $idVilleInterest,
+            'rayon' => (int) $rayon
+        ]);
+    
+        return $result;
+    }
+
+    // Récupère les intérêts villes par contact
+    public function getInteretsVillesByContact($idContact) {
+
+        $sql = "SELECT iv.idContact, iv.rayon, v.idVille, v.ville
+                FROM interetville iv
+                JOIN villes v ON iv.idVille = v.idVille
+                WHERE iv.idContact = :idContact";
+
+        $query = $this->db->query($sql, ['idContact' => $idContact]);
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!$result) {
+            return null;
+        }
+
+        $interetsVilles = [];
+        foreach ($result as $row) {
+            // Création d'un objet Ville
+            $ville = new Ville();
+            $ville->setIdVille($row['idVille']);
+            $ville->setVille($row['ville']);
+
+            // Création d'un objet InteretVille
+            $interetVille = new InteretVille();
+            $interetVille->setIdContact($row['idContact']);
+            $interetVille->setRayon($row['rayon']);
+            $interetVille->setVille($ville);
+
+            $interetsVilles[] = $interetVille;
+        }
+
+        return $interetsVilles;
+    }
 }

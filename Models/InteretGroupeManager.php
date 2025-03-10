@@ -5,38 +5,8 @@ include_once('AbstractEntityManager.php');
 class InteretGroupeManager extends AbstractEntityManager{
     public $db;
 
-    public function insertInteretGroupe($idContact, $niveau, $nom) {
-        if ($niveau === "" || $niveau === null) {
-            return;
-        }
     
-        try {
-            $sql = 'INSERT INTO interetgroupe (idContact, niveau, nom) 
-                    VALUES (:idContact, :niveau, :nom)
-                    ON DUPLICATE KEY UPDATE 
-                        niveau = VALUES(niveau), 
-                        date_colonne = IF(date_colonne IS NOT NULL, NOW(), date_colonne)';
     
-            $query = $this->db->prepare($sql);
-            $success = $query->execute([
-                'idContact' => $idContact,
-                'niveau' => $niveau,
-                'nom' => $nom
-            ]);
-    
-            if ($success) {
-                return true;
-            } else {
-                throw new Exception("Échec de l'exécution SQL");
-            }
-        } catch (Exception $e) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => "Erreur SQL : " . $e->getMessage()
-            ]);
-            exit;
-        }
-    }
 
     public function getIdGroupeByName($nom){
         $sql = "SELECT i.niveau, i.idContact, i.date_colonne AS dateInteret
@@ -54,28 +24,6 @@ class InteretGroupeManager extends AbstractEntityManager{
         return $interetsGroupe;
 
     }
-    
-    public function getInteretGroupesByContact($idContact) {
-        try {
-         $sql = "SELECT i.niveau, i.nom, i.date_colonne AS dateInteret
-        FROM interetgroupe i
-        JOIN contacts c ON i.idContact = c.idContact
-        WHERE i.idContact = :idContact";
-    
-            $query = $this->db->query($sql, ['idContact' => $idContact]);
-            $result = $query->fetchAll(PDO::FETCH_ASSOC);
-    
-            $interets = [];
-            foreach ($result as $row) {
-                $interets[] = new InteretGroupe($row);
-            }
-    
-            return $interets;
-        } catch (Exception $e) {
-            die("Erreur : " . $e->getMessage());
-        }
-    }
-    
 
     public function getContactsByGroupe($groupe)
     {
@@ -106,5 +54,54 @@ class InteretGroupeManager extends AbstractEntityManager{
 
         return $contacts;
     }
+    
+    public function insertInteretGroupe(InteretGroupe $interetGroupe) {
+        // Récupérer les valeurs à partir de l'objet InteretGroupe
+        $niveau = $interetGroupe->getNiveau();
+        $idContact = $interetGroupe->getIdContact();
+        $nom = $interetGroupe->getNom();
+    
+        // Vérifier si le niveau est vide ou null
+        if ($niveau === "" || $niveau === null) {
+            return;
+        }
+        
+        // Requête SQL pour insertion ou mise à jour
+        $sql = 'INSERT INTO interetgroupe (idContact, niveau, nom) 
+                VALUES (:idContact, :niveau, :nom)
+                ON DUPLICATE KEY UPDATE 
+                    niveau = VALUES(niveau), 
+                    date_colonne = IF(date_colonne IS NOT NULL, NOW(), date_colonne)';
+
+        // Passer directement la requête à ton dbManager
+        $result = $this->db->query($sql, [
+            'idContact' => $idContact,
+            'niveau' => $niveau,
+            'nom' => $nom
+        ]);
+        return $result;
+    }
+
+    public function getInteretsGroupesByIdContact($idContact) {
+
+        $sql = "SELECT i.niveau, i.nom, i.date_colonne AS dateInteret
+       FROM interetgroupe i
+       JOIN contacts c ON i.idContact = c.idContact
+       WHERE i.idContact = :idContact";
+   
+       $query = $this->db->query($sql, ['idContact' => $idContact]);
+       $result = $query->fetchAll(PDO::FETCH_ASSOC);
+       
+       if(!$result){
+           return null;
+       }
+
+       $interetsGroupes = [];
+       foreach ($result as $row) {
+           $interetsGroupes[] = new InteretGroupe($row);
+       }
+       
+       return $interetsGroupes;
+   }
 
 }

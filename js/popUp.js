@@ -1,5 +1,3 @@
-
-
 // Gestion de l'affichage des champs dynamiques en fonction des cases cochées
 document.addEventListener("DOMContentLoaded", function () {
     const checkboxes = document.querySelectorAll('input[name="choixInfoContact"]')

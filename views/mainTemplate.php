@@ -21,9 +21,9 @@
             <?php if (isset($_SESSION['userId']) && $_SESSION['userRole'] === 'admin') : ?>
             <div><a class="nav-link" href="index.php?action=createUser">🔐 Page Admin</a></div>
             <?php endif; ?>
-            <div><a class="nav-link" href="index.php?action=accueil">Carte</a></div>
+            <div><a class="nav-link" href="index.php?action=accueil">Accueil</a></div>
             <div><a class="nav-link" href="index.php?action=clients">Clients</a></div>
-            <div><a class="nav-link" href="index.php?action=contacts">Contacts</a></div>
+            <div><a class="nav-link" href="index.php?action=acheteurs">Acheteurs</a></div>
             <div><a class="nav-link" href="index.php?action=newContactForm">Nouveau contact</a></div>
             <div><a href="index.php?action=logout" class='btn btn-secondary'>Déconnexion</a></div>
         </div>
@@ -35,5 +35,6 @@
 
 </main>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>  
+<script src="js/mainTemplate.js" defer> </script>
 </body>
 </html>

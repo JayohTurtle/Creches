@@ -1,5 +1,5 @@
 <div class="container">
-    <div class = "row">            
+    <div class = "row">
         <div class = "articles col-md-3">
             <div class="article contact-article">
                 <div class="row col-md-12">
@@ -303,7 +303,7 @@
                     <?php foreach ($clients as $client) : ?>
                         <?php foreach (explode(', ', $client->getIdentifiant()) as $identifiant) : ?>
                             <?php if (!empty($identifiant)) : ?>
-                                <option value="<?php echo htmlspecialchars($identifiant); ?>"></option>
+                                <option value="<?= htmlspecialchars($identifiant); ?>"></option>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     <?php endforeach; ?>
@@ -426,7 +426,6 @@
                     $nom = isset($contact) ? $contact->getNom() : ''; // Vérification de l'existence de $contact
                 ?>
                 <input type="hidden" name="nom" value="<?= htmlspecialchars($nom) ?>">
-
                 <input type="hidden" name="idContact" value="<?= (int) $idContact ?>">
                 <div class="form-group col-md-3 d-flex justify-content-center">
                     <button type="submit" class="btn btn-primary small-button mt-3">Envoyer</button>
