@@ -26,10 +26,10 @@
             <?php endif; ?>
         <?php endforeach; ?>
     </div>
-    <div class = "row"> 
+    <div class = "row mt-5"> 
         <div class="articles col-md-6 mt-5">
             <h5 class = "mt-5">Rechercher un client</h5>
-            <form class = "article" id="formResearchClient" method="POST" action="index.php?action=researchResultClient">
+            <form class = "article" id="formResearchClient" method="POST" action="index.php?action=resultClient">
                 <div class="row">
                     <div class="radio-group col-md-12">
                         <div class="radio-item">
@@ -110,7 +110,7 @@
         </div>
         <div class = "articles col-md-6 mt-5">
             <h5 class = "mt-5">Rechercher des crèches à vendre</h5>
-            <form class = "article" id="formResearchVente" method="POST" action="index.php?action=researchResultZoneVente">
+            <form class = "article" id="formResearchVente" method="POST" action="index.php?action=resultZoneVente">
                 <div class="row">
                     <div class="radio-group col-md-12">
                         <div class="radio-item">
@@ -166,45 +166,6 @@
                             <?php endforeach; ?>
                             </datalist>
                         </div>
-                    </div>
-                    <div class="form-group col-md-3 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary small-button align-self-end">Chercher</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div class="row">
-        <h5>Rechercher les intérêts</h5>
-        <div class = "articles col-md-6 mt-5">
-            <form class = "article" id="formResearchIdentifiant" method="POST" action="index.php?action=researchResultInteretCreche">
-                <div class="row form-row mt-3 align-items-end">
-                    <div class="form-group col-md-8">
-                        <label for="identifiant">Sur une crèche</label>
-                        <input type="text" class="form-control" name="identifiant" id="identifiant" list="getIdentifiants">
-                        <datalist id="getIdentifiants">
-                        <?php foreach ($identifiants as $identifiant) : ?>
-                            <option value="<?php echo htmlspecialchars($identifiant); ?>"></option>
-                        <?php endforeach; ?>
-                        </datalist>
-                    </div>
-                    <div class="form-group col-md-3 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary small-button align-self-end">Chercher</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class = "articles col-md-6 mt-5">
-            <form class = "article" id="formResearchGroupe" method="POST" action="index.php?action=researchResultInteretGroupe">
-                <div class="row form-row mt-2 align-items-end">
-                    <div class="form-group col-md-8">
-                        <label for="groupe">Sur un groupe</label>
-                        <input type="text" class="form-control" name="groupe" id="groupe" list="getGroupes">
-                        <datalist id="getGroupes">
-                            <?php foreach ($clients as $client) : ?>
-                                <option value="<?php echo htmlspecialchars($client->getNom()); ?>"></option>
-                            <?php endforeach; ?>
-                        </datalist>
                     </div>
                     <div class="form-group col-md-3 d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary small-button align-self-end">Chercher</button>

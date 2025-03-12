@@ -192,10 +192,9 @@ class InteretCrecheManager extends AbstractEntityManager {
         }
 
         return $interetsCreches;
-
     }
 
-    public function getInteretsByIdLocalisation(array $idLocalisations) {
+    public function getInteretsCrecheByIdLocalisations(array $idLocalisations) {
         if (empty($idLocalisations)) {
             return []; // Retourner un tableau vide si aucun ID n'est fourni
         }
@@ -203,29 +202,77 @@ class InteretCrecheManager extends AbstractEntityManager {
         // Création de placeholders sécurisés (:id1, :id2, etc.)
         $placeholders = implode(',', array_map(fn($key) => ":id$key", array_keys($idLocalisations)));
     
-        // Requête SQL avec IN (...)
-        $sql = "SELECT * FROM interetCreche WHERE idLocalisation IN ($placeholders)";
+        $sql = "SELECT 
+                ic.*, 
+                l.idLocalisation AS idLocalisation, l.idGroupe, l.identifiant, l.adresse , l.idVille, l.idDepartement, l.taille,
+                v.ville, v.codePostal,
+                d.departement, d.idRegion,
+                r.region,
+                c.idContact, c.nom, c.email, c.telephone, c.contact
+            FROM interetCreche ic
+            JOIN localisations l ON ic.idLocalisation = l.idLocalisation
+            JOIN villes v ON l.idVille = v.idVille
+            JOIN departements d ON l.idDepartement = d.idDepartement
+            JOIN regions r ON d.idRegion = r.idRegion
+            JOIN contacts c ON ic.idContact = c.idContact
+            WHERE ic.idLocalisation IN ($placeholders);
+        ";
     
         // Associer chaque valeur aux placeholders
         $params = [];
         foreach ($idLocalisations as $key => $id) {
-            $params["id$key"] = (int) $id; // Forcer en int pour sécurité
+            $params[":id$key"] = (int) $id; // Sécurisation en entier
         }
         
         // Exécuter la requête
-        $stmt = $this->db->query($sql, $params);
+        $result = $this->db->query($sql, $params);
 
-        $interets = [];
-        while ($row = $stmt->fetch()) {
-            $interet = new InteretCreche([
-               'idLocalisation'=>$row['idLocalisation'],
-                'idContact'=>$row['idContact']
-            ]);
-            $interets[] = $interet;
-        
+        $interetsCreche = [];
+
+        while ($row = $result->fetch()) {
+            // Clé unique basée sur l'ID de localisation
+            $key = $row['idLocalisation'];
+
+            // Vérifier si on a déjà créé un objet pour cette localisation
+            if (!isset($interetsCreche[$key])) {
+                $interetsCreche[$key] = new InteretCreche([
+                    'idInteretCreche' => $row['idInteretCreche'],
+                    'idLocalisation' => $row['idLocalisation'],
+                    'dateColonne' => $row['date_colonne'],
+                    'localisation' => new Localisation([
+                        'adresse' => $row['adresse'],
+                        'identifiant' => $row['identifiant'],
+                        'idGroupe' => $row['idGroupe'],
+                        'taille' => $row['taille'],
+                        'idVille' => $row['idVille'],
+                        'idDepartement' => $row['idDepartement'],
+                    ]),
+                    'ville' => new Ville([
+                        'ville' => $row['ville'],
+                        'codePostal' => $row['codePostal']
+                    ]),
+                    'departement' => new Departement([
+                        'departement' => $row['departement'],
+                        'idRegion' => $row['idRegion'],
+                    ]),
+                    'region' => new Region([
+                        'region' => $row['region']
+                    ])
+                ]);
+            }
+            
+            // Ajouter le contact à l'objet existant avec le niveau d'intérêt
+            $interetsCreche[$key]->ajouterContact(new Contact([
+                'idContact' => $row['idContact'],
+                'contact'   => $row['contact'],
+                'nom'       => $row['nom'],
+                'niveau'    => $row['niveau'], // Associer le niveau à chaque contact
+            ]));
         }
-    
-        return $interets;
+
+        // Retourner un tableau contenant uniquement les objets InteretCreche
+        
+        return array_values($interetsCreche);
     }
 }
 

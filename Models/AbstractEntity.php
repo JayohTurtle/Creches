@@ -6,8 +6,7 @@ class AbstractEntity{
     {
         if (!empty ($data)){
             $this -> hydrate($data);
-        }
-        
+        }  
     }
 
     public function hydrate(array $data = []) {

@@ -1,6 +1,6 @@
 <?php
 
-class ResearchResultInteretGroupeController {
+class ResultInteretGroupeController {
     private $interetGroupeManager;
     private $interetCrecheManager;
 
@@ -9,7 +9,6 @@ class ResearchResultInteretGroupeController {
         $this->interetCrecheManager = new InteretCrecheManager();
 
     }
-
 
     public function showResultInteretGroupe(){
         if ($_SERVER["REQUEST_METHOD"] == "POST") {

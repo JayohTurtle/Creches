@@ -1,4 +1,3 @@
-
 <div class="container">
     <div class="articles">
         <div class="row">
@@ -17,8 +16,9 @@
                         </a>
                     </p>
                     <p><strong>SIREN: </strong> <?= htmlspecialchars($contact->getSiren()) ?></p>
-                    <form method="POST" action="index.php?action=saveContact">
-                        <input type="hidden" name="idContact" value="<?= (int) $idContact ?>">
+                    <form method="POST" action="index.php?action=seeContact">
+                        <input type="hidden" name="idContact" value="<?= htmlspecialchars($contact->getIdContact()) ?>">
+                        <input type="hidden" name="sens" value="<?= htmlspecialchars($contact->getSens()) ?>">
                         <button type ="submit" class="btn btn-primary">Voir la fiche complète</button>
                     </form>
                 <?php else: ?>

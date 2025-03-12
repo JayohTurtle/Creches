@@ -36,6 +36,45 @@ $controller = null;
 
 switch ($action) {
 
+    case 'createUser':
+        $controller = new ConnectController();
+        $controller->showCreateUser();
+        break;
+
+    case 'userCreated':
+        $controller = new ConnectController();
+        $controller->userCreated();
+        break;
+
+    case 'userFormConnect':
+        $controller = new ConnectController();
+        $controller->showUserFormconnect();
+        break;
+
+    case 'login':
+        $controller = new ConnectController();
+        $controller->login();
+        break;
+    
+    case 'logout':
+        $controller = new ConnectController();
+        $controller->logout();
+        break;        
+        
+    case 'forgotPassword':
+        $controller = new ResetPasswordController();
+        $controller->showForgotPasswordForm();
+        break;
+
+    case 'changePassword':
+        $controller = new ChangePasswordController();
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $controller->changePassword();
+        } else {
+            $controller->showChangePasswordForm();
+        }
+        break;
+
     case 'accueil':
         $controller = new AccueilController();
         $controller->showAccueil();
@@ -66,6 +105,20 @@ switch ($action) {
         $controller->handleResearchAcheteur();
         break;
 
+    case 'newContactForm':
+        $controller = new ContactFormController();
+        $controller->showContactForm();
+        break;
+
+    case 'saveContact':
+        $controller = new AjoutContactController();
+        $controller->handleAddContact();
+        break;
+
+    case 'seeContact':
+        $controller = new ContactController();
+        $controller->selectSens();
+
     case 'resultContacts':
         $controller = new ContactsController();
         $controller->showContacts();
@@ -76,28 +129,8 @@ switch ($action) {
         $controller->handleResearchContacts();
         break;
     
-    case 'newContactForm':
-        $controller = new ContactFormController();
-        $controller->showContactForm();
-        break;
-    
-    case 'createUser':
-        $controller = new ConnectController();
-        $controller->showCreateUser();
-        break;
-
-    case 'userCreated':
-        $controller = new ConnectController();
-        $controller->userCreated();
-        break;
-
-    case 'saveContact': // Ajout d'une action pour enregistrer un contact
-        $controller = new AddContactController();
-        $controller->handleAddContact();
-        break;
-
     case 'ajoutInfoContact':
-        $controller = new AddInfoContactController();
+        $controller = new AjoutInfoContactController();
         $controller->handleInfoContact();
         break;
 
@@ -105,6 +138,10 @@ switch ($action) {
         $controller = new AddCommentController();
         $controller->handleAddComment();
         break;
+
+    case 'creche':
+        $controller = new CrecheController();
+        $controller->handleCreche();
     
     case 'ajoutInteretCreche':
         $controller = new AddInteretCrecheController();
@@ -121,62 +158,38 @@ switch ($action) {
         $controller->handleAddLocalisation();
         break;
 
-    case 'userFormConnect':
-        $controller = new ConnectController();
-        $controller->showUserFormconnect();
-        break;
-
-    case 'login':
-        $controller = new ConnectController();
-        $controller->login();
-        break;
-    
-    case 'logout':
-        $controller = new ConnectController();
-        $controller->logout();
-        break;        
-        
-    case 'forgotPassword':
-        $controller = new ResetPasswordController();
-        $controller->showForgotPasswordForm();
-        break;
-    
     case 'sendResetLink':
         $controller = new ResetPasswordController();
         $controller->sendResetLink();
         break;
     
-    case 'changePassword':
-        $controller = new ChangePasswordController();
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $controller->changePassword();
-        } else {
-            $controller->showChangePasswordForm();
-        }
-        break;
-
-    case 'researchResultZoneVente':
-        $controller = new ResearchResultVenteCrecheController();
-        $controller->showResultVenteCreche();
+    case 'resultZoneVente':
+        $controller = new ResultZoneVenteController();
+        $controller->showResultZoneVente();
         break;
 
     case 'resultZoneAchat':
-        $controller = new resultAchatCrecheController();
-        $controller->showResultAchatCreche();
+        $controller = new resultZoneAchatController();
+        $controller->showResultZoneAchat();
         break;
 
-    case 'researchResultTaille':
-        $controller = new ResearchResultTailleController();
+    case 'resultTaille':
+        $controller = new ResultTailleController();
         $controller->showResultTaille();
         break;
 
-    case 'researchResultInteretCreche':
-        $controller = new ResearchResultInteretCrecheController();
+    case 'interetsCreche':
+        $controller = new InteretCrecheController();
+        $controller->showInteretCreche();
+        break;
+
+    case 'resultInteretCreche':
+        $controller = new ResultInteretCrecheController();
         $controller->showResultInteretCreche();
         break;
 
-    case 'researchResultInteretGroupe':
-        $controller = new ResearchResultInteretGroupeController();
+    case 'resultInteretGroupe':
+        $controller = new ResultInteretGroupeController();
         $controller->showResultInteretGroupe();
         break;
 

@@ -7,14 +7,47 @@ class LocalisationManager extends AbstractEntityManager{
 
     //Récupérer toutes les localisations
     function getLocalisations(){
-        $request = "select * from localisations";
-        $statement = $this -> db -> query($request);
+        $sql = "SELECT 
+                l.idLocalisation, l.idContact, l.identifiant, l.adresse, l.taille, l.idDepartement, 
+                d.departement, 
+                r.idRegion, r.region
+                FROM localisations l
+                JOIN departements d ON l.idDepartement = d.idDepartement
+                JOIN regions r ON d.idRegion = r.idRegion";
 
-        $localisationList=[];
-        while ($localisation = $statement -> fetch()){
-            $localisationList[] = new Localisation ($localisation);
+        $result = $this -> db -> query($sql);
+
+        // Initialiser le tableau d'objets Identifiant
+        $localisations = [];
+
+        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+            // Création de l'objet Localisation
+            $localisation = new Localisation();
+            $localisation->setIdentifiant($row['identifiant']);
+            $localisation->setIdLocalisation($row['idLocalisation']);
+            $localisation->setAdresse($row['adresse']);
+            $localisation->setIdContact($row['idContact']);
+            $localisation->setTaille($row['taille']);
+        
+            // Création de l'objet Département
+            $departement = new Departement();
+            $departement->setIdDepartement($row['idDepartement']);
+            $departement->setDepartement($row['departement']);
+        
+            // Création de l'objet Région
+            $region = new Region();
+            $region->setIdRegion($row['idRegion']);
+            $region->setRegion($row['region']);
+        
+            // Associer Département et Région à la Localisation
+            $localisation->setDepartement($departement);
+            $localisation->setRegion($region);
+        
+            // Ajouter à la liste des localisations
+            $localisations[] = $localisation;
         }
-        return $localisationList;
+        
+        return $localisations; // Retourne un tableau d'objets Localisation
     }
     
     //Récupére l'id d'un identifiant
@@ -102,7 +135,6 @@ class LocalisationManager extends AbstractEntityManager{
         return $query !== false;
     }
     
-    
     //Récupérer tous les points lat et lng
     public function getPoints() {
         try {
@@ -147,69 +179,6 @@ class LocalisationManager extends AbstractEntityManager{
         return $idContacts; // Retourne un tableau contenant uniquement les idContact
     }
     
-    public function getLocalisationsByVendeurAndDepartement(array $idContacts, $idDepartementArray): array
-    {
-        if (empty($idContacts)) {
-            return []; // Retourne un tableau vide si aucun contact vendeur trouvé
-        }
-
-        // Création des placeholders pour la requête IN (?, ?, ?)
-        $placeholders = implode(',', array_fill(0, count($idContacts), '?'));
-
-        $sql = "SELECT identifiant FROM localisations WHERE idContact IN ($placeholders) AND idDepartement = ?";
-
-        $params = array_merge($idContacts, [$idDepartementArray]);
-        $stmt = $this->db->query($sql, $params);
-
-        // Stocker les identifiants sous forme d'objets Localisation
-        $localisations = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $localisation = new Localisation();
-            $localisation->setIdentifiant($row['identifiant']);
-            $localisations[] = $localisation;
-        }
-
-        return $localisations; // Retourne un tableau d'objets Localisation
-    }
-
-    public function getLocalisationsByVendeurAndRegion(array $idVendeurs, array $idDepartementList): array {
-        // Vérifier si on a des objets ou déjà des ID
-        if (!empty($idDepartementList) && is_object(reset($idDepartementList))) {
-            $idDepartementArray = array_map(fn($dep) => $dep->getIdDepartement(), $idDepartementList);
-        } else {
-            $idDepartementArray = $idDepartementList;
-        }
-
-        // Vérifier que les listes ne sont pas vides
-        if (empty($idVendeurs) || empty($idDepartementArray)) {
-            return [];
-        }
-
-        // Création des placeholders dynamiques pour la requête SQL
-        $placeholdersVendeurs = implode(',', array_fill(0, count($idVendeurs), '?'));
-        $placeholdersDepartements = implode(',', array_fill(0, count($idDepartementArray), '?'));
-
-        // Requête SQL pour récupérer la colonne identifiant
-        $sql = "SELECT identifiant FROM localisations 
-                WHERE idContact IN ($placeholdersVendeurs) 
-                AND idDepartement IN ($placeholdersDepartements)";
-
-        // Fusionner les valeurs à injecter
-        $params = array_merge($idVendeurs, $idDepartementArray);
-        
-        $statement = $this->db->query($sql, $params);
-
-        // Initialiser le tableau d'objets Identifiant
-        $localisations = [];
-        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
-            $localisation = new Localisation();
-            $localisation->setIdentifiant($row['identifiant']);
-            $localisations[] = $localisation;
-        }
-
-        return $localisations;
-    }
-
     public function getLocalisationIdByIdentifiant($identifiant) {
         $sql = "SELECT idLocalisation FROM localisations WHERE identifiant = :identifiant LIMIT 1";
         
@@ -260,25 +229,8 @@ class LocalisationManager extends AbstractEntityManager{
 
     public function getIdContactByLocalisations() {
         $sql = "SELECT idContact FROM localisations";
-        return $this->db->fetchAll($sql, [], PDO::FETCH_COLUMN);
-    }
-
-    public function getLocalisationsByIdContacts($idContacts) {
-        // Supposons que $idContacts est un tableau d'IDs de contacts
-        if (is_array($idContacts) && count($idContacts) > 0) {
-            // Implode les ID pour une utilisation dans une clause IN
-            $idContactsStr = implode(',', $idContacts);
-
-            // Exécuter la requête SQL pour récupérer les localisations associées aux contacts
-            $sql = "SELECT idLocalisation, identifiant FROM localisations WHERE idContact IN ($idContactsStr)";
-
-            $result = $this->db->query($sql);
-            
-            // Récupérer toutes les lignes sous forme de tableau associatif
-            return $result->fetchAll(PDO::FETCH_ASSOC);
-        }
-
-        return [];
+        $result = $this->db->query($sql);
+        return $result->fetchAll(PDO::FETCH_COLUMN); // Retourne un tableau d'idContact
     }
 
     // Insère la localisation avec les ID ville et département
@@ -293,8 +245,8 @@ class LocalisationManager extends AbstractEntityManager{
         }
     
         // Insérer si l'identifiant n'existe pas encore
-        $sql = 'INSERT INTO localisations (idContact, idVille, adresse, idDepartement, identifiant, taille) 
-                VALUES (:idContact, :idVille, :adresse, :idDepartement, :identifiant, :taille)';
+        $sql = 'INSERT INTO localisations (idContact, idVille, adresse, idDepartement, identifiant, taille, idGroupe) 
+                VALUES (:idContact, :idVille, :adresse, :idDepartement, :identifiant, :taille, :idGroupe)';
     
         $this->db->query($sql, [
             'idContact' => $localisation->getIdContact(),
@@ -302,7 +254,8 @@ class LocalisationManager extends AbstractEntityManager{
             'adresse' => $localisation->getAdresse(),
             'idDepartement' => $localisation->getIdDepartement(),
             'identifiant' => $localisation->getIdentifiant(),
-            'taille' => $localisation->getTaille()
+            'taille' => $localisation->getTaille(),
+            'idGroupe'=>$localisation->getIdGroupe()
         ]);
     
         return $this->db->lastInsertId();
@@ -310,11 +263,15 @@ class LocalisationManager extends AbstractEntityManager{
 
     public function getLocalisationsByIdContact($idContact) {
     
-        $sql = "SELECT l.idLocalisation, l.identifiant, l.adresse, v.idVille, v.ville, d.idDepartement, d.departement 
-                FROM localisations l
-                JOIN villes v ON l.idVille = v.idVille
-                JOIN departements d ON l.idDepartement = d.idDepartement
-                WHERE l.idContact = :idContact";
+        $sql = "SELECT l.idLocalisation, l.identifiant, l.adresse, 
+            v.idVille, v.ville, 
+            d.idDepartement, d.departement, 
+            r.idRegion, r.region  
+        FROM localisations l
+        JOIN villes v ON l.idVille = v.idVille
+        JOIN departements d ON l.idDepartement = d.idDepartement
+        JOIN regions r ON d.idRegion = r.idRegion
+        WHERE l.idContact = :idContact";
         
         $query = $this->db->query($sql, ['idContact' => $idContact]);
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -329,7 +286,13 @@ class LocalisationManager extends AbstractEntityManager{
 
             $departement = new Departement([
                 'idDepartement' => $row['idDepartement'],
+                'idRegion' => $row['idRegion'],
                 'departement' => $row['departement']
+            ]);
+
+            $region = new Region([
+                'idRegion' => $row['idRegion'],
+                'region' => $row['region']
             ]);
 
             // Création de l'objet Localisation avec idLocalisation
@@ -340,6 +303,7 @@ class LocalisationManager extends AbstractEntityManager{
             ]);
             $localisation->setVille($ville);
             $localisation->setDepartement($departement);
+            $localisation->setRegion($region);
 
             $localisations[] = $localisation;
         }
@@ -377,11 +341,15 @@ class LocalisationManager extends AbstractEntityManager{
         }
         
         // Construire la requête SQL
-       $sql = "SELECT idLocalisation, idContact, identifiant,
-            ST_Distance_Sphere(location, POINT(?, ?)) / 1000 AS distance_km
-            FROM localisations
-            WHERE ST_Distance_Sphere(location, POINT(?, ?)) / 1000 <= ?
-            ";
+        $sql = "SELECT 
+        l.idLocalisation, l.idContact, l.identifiant,l.adresse, l.taille, l.idDepartement, 
+        d.departement, 
+        r.idRegion, r.region,
+        ST_Distance_Sphere(location, POINT(?, ?)) / 1000 AS distance_km
+        FROM localisations l
+        JOIN departements d ON l.idDepartement = d.idDepartement
+        JOIN regions r ON d.idRegion = r.idRegion
+        WHERE ST_Distance_Sphere(location, POINT(?, ?)) / 1000 <= ?";
 
         // Passer la requête SQL au DBManager qui s'occupe de la préparation et de l'exécution
         $result = $this->db->query($sql, [
@@ -397,15 +365,39 @@ class LocalisationManager extends AbstractEntityManager{
             throw new Exception("Aucun résultat trouvé.");
         }
     
-        // Utiliser fetchAll pour obtenir les résultats sous forme de tableau
-        $contacts = $result->fetchAll(PDO::FETCH_ASSOC);
-    
-        // Si aucun résultat n'est trouvé, retourner un tableau vide
-        if (empty($contacts)) {
-            return [];
+        // Stocker les identifiants sous forme d'objets Localisation
+        $localisations = [];
+
+        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+            // Création de l'objet Localisation
+            $localisation = new Localisation();
+            $localisation->setIdentifiant($row['identifiant']);
+            $localisation->setIdLocalisation($row['idLocalisation']);
+            $localisation->setAdresse($row['adresse']);
+            $localisation->setIdContact($row['idContact']);
+            $localisation->setTaille($row['taille']);
+        
+            // Création de l'objet Département
+            $departement = new Departement();
+            $departement->setIdDepartement($row['idDepartement']);
+            $departement->setDepartement($row['departement']);
+        
+            // Création de l'objet Région
+            $region = new Region();
+            $region->setIdRegion($row['idRegion']);
+            $region->setRegion($row['region']);
+        
+            // Associer Département et Région à la Localisation
+            $localisation->setDepartement($departement);
+            $localisation->setRegion($region);
+        
+            // Ajouter à la liste des localisations
+            $localisations[] = $localisation;
         }
-        return $contacts;
-    }
+        
+        return $localisations; // Retourne un tableau d'objets Localisation
+    }        
+
     public function getIdContactByIdDepartement(array $idDepartements) {
         if (empty($idDepartements)) {
             return [];
@@ -438,6 +430,185 @@ class LocalisationManager extends AbstractEntityManager{
         $stmt->execute($idClients);
     
         return $stmt->fetchColumn(); 
+    }
+    public function getLocalisationsByVendeurAndRegion(array $idVendeurs, array $idDepartementList): array {
+        // Vérifier si on a des objets ou déjà des ID
+        if (!empty($idDepartementList) && is_object(reset($idDepartementList))) {
+            $idDepartementArray = array_map(fn($dep) => $dep->getIdDepartement(), $idDepartementList);
+        } else {
+            $idDepartementArray = $idDepartementList;
+        }
+
+        // Vérifier que les listes ne sont pas vides
+        if (empty($idVendeurs) || empty($idDepartementArray)) {
+            return [];
+        }
+
+        // Création des placeholders dynamiques pour la requête SQL
+        $placeholdersVendeurs = implode(',', array_fill(0, count($idVendeurs), '?'));
+        $placeholdersDepartements = implode(',', array_fill(0, count($idDepartementArray), '?'));
+
+        // Requête SQL pour récupérer la colonne identifiant
+        $sql = "SELECT 
+                l.idLocalisation, l.idContact, l.identifiant, l.adresse, l.taille, l.idDepartement, 
+                d.departement, 
+                r.idRegion, r.region
+                FROM localisations l
+                JOIN departements d ON l.idDepartement = d.idDepartement
+                JOIN regions r ON d.idRegion = r.idRegion
+                WHERE l.idContact IN ($placeholdersVendeurs) 
+                AND l.idDepartement IN ($placeholdersDepartements)";
+
+        // Fusionner les valeurs à injecter
+        $params = array_merge($idVendeurs, $idDepartementArray);
+        
+        $result = $this->db->query($sql, $params);
+
+        // Initialiser le tableau d'objets Identifiant
+        $localisations = [];
+
+        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+            // Création de l'objet Localisation
+            $localisation = new Localisation();
+            $localisation->setIdentifiant($row['identifiant']);
+            $localisation->setIdLocalisation($row['idLocalisation']);
+            $localisation->setAdresse($row['adresse']);
+            $localisation->setIdContact($row['idContact']);
+            $localisation->setTaille($row['taille']);
+        
+            // Création de l'objet Département
+            $departement = new Departement();
+            $departement->setIdDepartement($row['idDepartement']);
+            $departement->setDepartement($row['departement']);
+        
+            // Création de l'objet Région
+            $region = new Region();
+            $region->setIdRegion($row['idRegion']);
+            $region->setRegion($row['region']);
+        
+            // Associer Département et Région à la Localisation
+            $localisation->setDepartement($departement);
+            $localisation->setRegion($region);
+        
+            // Ajouter à la liste des localisations
+            $localisations[] = $localisation;
+        }
+        
+        return $localisations; // Retourne un tableau d'objets Localisation
+    }
+
+    public function getLocalisationsByVendeurAndDepartement(array $idContacts, array $idDepartements): array
+{
+    if (empty($idContacts) || empty($idDepartements)) {
+        return []; // Retourne un tableau vide si aucun contact vendeur ou département
+    }
+
+    // Création des placeholders pour la requête IN (?, ?, ?)
+    $placeholdersContacts = implode(',', array_fill(0, count($idContacts), '?'));
+    $placeholdersDepartements = implode(',', array_fill(0, count($idDepartements), '?'));
+
+    $sql = "SELECT 
+        l.idLocalisation, l.idContact, l.identifiant, l.adresse, l.taille, l.idDepartement, 
+        d.departement, 
+        r.idRegion, r.region
+        FROM localisations l
+        JOIN departements d ON l.idDepartement = d.idDepartement
+        JOIN regions r ON d.idRegion = r.idRegion
+        WHERE l.idContact IN ($placeholdersContacts) 
+        AND l.idDepartement IN ($placeholdersDepartements)";
+
+        // Fusionner les paramètres pour correspondre aux placeholders
+        $params = array_merge($idContacts, $idDepartements);
+        
+        $result = $this->db->query($sql, $params);
+
+        // Stocker les localisations sous forme d'objets
+        $localisations = [];
+
+        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+            // Création de l'objet Localisation
+            $localisation = new Localisation();
+            $localisation->setIdentifiant($row['identifiant']);
+            $localisation->setIdLocalisation($row['idLocalisation']);
+            $localisation->setAdresse($row['adresse']);
+            $localisation->setIdContact($row['idContact']);
+            $localisation->setTaille($row['taille']);
+        
+            // Création de l'objet Département
+            $departement = new Departement();
+            $departement->setIdDepartement($row['idDepartement']);
+            $departement->setDepartement($row['departement']);
+        
+            // Création de l'objet Région
+            $region = new Region();
+            $region->setIdRegion($row['idRegion']);
+            $region->setRegion($row['region']);
+        
+            // Associer Département et Région à la Localisation
+            $localisation->setDepartement($departement);
+            $localisation->setRegion($region);
+        
+            // Ajouter à la liste des localisations
+            $localisations[] = $localisation;
+        }
+        
+        return $localisations; // Retourne un tableau d'objets Localisation
+    }
+
+    public function getLocalisationsByVendeurs(array $idVendeurs): array
+    {
+    if (empty($idVendeurs)) {
+        return []; // Retourne un tableau vide si aucun contact vendeur ou département
+    }
+
+    // Création des placeholders pour la requête IN (?, ?, ?)
+    $placeholdersVendeurs = implode(',', array_fill(0, count($idVendeurs), '?'));
+
+    $sql = "SELECT 
+        l.idLocalisation, l.idContact, l.identifiant, l.adresse, l.taille, l.idDepartement, 
+        d.departement, 
+        r.idRegion, r.region
+        FROM localisations l
+        JOIN departements d ON l.idDepartement = d.idDepartement
+        JOIN regions r ON d.idRegion = r.idRegion
+        WHERE l.idContact IN ($placeholdersVendeurs) ";
+
+        // Fusionner les paramètres pour correspondre aux placeholders
+        $params = array_merge($idVendeurs);
+        
+        $result = $this->db->query($sql, $params);
+
+        // Stocker les localisations sous forme d'objets
+        $localisations = [];
+
+        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+            // Création de l'objet Localisation
+            $localisation = new Localisation();
+            $localisation->setIdentifiant($row['identifiant']);
+            $localisation->setIdLocalisation($row['idLocalisation']);
+            $localisation->setAdresse($row['adresse']);
+            $localisation->setIdContact($row['idContact']);
+            $localisation->setTaille($row['taille']);
+        
+            // Création de l'objet Département
+            $departement = new Departement();
+            $departement->setIdDepartement($row['idDepartement']);
+            $departement->setDepartement($row['departement']);
+        
+            // Création de l'objet Région
+            $region = new Region();
+            $region->setIdRegion($row['idRegion']);
+            $region->setRegion($row['region']);
+        
+            // Associer Département et Région à la Localisation
+            $localisation->setDepartement($departement);
+            $localisation->setRegion($region);
+        
+            // Ajouter à la liste des localisations
+            $localisations[] = $localisation;
+        }
+        
+        return $localisations; // Retourne un tableau d'objets Localisation
     }
 }    
     

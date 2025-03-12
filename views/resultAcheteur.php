@@ -3,13 +3,10 @@
     <div class = "row">
         <div class = "articles col-md-3">
             <div class="article contact-article">
-                <div class="row col-md-12">
-                    <div class="mb-3 col-md-5">
-                        <button type="button" class="btn btn-primary" id= "ajoutContact" onclick="ouvrirPopup('popupModifContact')">Modifier</button>
-                    </div>
-                </div>
-                <h5>Identité</h5>
                 <?php if (isset($contact) && $contact instanceof Contact): ?>
+                    <h5> 
+                    <a href="#" onclick="ouvrirPopup('popupModifContact')">Identité</a>
+                    </h5>
                     <p><strong>Nom: </strong> <?= htmlspecialchars($contact->getNom()) ?></p>
                     <p><strong>Contact: </strong> <?= htmlspecialchars($contact->getContact()) ?></p>
                     <p><strong>Email: </strong> <?= htmlspecialchars($contact->getEmail()) ?></p>
@@ -29,10 +26,9 @@
         </div>
         <div class = "articles col-md-3">
             <div class = "article contact-article">
-                <div class="mb-3 col-md-3">
-                    <button id ="boutonAjoutInteretGeneral" type="button" class="btn btn-primary" onclick="ouvrirPopup('popupAjoutInteretGeneral')">Ajouter</button>
-                </div>
-                <h5>Intérêt général</h5>
+                <h5> 
+                <a href="#" onclick="ouvrirPopup('popupAjoutInteretGeneral')">Intérêt général</a>
+                </h5>
                 <h6>Ville(s) :</h6>
                 <?php if (!empty($interetVilles ?? [])): ?>
                     <ul>
@@ -78,11 +74,9 @@
         </div>
         <div class = "articles col-md-6 mb-3">
             <div class = "article contact-article">
-                <div class="mb-3 col-md-2">
-                    <button id="boutonAjoutInteretCreche" type="button" class="btn btn-primary" onclick="ouvrirPopup('popupAjoutInteretCreche')">Ajouter</button>
-                </div>
-                <h5>Intérêt précis</h5>
-                <h6>Crèche(s) :</h6>
+                <h5> 
+                <a href="#" onclick="ouvrirPopup('popupAjoutInteretCreche')">Intérêt précis</a>
+                </h5>
                 <?php if (!empty($interetCreches)): ?>
                     <ul>
                         <?php foreach ($interetCreches as $interet): ?>
@@ -100,7 +94,7 @@
                     <ul>
                         <?php foreach ($interetsGroupes as $interetGroupe): ?>
                             <li>
-                                <strong>Nom :</strong> <?= htmlspecialchars($interetGroupe->getNom()) ?><br>
+                                <strong>Nom :</strong> <?= htmlspecialchars($interetGroupe->getGroupe()) ?><br>
                                 <strong>Niveau :</strong> <?= htmlspecialchars($interetGroupe->getNiveau()); ?> <strong> le :</strong> <?php echo htmlspecialchars($interetGroupe->getDateInteretFormatFr()); ?>
                             </li>
                         <?php endforeach; ?>
@@ -117,48 +111,49 @@
             </div>
         </div>
     </div>
-    <div class = "articles col-md-9">
-            <div class="article">
-                <div class="row col-md-9">
-                    <div class="mb-3 col-md-1">
-                        <button type="button" class="btn btn-primary" onclick="ouvrirPopup('popupAjoutComment')">Ajouter</button>
-                    </div>
+    <div class = "articles col-md-12">
+        <div class="article">
+            <div class="row col-md-9">
+                <div class="mb-3 col-md-1">
+                    <button type="button" class="btn btn-primary" onclick="ouvrirPopup('popupAjoutComment')">Ajouter</button>
                 </div>
-                <h5 >Commentaires</h5>
-                <ul>
-                    <?php if (!empty($commentaires)): ?>
-                        <?php foreach ($commentaires as $comment): ?>
-                            <li>Le <?= htmlspecialchars($comment->getDateCommentFormatFr()); ?> 
-                                , <?= htmlspecialchars($comment->getOperateur()) ?> a écrit :
-                                <?= htmlspecialchars($comment->getCommentaire()) ?>
-                            </li>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <li>Aucun commentaire trouvé.</li>
-                    <?php endif; ?>
-                </ul>
             </div>
+            <h5 >Commentaires</h5>
+            <ul>
+                <?php if (!empty($commentaires)): ?>
+                    <?php foreach ($commentaires as $comment): ?>
+                        <li>Le <?= htmlspecialchars($comment->getDateCommentFormatFr()); ?> 
+                            , <?= htmlspecialchars($comment->getOperateur()) ?> a écrit :
+                            <?= htmlspecialchars($comment->getCommentaire()) ?>
+                        </li>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <li>Aucun commentaire trouvé.</li>
+                <?php endif; ?>
+            </ul>
         </div>
-        <div class = "articles col-md-9">
-            <div class = "article">
-                <div class=" mb-3">
-                    <button id="boutonAjoutInteretCreche" type="button" class="btn btn-primary" onclick="ouvrirPopup('popupAjoutLocalisation')">Ajouter une localisation</button>
-                </div>
-                <?php if (!empty($localisations)): ?>
-                    <h5>Localisation des crèches</h5>
-                    <ul>
-                        <?php foreach ($localisations as $localisation): ?>
-                            <li>
+    </div>
+    <div class = "articles col-md-12">
+        <div class = "article">
+            <div class=" mb-3">
+                <button id="boutonAjoutInteretCreche" type="button" class="btn btn-primary" onclick="ouvrirPopup('popupAjoutLocalisation')">Ajouter une localisation</button>
+            </div>
+            <?php if (!empty($localisations)): ?>
+                <h5>Localisation des crèches</h5>
+                <ul>
+                    <?php foreach ($localisations as $localisation): ?>
+                        <li>
+                            <a href="index.php?action=creche&identifiant=<?= urlencode($localisation->getIdentifiant()) ?>">
                                 Adresse : <?= htmlspecialchars($localisation->getAdresse()) ?>,
                                 <?= htmlspecialchars($localisation->getVille()->getVille()) ?>,
                                 <?= htmlspecialchars($localisation->getDepartement()->getDepartement()) ?>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php else: ?>
-                    <p>Aucune localisation trouvée.</p>
-                <?php endif; ?>
-            </div>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php else: ?>
+                <p>Aucune localisation trouvée.</p>
+            <?php endif; ?>
         </div>
     </div>
      <!-- Boîte modale pour modifier un contact -->
@@ -169,15 +164,7 @@
             <form class = "article justify-content-center" id="addInfoContact" method="POST">
                 <div class="row w-100">
                     <div class="radio-group">
-                        <div class="radio-item">
-                            <input type="checkbox" name="choixInfoContact" value="contact" id="checkContact">
-                            <label for="checkContact">Contact</label>
-                        </div>
-                        <div class="radio-item ms-4">
-                            <input type="checkbox" name="choixInfoContact" value="nom" id="checkNom">
-                            <label for="checkNom">Nom</label>
-                        </div>
-                        <div class="radio-item ms-4">
+                        <div class="radio-item ms-2">
                             <input type="checkbox" name="choixInfoContact" value="email" id="checkEmail">
                             <label for="checkEmail">Email</label>
                         </div>
@@ -185,21 +172,21 @@
                             <input type="checkbox" name="choixInfoContact" value="telephone" id="checkTelephone">
                             <label for="checkTelephone">Téléphone</label>
                         </div>
+                        <div class="radio-item ms-4">
+                            <input type="checkbox" name="choixInfoContact" value="sens" id="checkSens">
+                            <label for="checkSens">Sens</label>
+                        </div>
                     </div>
                 </div>
                 <div class="row w-100 mt-3 form-group d-flex flex-column align-items-center">
                     <div class="radio-group">
-                        <div class="radio-item ms-5">
-                            <input type="checkbox" name="choixInfoContact" value="sens" id="checkSens">
-                            <label for="checkSens">Sens</label>
-                        </div>
-                        <div class="radio-item ms-5">
-                            <input type="checkbox" name="choixInfoContact" value="site" id="checkSite">
-                            <label for="checkSite">Site Internet</label>
-                        </div>
-                        <div class="radio-item ms-5">
+                    <div class="radio-item ms-2">
                             <input type="checkbox" name="choixInfoContact" value="siren" id="checkSiren">
                             <label for="checkSiren">SIREN</label>
+                        </div>
+                        <div class="radio-item ms-4">
+                            <input type="checkbox" name="choixInfoContact" value="site" id="checkSite">
+                            <label for="checkSite">Site Internet</label>
                         </div>
                     </div>
                 </div>

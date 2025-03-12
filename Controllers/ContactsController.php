@@ -3,7 +3,7 @@
 class ContactsController {
     public function showContacts() {
         // Récupérer les données traitées après la redirection
-        $contact = $_SESSION['contact'] ?? null;  // Par exemple, tu peux utiliser une session ou une autre méthode pour passer les données
+        $contact = $_SESSION['contact'] ?? null; 
         $commentaires = $_SESSION['commentaires'] ?? null;
         $localisations = $_SESSION['localisations'] ?? null;
 

@@ -1,6 +1,6 @@
 <?php
 
-class ResearchResultInteretCrecheController {
+class ResultInteretCrecheController {
     private $interetCrecheManager;
     private $departementManager;
     private $villeManager;

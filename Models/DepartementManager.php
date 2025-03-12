@@ -59,15 +59,6 @@ class DepartementManager extends AbstractEntityManager{
         return $departementList;
     }
 
-    public function getDepartementIdByName($departement){
-        $sql = 'SELECT idDepartement FROM departements WHERE departement = :departement';
-        $query = $this->db->query($sql, ['departement' => $departement]);
-        $result = $query->fetch(PDO::FETCH_ASSOC);
-
-        return $result ? (int) $result['idDepartement'] : null;
-    
-    }
-
     public function getDepartementsIdByIdRegion($idRegion) {
         $request = "SELECT idDepartement FROM departements WHERE idRegion = :idRegion";
 
@@ -78,6 +69,15 @@ class DepartementManager extends AbstractEntityManager{
             $idDepartementList[] = new Departement ($idDepartement);
         }
         return $idDepartementList;
+    }
+
+    public function getDepartementIdByName($departement){
+        $sql = 'SELECT idDepartement FROM departements WHERE departement = :departement';
+        $query = $this->db->query($sql, ['departement' => $departement]);
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+
+        return $result ? (int) $result['idDepartement'] : null;
+    
     }
 }
 

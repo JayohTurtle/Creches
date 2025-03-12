@@ -1,6 +1,6 @@
 <?php
 
-class AddInfoContactController {
+class AjoutInfoContactController {
 
     private $contactManager;
 

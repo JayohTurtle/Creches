@@ -28,7 +28,6 @@ class AcheteursController {
         $regions = $this->regionManager->getRegions();
 
         // Récupération des données depuis interetCreche
-        // Récupération des données depuis interetCreche
         $interetsCrecheData = $this->interetCrecheManager->getCrecheData();   
 
         // S'assurer de la correspondance des statuts

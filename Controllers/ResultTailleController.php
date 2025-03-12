@@ -1,6 +1,6 @@
 <?php
 
-class ResearchResultTailleController{
+class ResultTailleController{
 
     public function showResultTaille(){
         $view = new View();

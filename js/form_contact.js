@@ -40,26 +40,37 @@ document.addEventListener("DOMContentLoaded", function () {
         addInterestRegion: document.getElementById("add-interestRegion"),
     }
 
-    // 🔹 Gestion affichage acheteur/vendeur
+    // Gestion affichage acheteur/vendeur
     elements.choiceSeller.addEventListener("click", () => toggleSellerBuyer(true))
     elements.choiceBuyer.addEventListener("click", () => toggleSellerBuyer(false))
 
     function toggleSellerBuyer(isSeller) {
-        ["statutVendeur", "valoVendeur", "commVendeur"].forEach(id => 
-            elements[id].classList.toggle("d-none", !isSeller)
-        )
-        ["interest", "buyerTitle", "crecheSizeChoice"].forEach(id => 
-            elements[id].classList.toggle("d-none", isSeller)
-        )
+    
+        ["statutVendeur", "valoVendeur", "commVendeur"].forEach(id => {
+            if (elements[id]) {
+                elements[id].classList.toggle("d-none", !isSeller);
+            } else {
+                console.warn(`⚠️ Attention : elements[${id}] est undefined`);
+            }
+        });
+    
+        ["interest", "buyerTitle", "crecheSizeChoice"].forEach(id => {
+            if (elements[id]) {
+                elements[id].classList.toggle("d-none", isSeller);
+            } else {
+                console.warn(`⚠️ Attention : elements[${id}] est undefined`);
+            }
+        });
     
         document.querySelectorAll(`[id^="new-row"], [id^="seller-choice"]`).forEach(el => {
-            el.classList.add("d-none")
-            if (!isSeller) el.nextElementSibling?.remove()
-        })
+            el.classList.add("d-none");
+            if (!isSeller) el.nextElementSibling?.remove();
+        });
     
         // Assure que le bouton reste visible
-        document.getElementById("contactEnvoi").classList.remove("d-none")
+        document.getElementById("contactEnvoi")?.classList.remove("d-none");
     }
+    
 
     // 🔹 Fonction générique d'ajout d'élément
     function addNewRow(container, type, template) {

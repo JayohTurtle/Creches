@@ -30,46 +30,51 @@ class ResultAcheteursController {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $postData = $_POST;
 
-            $this->showResultAcheteur($postData);
+            // Liste des champs à vérifier
+            $donnees = [
+                'contact' => $this->sanitizeInput($postData['donneeContact'] ?? ''),
+                'nom' => $this->sanitizeInput($postData['donneeNomGroupe'] ?? ''),
+                'email' => $this->sanitizeInput($postData['donneeEmail'] ?? ''),
+                'siren' => $this->sanitizeInput($postData['donneeSIREN'] ?? ''),
+                'telephone' => $this->sanitizeInput($postData['donneeTelephone'] ?? ''),
+                'siteInternet' => $this->sanitizeInput($postData['donneeSiteInternet'] ?? ''),
+            ];
+        
+            $donneeRecherchee = null;
+            $valeurRecherchee = null;
+        
+            // Trouver la première valeur non vide
+            foreach ($donnees as $champ => $valeur) {
+                if (!empty($valeur)) {
+                    $donneeRecherchee = $champ; 
+                    $valeurRecherchee = $valeur;
+                    
+                    break; // On s'arrête après avoir trouvé la première donnée remplie
+                }
+            }
+        
+            $contact = null;
+            $localisations = null;
+    
+            if ($valeurRecherchee !== null && $donneeRecherchee !== null) {
+                // Récupérer un SEUL contact
+                $contact = $this->contactManager->extractResearchContact($donneeRecherchee, $valeurRecherchee);
+
+                if ($contact && method_exists($contact, 'getIdContact')) {
+                    // Récupérer l'idContact
+                    $idContact = $contact->getIdContact();
+                }
+            }
         }
+
+        if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['idContact'])) {
+            $idContact = (int) $_GET['idContact'];
+        }
+
+        $this->showResultAcheteur($idContact);
     }
 
-    public function showResultAcheteur($postData) {
-        // Liste des champs à vérifier
-        $donnees = [
-            'contact' => $this->sanitizeInput($postData['donneeContact'] ?? ''),
-            'nom' => $this->sanitizeInput($postData['donneeNomGroupe'] ?? ''),
-            'email' => $this->sanitizeInput($postData['donneeEmail'] ?? ''),
-            'siren' => $this->sanitizeInput($postData['donneeSIREN'] ?? ''),
-            'telephone' => $this->sanitizeInput($postData['donneeTelephone'] ?? ''),
-            'siteInternet' => $this->sanitizeInput($postData['donneeSiteInternet'] ?? ''),
-        ];
-    
-        $donneeRecherchee = null;
-        $valeurRecherchee = null;
-    
-        // Trouver la première valeur non vide
-        foreach ($donnees as $champ => $valeur) {
-            if (!empty($valeur)) {
-                $donneeRecherchee = $champ; 
-                $valeurRecherchee = $valeur;
-                
-                break; // On s'arrête après avoir trouvé la première donnée remplie
-            }
-        }
-    
-        $contact = null;
-        $localisations = null;
-    
-        if ($valeurRecherchee !== null && $donneeRecherchee !== null) {
-            // Récupérer un SEUL contact
-            $contact = $this->contactManager->extractResearchContact($donneeRecherchee, $valeurRecherchee);
-
-            if ($contact && method_exists($contact, 'getIdContact')) {
-                // Récupérer l'idContact
-                $idContact = $contact->getIdContact();
-            }
-        }
+    public function showResultAcheteur($idContact) {
 
         //Récupérer les données du contact
         $contact = $this->contactManager->getContactById($idContact);

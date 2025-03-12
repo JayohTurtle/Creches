@@ -47,9 +47,10 @@ class ResultContactsController {
             if ($valeurRecherchee !== null && $donneeRecherchee !== null) {
                 // Récupérer un SEUL contact
                 $contact = $this->contactManager->extractResearchContact($donneeRecherchee, $valeurRecherchee);
+                
                 if ($contact && method_exists($contact, 'getIdContact')) {
                     $idContact = $contact->getIdContact();
-                    $localisations = $this->localisationManager->getLocalisationByContact($idContact);
+                    $localisations = $this->localisationManager->getLocalisationsByIdContact($idContact);
                     $commentaires = $this->commentManager->extractComments($idContact);
                 }
 

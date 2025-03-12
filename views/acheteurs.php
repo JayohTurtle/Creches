@@ -27,8 +27,8 @@
         <?php endforeach; ?>
     </div>
     <div class = "row mt-5"> 
-        <div class="articles col-md-6">
-            <h5 class = "mt-3">Rechercher un acheteur</h5>
+        <div class="articles col-md-6 mt-5">
+            <h5 class = "mt-5">Rechercher un acheteur</h5>
             <form class = "article" id="formResearchContact" method="POST" action="index.php?action=resultAcheteur">
                 <div class="row">
                     <div class="radio-group col-md-12">
@@ -108,8 +108,8 @@
                 </div>
             </form>
         </div>
-        <div class="articles col-md-6">
-            <h5 class="mt-3">Rechercher des acheteurs par zone</h5>
+        <div class="articles col-md-6 mt-5">
+            <h5 class="mt-5">Rechercher des acheteurs par zone</h5>
             <form class="article" id="formResearchZoneAchat" method="POST" action="index.php?action=resultZoneAchat">
                 <div class="row">
                     <div class="radio-group col-md-12">

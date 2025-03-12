@@ -7,9 +7,11 @@ class InteretGroupe extends AbstractEntity{
     private $idInteretGroupe;
     private $idContact;
     private $niveau;
-    private $nom;
+    private $idGroupe;
     private $dateInteret;
     private ?Contact $contact = null; // ✅ Ajout de la propriété manquante
+    private $groupe;
+    private $nom;
 
     public function setContact(Contact $contact): void {
         $this->contact = $contact;
@@ -17,6 +19,14 @@ class InteretGroupe extends AbstractEntity{
 
     public function getContact(): ?Contact {
         return $this->contact;
+    }
+
+    public function getIdGroupe(){
+        return $this->idGroupe;
+    }
+
+    public function setIdGroupe($idGroupe) {
+        $this->idGroupe = $idGroupe;
     }
 
     public function setIdInteretGroupe(int $idInteretGroupe):void{
@@ -35,6 +45,14 @@ class InteretGroupe extends AbstractEntity{
         return $this -> idContact;
     }
 
+    public function setNom (string $nom){
+        $this -> nom = $nom;
+    }
+
+    public function getnom ():string{
+        return $this -> nom;
+    }
+
     public function setNiveau (string $niveau){
         $this -> niveau = $niveau;
     }
@@ -43,12 +61,12 @@ class InteretGroupe extends AbstractEntity{
         return $this -> niveau;
     }
 
-    public function setNom (string $nom){
-        $this -> nom = $nom;
+    public function setGroupe (string $groupe){
+        $this -> groupe = $groupe;
     }
 
-    public function getNom ():string{
-        return $this -> nom;
+    public function getGroupe ():string{
+        return $this -> groupe;
     }
 
     public function setDateInteret (string $dateInteret){
@@ -61,7 +79,7 @@ class InteretGroupe extends AbstractEntity{
 
     public function getDateInteretFormatFr() {
         if (!empty($this->dateInteret)) {
-            return date("d/m/Y", strtotime($this->dateInteret)); // Format JJ/MM/AAAA
+            return date("d-m-Y", strtotime($this->dateInteret)); // Format JJ/MM/AAAA
         }
         return null; // Retourne null si la date est vide
     }

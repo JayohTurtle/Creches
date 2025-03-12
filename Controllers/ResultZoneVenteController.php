@@ -1,6 +1,6 @@
 <?php
 
-class ResearchResultVenteCrecheController{
+class ResultZoneVenteController{
 
     private $localisationManager;
     private $contactManager;
@@ -16,7 +16,7 @@ class ResearchResultVenteCrecheController{
         $this->regionManager = new RegionManager();
     }
 
-    public function showResultVenteCreche() {
+    public function showResultZoneVente() {
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $zoneType = $_POST['localResearch'] ?? null;
@@ -34,6 +34,8 @@ class ResearchResultVenteCrecheController{
                 $zoneValue = $this->sanitizeInput($_POST['zoneDepartement'] ?? null);
             } elseif ($zoneType === "researchRegion") {
                 $zoneValue = $this->sanitizeInput($_POST['zoneRegion'] ?? null);
+            }elseif ($zoneType === "researchFrance"){
+                $zoneValue = "France";
             }
 
             // Vérifier quel type de recherche est sélectionné
@@ -50,6 +52,9 @@ class ResearchResultVenteCrecheController{
                 case 'researchRegion':
                     $idRegion = $this->regionManager->getRegionIdByName($zoneValue);
                     break;
+
+                case 'researchFrance':
+                    break;
                 default:
                     die("Type de recherche invalide.");
             }
@@ -59,17 +64,34 @@ class ResearchResultVenteCrecheController{
             
             // Extraire les ID des vendeurs
             $idVendeurs = array_map(fn($v) => $v->getIdContact(), $vendeurs);
-
             // Vérifier quel type de recherche est sélectionné
             switch ($zoneType) {
                 case 'researchVille':
                     // Récupérer les objets Localisation contenant les identifiants
                    $localisationContacts = $this->localisationManager->getLocalisationsInRayon($coords, $rayon);
-                   $localisations = $this->contactManager->comparerContacts($localisationContacts, $idVendeurs);
-                   break;
+                    
+                   $filteredLocalisations = array_filter($localisationContacts, function ($localisation) use ($idVendeurs) {
+                    return in_array($localisation->getIdContact(), $idVendeurs);
+                });
+
+                $localisations = [];
+                foreach ($filteredLocalisations as $localisation) {
+                    $loc = new Localisation();
+                    $loc->setIdentifiant($localisation->getIdentifiant());
+                    $loc->setAdresse($localisation->getAdresse());
+                    $loc->setIdLocalisation($localisation->getIdLocalisation());
+                    $loc->setTaille($localisation->getTaille());
+                    $loc->setDistance($localisation->getDistanceKm());
+                    $loc->setDepartement($localisation->getDepartement());
+                    $loc->setRegion($localisation->getRegion());
+                
+                    $localisations[] = $loc; 
+                    }
+                    break;
+
                 case 'researchDepartement':
                     // Récupérer les objets Localisation contenant les identifiants
-                    $localisations = $this->localisationManager->getLocalisationsByVendeurAndDepartement($idVendeurs, $idZone);
+                    $localisations = $this->localisationManager->getLocalisationsByVendeurAndDepartement($idVendeurs, [$idZone]);
                     break;
                 case 'researchRegion':
                     $idDepartementList = $this->departementManager->getDepartementsIdByIdRegion($idRegion);
@@ -86,26 +108,36 @@ class ResearchResultVenteCrecheController{
                     $localisations = $this->localisationManager->getLocalisationsByVendeurAndRegion($idVendeurs, $idDepartementArray);
                     break;
 
+                case 'researchFrance':
+                    // Récupérer les objets Localisation contenant les identifiants
+                    $localisations = $this->localisationManager->getLocalisationsByVendeurs($idVendeurs);
+                    break;
+
             }
-            
+
+            $nombreLocalisations = count($localisations);
+
             $identifiants = [];
 
             foreach ($localisations as $localisation) {
-                $distance = ($zoneType === 'researchVille') ? $localisation->getDistance() : null; // ✅ Distance uniquement pour les villes
+                $distance = ($zoneType === 'researchVille') ? $localisation->getDistance() : null;
                 $identifiants[] = [
                     'localisation' => $localisation,
                     'distance' => !is_null($distance) ? round($distance, 2) : null
                 ];
             }
+
+            // Passer les résultats à la vue
+            $view = new View();
+            $view->render('resultZoneVente', [
+             'identifiants'=> $identifiants,
+             'zoneValue'=> $zoneValue ?? '',
+             'rayon'=> $rayon ?? null,
+             'localisations'=> $localisations,
+             'nombreLocalisations'=> $nombreLocalisations
+         ]);
             
         }
-         // Passer les résultats à la vue
-         $view = new View();
-         $view->render('researchResultZoneVente', [
-             'identifiants' => $identifiants,
-             'zoneValue' => $zoneValue ?? '',
-             'rayon' => $rayon ?? null
-         ]);
     }
                
     /**

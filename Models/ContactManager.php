@@ -202,27 +202,6 @@ class ContactManager extends AbstractEntityManager {
         return ["status" => "success", "message" => "Mise à jour effectuée avec succès."];
     }
     
-    function comparerContacts($localisationContacts,$idVendeurs) {
-
-        // Étape 1 : Filtrer les localisations en fonction des vendeurs
-        $filteredLocalisations = array_filter($localisationContacts, function ($localisation) use ($idVendeurs) {
-            return in_array($localisation['idContact'], $idVendeurs);
-        });
-
-        // Étape 2 : Transformer le tableau filtré en objets
-        $localisations = [];
-        foreach ($filteredLocalisations as $localisation) {
-            $loc = new Localisation(); // Créer une nouvelle instance de Localisation
-            $loc->setIdentifiant($localisation['identifiant']);
-            $loc->setIdLocalisation($localisation['idLocalisation']);
-            $loc->setDistance($localisation['distance_km']);
-
-        
-            $localisations[] = $loc; // Ajouter l'objet Localisation au tableau
-        }
-       
-        return $localisations;
-    }
 
     // Ajouter un contact en base
     public function insertContact(Contact $contact) {
@@ -272,39 +251,6 @@ class ContactManager extends AbstractEntityManager {
         return null;
     }
     
-    public function getContactById($idContact) {
-        if (empty($idContact)) {
-            return null; // Retourne null si aucun ID n'est fourni
-        }
-    
-        // Requête SQL avec un paramètre sécurisé
-        $sql = "SELECT * FROM contacts WHERE idContact = :idContact";
-    
-        // Préparation et exécution de la requête
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['idContact' => (int) $idContact]);
-    
-        // Récupérer un seul résultat
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-        if (!$row) {
-            return null; // Retourne null si aucun contact trouvé
-        }
-    
-        // Création et hydratation de l'objet Contact
-        $contact = new Contact();
-        $contact->setIdContact($row['idContact']);
-        $contact->setNom($row['nom']);
-        $contact->setContact($row['contact']);
-        $contact->setSiren($row['siren']);
-        $contact->setEmail($row['email']);
-        $contact->setTelephone($row['telephone']);
-        $contact->setSiteInternet($row['siteInternet']);
-        $contact->setSens($row['sens']);
-    
-        return $contact;
-    }
-
     function getAcheteursContacts(){
         $request = "SELECT * FROM contacts WHERE sens = 'acheteur'";
         $result = $this -> db -> query($request);
@@ -362,7 +308,79 @@ class ContactManager extends AbstractEntityManager {
         }
         
         return null;
-    }    
+    } 
+
+    public function getContactsByIdsContact(array $idsContacts) {
+        if (empty($idsContacts)) {
+            return []; // Retourne un tableau vide si aucun ID n'est fourni
+        }
+    
+        // Création des placeholders pour la requête SQL (ex: :id0, :id1, ...)
+        $placeholders = implode(',', array_map(fn($key) => ":id$key", array_keys($idsContacts)));
+    
+        // Requête SQL avec IN et des paramètres sécurisés
+        $sql = "SELECT * FROM contacts WHERE idContact IN ($placeholders)";
+    
+        // Associer les valeurs aux placeholders
+        $params = [];
+        foreach ($idsContacts as $key => $id) {
+            $params[":id$key"] = $id;
+        }
+    
+        // Exécuter la requête
+        $result = $this->db->query($sql, $params);
+        $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+    
+        // Convertir chaque ligne en objet Contact
+        $contacts = [];
+        foreach ($rows as $row) {
+            $contact = new Contact();
+            $contact->setIdContact($row['idContact']);
+            $contact->setNom($row['nom']);
+            $contact->setContact($row['contact']);
+            $contact->setEmail($row['email']);
+            $contact->setTelephone($row['telephone']);
+    
+            $contacts[] = $contact;
+        }
+    
+        return $contacts;
+    }
+
+    public function getContactById($idContact) {
+        if (empty($idContact)) {
+            return null; // Retourne null si aucun ID n'est fourni
+        }
+    
+        // Requête SQL avec un paramètre sécurisé
+        $sql = "SELECT * FROM contacts WHERE idContact = :idContact";
+        
+        // Préparation et exécution de la requête
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['idContact' => (int) $idContact]);
+    
+        // Récupérer un seul résultat
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        if (!$row) {
+            return null; // Retourne null si aucun contact trouvé
+        }
+    
+        // Création et hydratation de l'objet Contact
+        $contact = new Contact();
+        $contact->setIdContact($row['idContact']);
+        $contact->setNom($row['nom']);
+        $contact->setContact($row['contact']);
+        $contact->setSiren($row['siren']);
+        $contact->setEmail($row['email']);
+        $contact->setTelephone($row['telephone']);
+        $contact->setSiteInternet($row['siteInternet']);
+        $contact->setSens($row['sens']);
+    
+        return $contact;
+    }
+
+    
 }
     
     

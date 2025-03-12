@@ -1,6 +1,6 @@
 <?php
 
-class ResultAchatCrecheController{
+class ResultZoneAchatController{
 
     private $localisationManager;
     private $contactManager;
@@ -20,7 +20,7 @@ class ResultAchatCrecheController{
         $this->interetGroupeManager = new InteretGroupeManager();
     }
 
-    public function showResultAchatCreche(){
+    public function showResultZoneAchat(){
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $zoneType = $_POST['localResearchAchat'] ?? null;
             $nombreCreche = $_POST['researchNbreCreche'] ?? 0;
@@ -38,6 +38,8 @@ class ResultAchatCrecheController{
                 $zoneValue = $this->sanitizeInput($_POST['zoneDepartementAchat'] ?? null);
             } elseif ($zoneType === "researchRegionAchat") {
                 $zoneValue = $this->sanitizeInput($_POST['zoneRegionAchat'] ?? null);
+            } elseif ($zoneType === "researchFranceAchat"){
+                $zoneValue = "France";
             }
 
             // Vérifier quel type de recherche est sélectionné
@@ -54,6 +56,10 @@ class ResultAchatCrecheController{
                 case 'researchRegionAchat':
                     $idRegion = $this->regionManager->getRegionIdByName($zoneValue);
                     break;
+                
+                case 'researchFranceAchat':
+                    break;
+
                 default:
                     die("Type de recherche invalide.");
             }
@@ -69,7 +75,7 @@ class ResultAchatCrecheController{
                     // Récupérer uniquement les idContact
                     foreach ($localisationContacts as $localisation) {
                         // Accéder directement à l'index 'idContact'
-                        $idContacts[] = $localisation['idContact'];
+                        $idContacts[] = $localisation->getIdContact();
                     }
                     break;
 
@@ -91,6 +97,9 @@ class ResultAchatCrecheController{
                     // Passer un tableau de départements à la méthode
                     $idContacts = $this->localisationManager->getIdContactByIdDepartement($idDepartementArray);
                     break;
+
+                case 'researchFranceAchat':
+                    $idContacts = $this->localisationManager->getIdContactByLocalisations();
             }
 
             // Supprimer les doublons
@@ -119,14 +128,16 @@ class ResultAchatCrecheController{
                     };
                 }
             }
+            $nombreContacts = count($contacts);
         }
-
         // Passer les résultats à la vue
         $view = new View();
         $view->render('resultZoneAchat', [
-            'contacts' => $contacts,
-            'zoneValue' => $zoneValue ?? '',
-            'rayon' => $rayon ?? null
+            'contacts'=> $contacts,
+            'zoneValue'=> $zoneValue ?? '',
+            'rayon'=> $rayon ?? null,
+            'nombreContacts'=> $nombreContacts,
+            'nombreCreche'=> $nombreCreche
         ]);
     }
 

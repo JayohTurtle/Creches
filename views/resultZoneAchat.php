@@ -3,7 +3,7 @@
     <div class="articles">
         <div class="article">
             <h4>
-                Acheteurs : <?= htmlspecialchars($zoneValue) ?>
+                Acheteurs : <?= htmlspecialchars($zoneValue) ?>  - Ayant au moins <?= htmlspecialchars($nombreCreche == 0 ? 1 : $nombreCreche) ?> crèche(s) - (<?= htmlspecialchars($nombreContacts) ?>)
             </h4>
         </div>
         <div class="row mt-3">
@@ -12,8 +12,8 @@
                     <?php if (!empty($item['contact'])): ?>
                         <?php $contact = $item['contact']; // Récupération directe de l'objet ?>
                         <div class="col-md-12">
-                            <div class="zone-achat-article mb-3">
-                                <h6 class="mb-1">Contact</h6>
+                            <div class="article mb-3">
+                                <h6 class="mb-2"> <a href="index.php?action=resultAcheteur&idContact=<?= urlencode($contact->getIdContact()) ?>">Contact</a></h6>
                                 <div class="d-flex flex-wrap gap-3">
                                     <p><strong>Nom:</strong> <?= htmlspecialchars($contact->getNom()) ?></p>
                                     <p><strong>Contact:</strong> <?= htmlspecialchars($contact->getContact()) ?></p>
@@ -47,21 +47,13 @@
                                         <div class="d-flex flex-wrap gap-3">
                                             <?php foreach ($item['interetsGroupe'] as $interet): ?>
                                                 <p><strong>Niveau:</strong> <?= htmlspecialchars($interet->getNiveau()) ?></p>
-                                                <p><strong>Nom du Groupe:</strong> <?= htmlspecialchars($interet->getNom()) ?></p>
+                                                <p><strong>Nom du Groupe:</strong>  <?= htmlspecialchars($interet->getGroupe()) ?></p>
                                                 <p><strong>Date:</strong> <?= htmlspecialchars($interet->getDateInteret()) ?></p>
                                             <?php endforeach; ?>
                                         </div>
                                     <?php else: ?>
                                         <p>Aucun intérêt groupe trouvé.</p>
                                     <?php endif; ?>
-                                </div>
-                                <div class="col-md-1">
-                                    <form method="POST" action="index.php?action=resultAcheteur">
-                                        <input type="hidden" name="donneeContact" value="<?= htmlspecialchars($contact->getContact()); ?>">
-                                        <button id="boutonFiche-<?= htmlspecialchars($contact->getContact()); ?>" class="btn-liste btn btn-primary">
-                                            Fiche
-                                        </button>
-                                    </form>
                                 </div>
                             </div>
                         </div>

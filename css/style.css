@@ -42,10 +42,10 @@ body{
 }
 
 /*Les titres*/
-h5, h3, h4 {
+h5,h3, h4 {
     color: #E0E0E0;
     font-weight: 600;
-    border-bottom: 2px solid #E0E0E0;
+    border-bottom: 2px solid #90CAF9;
     padding-bottom: 5px;
 }
 
@@ -60,6 +60,15 @@ h6{
 .custom-container {
     max-width: 1200px;
 }
+a{
+    color: #E0E0E0;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover{
+    color: #90CAF9;
+}
 #mainNavbar {
     background-color: #121212;
     padding: 10px 0;
@@ -69,16 +78,15 @@ h6{
     z-index: 100;
 }
 .navbar .nav-link {
-    color: #E0E0E0;
     font-weight: 500;
-    transition: color 0.3s ease;
-}
-.navbar .nav-link:hover {
-    color: #90CAF9; /* Bleu clair pour l'interaction */
 }
 
 .navbar.nav-link:active, .nav-link[href*="index.php"]:hover {
     color: #90CAF9; /* Couleur du lien actif */
+}
+
+.links{
+    color:#90CAF9;
 }
   
 .btn-secondary {
@@ -251,7 +259,7 @@ input[type="checkbox"] {
 }
 
 .client-article{
-    height:550px;
+    height:500px;
 }
 
 .zone-achat-article{
@@ -270,7 +278,7 @@ input[type="checkbox"] {
     background: #252525;
     padding: 15px;
     border-radius: 8px;
-    box-shadow: 0px 0px 8px rgba(rgba(0, 255, 128, 0.5));
+    /*box-shadow: 0px 0px 4px 1px rgb(66,165,245);*/
     max-width: 100%;
     flex-grow: 1; /* Permet d'occuper la largeur correcte */
 }

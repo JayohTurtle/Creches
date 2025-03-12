@@ -11,9 +11,12 @@ class Localisation extends AbstractEntity {
     private $idDepartement;
     private $identifiant;
     private $taille;
+    private $region;
     private ?Ville $ville = null;   
     private ?Departement $departement = null;
     private $distance;
+    private $idGroupe;
+    private $distanceKm;
     private array $interets = []; // Stocke les intérêts
 
     public function setInterets(array $interets) {
@@ -30,6 +33,14 @@ class Localisation extends AbstractEntity {
 
     public function getIdLocalisation(): int {
         return $this->idLocalisation;
+    }
+
+    public function setIdGroupe(int $idGroupe){
+        $this -> idGroupe = $idGroupe;
+    }
+
+    public function getIdGroupe ():int{
+        return $this -> idGroupe;
     }
 
     public function setIdContact(int $idContact) {
@@ -56,12 +67,28 @@ class Localisation extends AbstractEntity {
         $this->departement = $departement;
     }
 
+    public function getRegion() {
+        return $this->region;
+    }
+
+    public function setRegion($region){
+        $this->region = $region;
+    }
+
     public function setIdVille(int $idVille) {
         $this->idVille = $idVille;
     }
 
     public function getIdVille(): int {
         return $this->idVille;
+    }
+
+    public function setDistanceKm($distanceKm) {
+        $this->idVille = $distanceKm;
+    }
+
+    public function getDistanceKm(){
+        return $this->distanceKm;
     }
 
     public function setAdresse(string $adresse) {

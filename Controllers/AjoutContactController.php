@@ -1,10 +1,11 @@
 <?php
 
-class AddContactController {
+class AjoutContactController {
     private $contactManager;
     private $commentManager;
     private $localisationManager;
     private $villeManager;
+    private $groupeManager;
     private $departementManager;
     private $clientManager;
     private $interetCrecheManager;
@@ -31,6 +32,7 @@ class AddContactController {
         $this->interetTailleManager = new InteretTailleManager();
         $this->interetGroupeManager = new InteretGroupeManager();
         $this->interetFranceManager = new InteretFranceManager();
+        $this->groupeManager = new GroupeManager();
     }
 
     public function handleAddContact() {
@@ -84,8 +86,6 @@ class AddContactController {
             if (!empty($postData['franceInterest'])){
                 $this->addInteretFrance($idContact);
             }
-
-            //vérifier si france est rempli avant d'ajouter un intérêt france
 
             // Vérifier si au moins une des valeurs est remplie avant d'ajouter un intérêt taille
             if (
@@ -141,6 +141,14 @@ class AddContactController {
     }
 
     private function addLocalisation($postData, $idContact) {
+        $nom = $this->sanitizeInput($postData['nom'] ?? null);
+       
+        $groupe = new Groupe;
+        $groupe->setGroupe($nom);
+        $groupe->setIdContact($idContact);
+
+        $idGroupe = $this->groupeManager->insertGroupe($groupe);
+    
         $idLocalisations = [];
     
         if (!empty($postData['ville'])) {
@@ -163,6 +171,7 @@ class AddContactController {
                 $localisation->setAdresse($adresse);
                 $localisation->setIdentifiant($identifiant);
                 $localisation->setTaille($taille);
+                $localisation->setIdGroupe($idGroupe);
 
                 $idLocalisation = $this->localisationManager->insertLocalisation($localisation);
     
@@ -229,12 +238,19 @@ class AddContactController {
             $this->interetCrecheManager->insertInteretCreche($interetCreche);
         }
     }
+
     private function addInteretGroupe($postData, $idContact) {
+
+        
+        $groupe = $this->sanitizeInput ($postData['groupeInterest']);
+        $idGroupe = $this->groupeManager->getIdGroupeByName($groupe);
 
         $interetGroupe = new InteretGroupe();
 
         $interetGroupe->setNiveau($this->sanitizeInput($postData['niveau'] ?? null));
-        $interetGroupe->setNom($this->sanitizeInput ($postData['groupeInterest']));
+        $interetGroupe->setGroupe($this->sanitizeInput($postData['groupeInterest']));
+        $interetGroupe->setIdGroupe($idGroupe);
+        $interetGroupe->setIdContact($idContact);
 
         $this->interetGroupeManager->insertInteretGroupe($interetGroupe);
     }
