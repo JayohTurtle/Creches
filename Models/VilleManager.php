@@ -3,39 +3,6 @@
 include_once('AbstractEntityManager.php');
 
 class VilleManager extends AbstractEntityManager{
-    
-    public function getVilleIdByName($ville) {
-        $sql = 'SELECT idVille FROM villes WHERE ville = :ville';
-        $query = $this->db->query($sql, ['ville' => $ville]);
-        $result = $query->fetch(PDO::FETCH_ASSOC);
-    
-        return $result ? (int) $result['idVille'] : null;
-    }
-    
-    public function updateAllCitiesLocations($coords, $idVille) {
-        // Suppression du var_dump qui bloquait
-        $this->insertLocationVille($idVille, $coords['lat'], $coords['lng']);
-    }
-    
-    public function getVilleIdByIdentifiant($identifiant) {
-        // Préparer la requête pour récupérer l'idVille pour l'identifiant donné
-        $sql = "SELECT idVille FROM localisations WHERE identifiant = :identifiant";
-        $stmt = $this->db->query($sql, ['identifiant' => $identifiant]);
-    
-        // Récupérer le résultat
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        // Retourner l'ID du département ou null si aucun résultat
-        return $result ? $result['idVille'] : null;
-    }
-
-    public function getVilleNameById($idVille){
-        $sql = 'SELECT ville FROM villes WHERE idVille = :idVille';
-        $query = $this->db->query($sql, ['idVille' => $idVille]);
-        $result = $query->fetch(PDO::FETCH_ASSOC);
-
-        return $result ? $result['ville'] : null;
-    }
 
     public function insertVilleIfNotExists($ville, $codePostal, $idDepartement) {
         $sql = 'SELECT idVille FROM villes WHERE ville = :ville AND codePostal = :codePostal AND idDepartement = :idDepartement';
@@ -58,7 +25,7 @@ class VilleManager extends AbstractEntityManager{
             $coords = $this->geocodeCity($ville, $codePostal);
             
             if ($coords) {
-                $this->updateAllCitiesLocations($coords, $idVille);
+                $this->insertLocationVille($idVille, $coords['lat'], $coords['lng']);
             } else {
                 echo "❌ Échec du géocodage pour : $ville ($codePostal)";
             }
@@ -107,7 +74,7 @@ class VilleManager extends AbstractEntityManager{
             'point' => $point
         ]);
     }
-    
+
     function getVilles(){
         $request = "select * from villes";
         $statement = $this -> db -> query($request);
@@ -128,7 +95,4 @@ class VilleManager extends AbstractEntityManager{
 
         return $coords ?: null; // Retourne null si aucun résultat
     }
-    
 }
-    
-

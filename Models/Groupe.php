@@ -6,7 +6,7 @@ class Groupe extends AbstractEntity{
 
     private $idGroupe;
     private $idContact;
-    private $groupe;
+    private $nom;
 
     public function setIdGroupe(int $idGroupe):void{
         $this -> idGroupe = $idGroupe;
@@ -24,11 +24,11 @@ class Groupe extends AbstractEntity{
         return $this -> idContact;
     }
 
-    public function setGroupe (string $groupe){
-        $this -> groupe = $groupe;
+    public function setNom (string $nom){
+        $this -> nom = $nom;
     }
 
-    public function getGroupe ():string{
-        return $this -> groupe;
+    public function getNom ():string{
+        return $this -> nom;
     }
 }

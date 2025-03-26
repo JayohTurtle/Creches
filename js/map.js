@@ -6,39 +6,61 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Icône bleue pour les crèches normales
-let blueIcon = L.icon({
-    /*className: 'custom-icon',*/
-    iconUrl: 'assets/images/blue-marker.png',
-    iconSize: [24, 24],
-    iconAnchor: [12, 24]
+// Icônes pour les marqueurs
+let icons = {
+    client: L.icon({ iconUrl: 'assets/images/red-marker.png', iconSize: [24, 24], iconAnchor: [12, 24] }),
+    vendeur: L.icon({ iconUrl: 'assets/images/target.png', iconSize: [16, 16], iconAnchor: [8, 16] }),
+    acheteur: L.icon({ iconUrl: 'assets/images/blue-marker.png', iconSize: [24, 24], iconAnchor: [12, 24] }),
+    neutre: L.icon({ iconUrl: 'assets/images/contact.png', iconSize: [16, 16], iconAnchor: [8, 16] })
+};
+
+// Stocker les marqueurs pour pouvoir les filtrer
+let markers = [];
+let filtres = new Set(["client", "vendeur", "acheteur", "neutre"]); // Par défaut, tout est affiché
+
+// Fonction pour charger et afficher les marqueurs
+function chargerMarkers() {
+    markers.forEach(marker => map.removeLayer(marker));
+    markers = [];
+
+    fetch('http://localhost/creches/API.php')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(point => {
+                let statut = point.statut ? point.statut.trim().toLowerCase() : "inconnu";
+                if (icons[statut] && filtres.has(statut)) {
+                    let marker = L.marker([point.lat, point.lng], { icon: icons[statut] })
+                        .addTo(map)
+                        .bindPopup(`<b>Identifiant: ${point.identifiant}</b><br>Statut: ${statut}`);
+                    markers.push(marker);
+                }
+            });
+        })
+        .catch(error => console.error('Erreur lors du chargement des points:', error));
+    }
+
+    function filtrerMarkers() {
+        let nouvellesSelections = new Set();
+        document.querySelectorAll('input[name="filtre-type"]:checked').forEach(checkbox => {
+            nouvellesSelections.add(checkbox.value);
+        });
+
+        // Si aucune case n'est cochée, réafficher tous les marqueurs
+        if (nouvellesSelections.size === 0) {
+            filtres = new Set(["client", "vendeur", "acheteur", "neutre"]);
+        } else {
+            filtres = nouvellesSelections;
+        }
+
+        console.log("Filtres actifs :", Array.from(filtres)); // Debugging
+        chargerMarkers();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    chargerMarkers();
 });
 
-// Icône rouge pour les crèches à vendre
-let redIcon = L.icon({
-    iconUrl: 'assets/images/red-marker.png',
-    iconSize: [24, 24],
-    iconAnchor: [12, 24]
-});
 
-// Charger les données et afficher les marqueurs
-fetch('http://localhost/creches/API.php')
-  .then(response => response.json())
-  .then(data => {
-      data.forEach(point => {
-          
-          // Nettoyer la donnée (supprimer espaces avant/après et mettre en minuscule)
-          let sens = point.sens.trim().toLowerCase()
-
-          // Vérification de la condition
-          let icon = (sens === "vendeur") ? redIcon : blueIcon
-
-          L.marker([point.lat, point.lng], { icon: icon })
-            .addTo(map)
-            .bindPopup(`<b>Identifiant: ${point.identifiant}</b>`)
-      });
-  })
-  .catch(error => console.error('Erreur lors du chargement des points:', error))
 
 
 

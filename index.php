@@ -36,165 +36,193 @@ $controller = null;
 
 switch ($action) {
 
-    case 'createUser':
-        $controller = new ConnectController();
-        $controller->showCreateUser();
-        break;
-
-    case 'userCreated':
-        $controller = new ConnectController();
-        $controller->userCreated();
-        break;
-
     case 'userFormConnect':
-        $controller = new ConnectController();
-        $controller->showUserFormconnect();
+        $controller = new UserFormConnectController();
+        $controller->showUserFormConnect();
+        break;
+
+    case 'newContact':
+        $controller = new NewContactController();
+        $controller->showNewContact();
+        break;
+
+    case 'ajoutContact':
+        $controller = new AjoutContactController();
+        $controller->handleAjoutContact();
+        break;
+
+    case 'ajoutAcheteur':
+        $controller = new AjoutAcheteurController();
+        $controller->handleAjoutAcheteur();
+        break;
+    
+    case 'ajoutVendeur':
+        $controller = new AjoutVendeurController();
+        $controller->handleAjoutVendeur();
+        break;
+
+    case 'contacts':
+        $controller = new ContactsController();
+        $controller->showContacts();
+        break;
+    
+    case 'acheteurs':
+        $controller = new AcheteursController();
+        $controller->showAcheteurs();
+        break;
+    
+    case 'vendeurs':
+       $controller = new VendeursController();
+       $controller->showVendeurs();
+       break; 
+       
+    case 'seeStatuts':
+        $controller = new StatutController();
+        $controller->showStatut();
+        break;
+    
+    case 'researchAcheteurs':
+        $controller = new ResearchAcheteursController();
+        $controller->handleResearchAcheteurs();
+        break;
+    
+    case 'seeNiveaux':
+        $controller = new NiveauController();
+        $controller->showNiveau();
+        break;
+
+    case 'seeContact':
+        $controller = new SeeContactController();
+        $controller->selectSens();
+        break; 
+
+    case 'actionContact':
+        $controller = new ActionContactController();
+        $controller->handleActionContact();
+        break; 
+    
+    case 'researchVendeurs':
+        $controller = new ResearchVendeursController();
+        $controller->handleResearchVendeurs();
         break;
 
     case 'login':
         $controller = new ConnectController();
         $controller->login();
         break;
-    
+
     case 'logout':
         $controller = new ConnectController();
         $controller->logout();
         break;        
-        
-    case 'forgotPassword':
-        $controller = new ResetPasswordController();
-        $controller->showForgotPasswordForm();
-        break;
-
-    case 'changePassword':
-        $controller = new ChangePasswordController();
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $controller->changePassword();
-        } else {
-            $controller->showChangePasswordForm();
-        }
-        break;
 
     case 'accueil':
         $controller = new AccueilController();
         $controller->showAccueil();
         break;
 
-    case 'clients':
-        $controller = new ClientsController();
-        $controller->showclients();
-        break;
-
-    case 'resultClient':
-        $controller = new ResultClientController();
-        $controller->handleResearchClient();
-        break;
-
-    case 'researchResultClient':
-        $controller = new ResultClientController();
-        $controller->handleResearchClient();
-        break;
-
-    case 'acheteurs':
-        $controller = new AcheteursController();
-        $controller->showAcheteurs();
-        break;
-
-    case 'resultAcheteur':
-        $controller = new ResultAcheteursController();
-        $controller->handleResearchAcheteur();
-        break;
-
-    case 'newContactForm':
-        $controller = new ContactFormController();
-        $controller->showContactForm();
-        break;
-
-    case 'saveContact':
-        $controller = new AjoutContactController();
-        $controller->handleAddContact();
-        break;
-
-    case 'seeContact':
-        $controller = new ContactController();
-        $controller->selectSens();
-
     case 'resultContacts':
-        $controller = new ContactsController();
-        $controller->showContacts();
+        $controller = new ResultContactsController();
+        $controller->showResultContacts();
         break;
 
-    case 'researchResultContacts':
-        $controller = new ResultContactsController();
+    case 'researchContacts':
+        $controller = new ResearchContactsController();
         $controller->handleResearchContacts();
         break;
     
-    case 'ajoutInfoContact':
-        $controller = new AjoutInfoContactController();
-        $controller->handleInfoContact();
-        break;
-
-    case 'ajoutComment':
-        $controller = new AddCommentController();
-        $controller->handleAddComment();
-        break;
-
-    case 'creche':
-        $controller = new CrecheController();
-        $controller->handleCreche();
-    
-    case 'ajoutInteretCreche':
-        $controller = new AddInteretCrecheController();
-        $controller->handleAddInteretCreche();
-        break;
-    
-    case 'ajoutInteretGeneral':
-        $controller = new AddInteretGeneralController();
-        $controller->handleAddInteretGeneral();
-        break;
-
-    case 'ajoutNewLocalisation':
-        $controller = new AddLocalisationController();
-        $controller->handleAddLocalisation();
-        break;
-
-    case 'sendResetLink':
-        $controller = new ResetPasswordController();
-        $controller->sendResetLink();
-        break;
-    
-    case 'resultZoneVente':
-        $controller = new ResultZoneVenteController();
-        $controller->showResultZoneVente();
-        break;
-
     case 'resultZoneAchat':
         $controller = new resultZoneAchatController();
         $controller->showResultZoneAchat();
         break;
 
-    case 'resultTaille':
-        $controller = new ResultTailleController();
-        $controller->showResultTaille();
+    case 'resultZoneVente':
+        $controller = new ResultZoneVenteController();
+        $controller->showResultZoneVente();
+        break;
+    
+    case 'resultZoneContact':
+        $controller = new ResultZoneContactController();
+        $controller->showResultZoneContact();
         break;
 
-    case 'interetsCreche':
-        $controller = new InteretCrecheController();
-        $controller->showInteretCreche();
+    case 'creche':
+        $controller = new CrecheController();
+        $controller->showCreche();
         break;
 
-    case 'resultInteretCreche':
-        $controller = new ResultInteretCrecheController();
-        $controller->showResultInteretCreche();
+    case 'ajoutNewLocalisation':
+        $controller = new AjoutNewLocalisationController();
+        $controller->handleAjoutNewLocalisation();
         break;
 
-    case 'resultInteretGroupe':
-        $controller = new ResultInteretGroupeController();
-        $controller->showResultInteretGroupe();
+    case 'ajoutInfoContact':
+        $controller = new AjoutInfoContactController();
+        $controller->handleAjoutInfoContact();
+        break;
+    
+    case 'confirmerModificationContact':
+        $controller = new AjoutInfoContactController();
+        $controller->handleConfirmationModificationContact();
+        break;
+    
+    case 'modifInteretTaille':
+        $controller = new ModifInteretTailleController();
+        $controller->handleModifInteretTaille();
+        break;
+    
+    case 'confirmerModifInteretTaille':
+        $controller = new ModifInteretTailleController();
+        $controller->handleConfirmationModificationInteretTaille();
+        break;
+    
+    case 'ajoutInteretCreche':
+        $controller = new AjoutInteretCrecheController();
+        $controller->handleAjoutInteretCreche();
         break;
 
-    default:
-        echo "La page '$action' n'existe pas.";
+    case 'ajoutInteretVille':
+        $controller = new AjoutInteretVilleController();
+        $controller->handleAjoutInteretVille();
         break;
 
+    case 'ajoutInteretDepartement':
+        $controller = new AjoutInteretDepartementController();
+        $controller->handleAjoutInteretDepartement();
+        break;
+
+    case 'ajoutInteretRegion':
+        $controller = new AjoutInteretRegionController();
+        $controller->handleAjoutInteretRegion();
+        break;
+
+    case 'ajoutInteretFrance':
+        $controller = new AjoutInteretFranceController();
+        $controller->handleAjoutInteretFrance();
+        break;
+
+    case 'ajoutNewLocalisation':
+        $controller = new AjoutNewLocalisationController();
+        $controller->handleAjoutNewLocalisation();
+        break;
+
+    case 'ajoutNewComment':
+        $controller = new AjoutNewCommentController();
+        $controller->handleAjoutNewComment();
+        break;
+
+    case 'modifCommission':
+        $controller = new ModifCommissionController();
+        $controller->handleModifCommission();
+        break;
+
+    case 'modifValorisation':
+        $controller = new ModifValorisationController();
+        $controller->handleModifValorisation();
+        break;
+
+    case 'confirmerModificationContact':
+        $controller = new AjoutInfoContactController();
+        $controller->handleConfirmationModificationContact();
+        break;
 }

@@ -18,9 +18,10 @@
                         <li>Crèches : <?= $data['creches']; ?> crèches</li>
                     </ul>
                     <div class="ms-3">
-                        <button id="boutonListe-<?= htmlspecialchars($niveau); ?>" class="btn-liste btn btn-primary">
-                            Liste
-                        </button>
+                        <form id="form" method="POST" action="index.php?action=seeNiveaux">
+                            <input type="hidden" name="niveau" value="<?= htmlspecialchars($niveau); ?>">
+                            <button id="boutonListe-<?= htmlspecialchars($niveau); ?>" class="btn-liste btn btn-primary">Liste</button>
+                        </form>
                     </div>
                 </article>
             </div>
@@ -29,7 +30,7 @@
     <div class = "row mt-5"> 
         <div class="articles col-md-6 mt-5">
             <h5 class = "mt-5">Rechercher un acheteur</h5>
-            <form class = "article" id="formResearchContact" method="POST" action="index.php?action=resultAcheteur">
+            <form class = "article" id="formResearchContact" method="POST" action="index.php?action=researchAcheteurs">
                 <div class="row">
                     <div class="radio-group col-md-12">
                         <div class="radio-item">
@@ -58,7 +59,7 @@
                     <div class="col-md-8">
                         <div class="form-group" id="inputContact">
                             <label for="donneeContact">Contact</label>
-                            <input type="text" class="form-control contact-input" name="donneeContact" id="donneeContact" list="getContacts">
+                            <input type="text" class="form-control contact-input" name="donneeContact" id="donneeContact" list="getContacts" autocomplete="off">
                             <datalist id="getContacts">
                             <?php foreach ($contacts as $contact) : ?>
                                 <option value="<?= htmlspecialchars($contact->getContact()); ?>"></option>
@@ -67,7 +68,7 @@
                         </div>
                         <div class="form-group d-none" id="inputNomGroupe">
                             <label for="donneeNomGroupe">Nom du groupe</label>
-                            <input type="text" class="form-control contact-input" name="donneeNomGroupe" id="donneeNomGroupe" list="getNoms">
+                            <input type="text" class="form-control contact-input" name="donneeNomGroupe" id="donneeNomGroupe" list="getNoms" autocomplete="off">
                             <datalist id="getNoms">
                             <?php foreach ($contacts as $contact) : ?>
                                 <option value="<?= htmlspecialchars($contact->getNom()); ?>"></option>
@@ -76,7 +77,7 @@
                         </div>
                         <div class="form-group d-none" id="inputSIREN">
                             <label for="donneeSIREN">SIREN</label>
-                            <input type="text" class="form-control contact-input" name="donneeSIREN" id="donneeSIREN" list="getSirens">
+                            <input type="text" class="form-control contact-input" name="donneeSIREN" id="donneeSIREN" list="getSirens" autocomplete="off">
                             <datalist id="getSirens">
                             <?php foreach ($contacts as $contact) : ?>
                                 <option value="<?= htmlspecialchars($contact->getSiren()); ?>"></option>
@@ -85,7 +86,7 @@
                         </div>
                         <div class="form-group d-none" id="inputEmail">
                             <label for="donneeEmail">Email</label>
-                            <input type="email" class="form-control contact-input" name="donneeEmail" id="donneeEmail" list="getEmails">
+                            <input type="email" class="form-control contact-input" name="donneeEmail" id="donneeEmail" list="getEmails" autocomplete="off">
                             <datalist id="getEmails">
                             <?php foreach ($contacts as $contact) : ?>
                                 <option value="<?= htmlspecialchars($contact->getEmail()); ?>"></option>
@@ -94,7 +95,7 @@
                         </div>
                         <div class="form-group d-none" id="inputTelephone">
                             <label for="donneeTelephone">Téléphone</label>
-                            <input type="tel" class="form-control contact-input" name="donneeTelephone" id="donneeTelephone" list="getTelephones">
+                            <input type="tel" class="form-control contact-input" name="donneeTelephone" id="donneeTelephone" list="getTelephones" autocomplete="off">
                             <datalist id="getTelephones">
                             <?php foreach ($contacts as $contact) : ?>
                                 <option value="<?= htmlspecialchars($contact->getTelephone()); ?>"></option>
@@ -132,11 +133,11 @@
                     </div>
                 </div>
                 <div class="row mt-2 align-items-end">
-                    <div class="col-md-8">
+                    <div class="row form-row col-md-8">
                         <div class="row form-row col-md-12" id ="inputVilleAchat">
                             <div class="form-group col-md-9 ">
                                 <label for="zoneVilleAchat">Ville</label>
-                                <input type="text" class="form-control achat-input" name="zoneVilleAchat" id="zoneVilleAchat" list="getZoneVillesAchat">
+                                <input type="text" class="form-control achat-input" name="zoneVilleAchat" id="zoneVilleAchat" list="getZoneVillesAchat" autocomplete="off">
                                 <datalist id="getZoneVillesAchat">
                                 <?php foreach ($villes as $ville) : ?>
                                     <option value="<?php echo htmlspecialchars($ville->getVille()); ?>"></option>
@@ -150,7 +151,7 @@
                         </div>
                         <div class="form-group d-none" id ="inputDepartementAchat">
                             <label for="zoneDepartementAchat">Département</label>
-                            <input type="text" class="form-control achat-input" name="zoneDepartementAchat" id="zoneDepartementAchat" list="getZoneDepartementsAchat">
+                            <input type="text" class="form-control achat-input" name="zoneDepartementAchat" id="zoneDepartementAchat" list="getZoneDepartementsAchat" autocomplete="off">
                             <datalist id="getZoneDepartementsAchat">
                             <?php foreach ($departements as $departement) : ?>
                                 <option value="<?php echo htmlspecialchars($departement->getDepartement()); ?>"></option>
@@ -159,7 +160,7 @@
                         </div>
                         <div class="form-group d-none" id = "inputRegionAchat">
                             <label for="zoneRegionAchat">Région</label>
-                            <input type="text" class="form-control achat-input" name="zoneRegionAchat" id="zoneRegionAchat" list="getZoneRegionsAchat">
+                            <input type="text" class="form-control achat-input" name="zoneRegionAchat" id="zoneRegionAchat" list="getZoneRegionsAchat" autocomplete="off">
                             <datalist id="getZoneRegionsAchat">
                             <?php foreach ($regions as $region) : ?>
                                 <option value="<?php echo htmlspecialchars($region->getRegion()); ?>"></option>
@@ -167,13 +168,13 @@
                             </datalist>
                         </div>
                     </div>
+                    <div class="form-group col-md-3 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary small-button align-self-end">Chercher</button>
+                    </div>
                     <div class="row form-row mt-3 align-items-end">
                         <div class="form-group col-md-2">
                             <label for="researchNbreCreche">Nombre de crèches</label>
                             <input type="number" class="form-control" name="researchNbreCreche" id="researchNbreCreche">
-                        </div>
-                        <div class="form-group col-md-7 d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary small-button align-self-end">Chercher</button>
                         </div>
                     </div>
                 </form>

@@ -22,7 +22,8 @@ class InteretRegionManager extends AbstractEntityManager{
         return $result;
     }
 
-    public function getInteretsRegionsByContact($idContact) {
+    //Fonction qui récupère les intérêts régionaux par contact
+    public function getInteretsRegionsByIdContact($idContact) {
 
         $sql = "SELECT ir.idContact, r.idRegion, r.region
                 FROM interetRegion ir
@@ -53,5 +54,4 @@ class InteretRegionManager extends AbstractEntityManager{
 
         return $interetsRegions;
     }
-    
 }

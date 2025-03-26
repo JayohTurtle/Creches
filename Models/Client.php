@@ -9,10 +9,10 @@ class Client extends AbstractEntity{
     private $statut;
     private $valorisation;
     private $commission;
-    private $nom;
-    private $identifiant;
     private $dateStatut;
-    
+    private $nombreCreches;
+    private $contact;
+
 
     public function setIdClient(int $idClient):void{
         $this -> idClient = $idClient;
@@ -29,7 +29,6 @@ class Client extends AbstractEntity{
     public function getIdContact ():int{
         return $this -> idContact;
     }
-
     public function setStatut (string $statut){
         $this -> statut = $statut;
     }
@@ -54,22 +53,6 @@ class Client extends AbstractEntity{
         return $this -> commission;
     }
 
-    public function setNom (string $nom){
-        $this -> nom = $nom;
-    }
-
-    public function getNom ():string{
-        return $this -> nom;
-    }
-
-    public function setIdentifiant(string $identifiant){
-        $this -> identifiant = $identifiant;
-    }
-
-    public function getIdentifiant ():string{
-        return $this -> identifiant;
-    }
-
     public function setDateStatut(string $dateStatut){
         $this -> dateStatut = $dateStatut;
     }
@@ -86,5 +69,19 @@ class Client extends AbstractEntity{
         return "";
     }
 
-    
+    public function setNombreCreches(int $nombreCreches){
+        $this -> nombreCreches = $nombreCreches;
+    }
+
+    public function getNombreCreches():int{
+        return $this -> nombreCreches;
+    }
+
+    public function setContact(Contact $contact){
+        $this -> contact = $contact;
+    }
+
+    public function getContact():Contact{
+        return $this -> contact;
+    }
 }

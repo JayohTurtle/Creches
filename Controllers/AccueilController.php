@@ -2,20 +2,19 @@
 
 class AccueilController {
 
-    private $contactManager;
+    private $clientManager;
 
     public function __construct() {
-        $this->contactManager = new ContactManager();
-
+        $this->clientManager = new ClientManager();
     }
+
     public function showAccueil(){
 
-    $contacts = $this->contactManager->getContacts();
+        $commissions = $this->clientManager->getCommissions();
     
     $view = new View();
     $view->render("accueil", [ 
-        'contacts' => $contacts,
+        'commissions'=> $commissions
     ]);
     }
 }
-

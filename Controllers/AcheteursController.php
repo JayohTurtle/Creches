@@ -1,19 +1,16 @@
-
 <?php
 
 class AcheteursController {
     private $contactManager;
     private $localisationManager;
-    private $clientManager;
     private $villeManager;
     private $departementManager;
     private $regionManager;
     private $interetCrecheManager;
 
-    public function __construct() {
+    public function __construct(){
         $this->contactManager = new ContactManager();
         $this->localisationManager = new LocalisationManager();
-        $this->clientManager = new ClientManager();
         $this->villeManager = new VilleManager();
         $this->departementManager = new DepartementManager();
         $this->regionManager = new RegionManager();
@@ -21,14 +18,14 @@ class AcheteursController {
     }
 
     public function showAcheteurs() {
-        $contacts = $this->contactManager->getAcheteursContacts();
+        $contacts = $this->contactManager->getAcheteurs();
         $localisations = $this->localisationManager->getLocalisations();
-        $villes = $this->villeManager->getVilles();
         $departements = $this->departementManager->getDepartements();
         $regions = $this->regionManager->getRegions();
+        $villes = $this->villeManager->getVilles();
 
         // Récupération des données depuis interetCreche
-        $interetsCrecheData = $this->interetCrecheManager->getCrecheData();   
+        $interetsCrecheData = $this->interetCrecheManager->getInteretsCrecheData();   
 
         // S'assurer de la correspondance des statuts
         $niveauMapping = [
@@ -74,7 +71,6 @@ class AcheteursController {
                 }
             }
         }
-
         // Suppression des clés "contacts_uniques" (optionnel si tu n'en as plus besoin)
         foreach ($nbParNiveau as &$niveauData) {
             unset($niveauData["contacts_uniques"]);
@@ -105,5 +101,3 @@ class AcheteursController {
         ]);
     }
 }
-
-

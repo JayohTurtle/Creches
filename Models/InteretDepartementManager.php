@@ -22,7 +22,7 @@ class InteretDepartementManager extends AbstractEntityManager{
         return $result;
     }
 
-    //Récupère les intérêts pas départements par l'idContact
+    //Récupère les intérêts par département d'un contact
     public function getInteretsDepartementsByIdContact($idContact) {
 
         $sql = "SELECT id.idContact, d.idDepartement, d.departement

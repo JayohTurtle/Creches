@@ -36,8 +36,4 @@ class DBManager {
         return $this->db->lastInsertId();
     }
 
-    // Expose la méthode prepare() pour être accessible depuis DBManager
-    public function prepare($sql) {
-        return $this->db->prepare($sql);
-    }
 }

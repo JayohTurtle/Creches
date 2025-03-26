@@ -10,22 +10,16 @@ class Localisation extends AbstractEntity {
     private $adresse;
     private $idDepartement;
     private $identifiant;
-    private $taille;
-    private $region;
-    private ?Ville $ville = null;   
-    private ?Departement $departement = null;
+    private $taille;  
     private $distance;
     private $idGroupe;
-    private $distanceKm;
-    private array $interets = []; // Stocke les intérêts
+    private $vente;
+    private $location;
+    private $region;
+    private $departement;
+    private $ville;
+    private $niveau;
 
-    public function setInterets(array $interets) {
-        $this->interets = $interets;
-    }
-
-    public function getInterets(): array {
-        return $this->interets;
-    }
 
     public function setIdLocalisation(int $idLocalisation): void {
         $this->idLocalisation = $idLocalisation;
@@ -51,44 +45,12 @@ class Localisation extends AbstractEntity {
         return $this->idContact;
     }
 
-    public function getVille(): ?Ville {
-        return $this->ville;
-    }
-
-    public function setVille(Ville $ville): void {
-        $this->ville = $ville;
-    }
-
-    public function getDepartement(): ?Departement {
-        return $this->departement;
-    }
-
-    public function setDepartement(Departement $departement): void {
-        $this->departement = $departement;
-    }
-
-    public function getRegion() {
-        return $this->region;
-    }
-
-    public function setRegion($region){
-        $this->region = $region;
-    }
-
     public function setIdVille(int $idVille) {
         $this->idVille = $idVille;
     }
 
     public function getIdVille(): int {
         return $this->idVille;
-    }
-
-    public function setDistanceKm($distanceKm) {
-        $this->idVille = $distanceKm;
-    }
-
-    public function getDistanceKm(){
-        return $this->distanceKm;
     }
 
     public function setAdresse(string $adresse) {
@@ -130,5 +92,52 @@ class Localisation extends AbstractEntity {
     public function getDistance() {
         return $this->distance;
     }
-}
 
+    public function setVente( $vente) {
+        $this->vente = $vente;
+    }
+
+    public function getVente() {
+        return $this->vente;
+    }
+
+    public function setLocation( $location) {
+        $this->location = $location;
+    }
+
+    public function getLocation() {
+        return $this->location;
+    }
+
+    public function setRegion( $region) {
+        $this->region = $region;
+    }
+
+    public function getRegion() {
+        return $this->region;
+    }
+
+    public function setDepartement( $departement) {
+        $this->departement = $departement;
+    }
+
+    public function getDepartement() {
+        return $this->departement;
+    }
+
+    public function setVille( $ville) {
+        $this->ville = $ville;
+    }
+
+    public function getVille() {
+        return $this->ville;
+    }
+
+    public function setNiveau( $niveau) {
+        $this->niveau = $niveau;
+    }
+
+    public function getNiveau() {
+        return $this->niveau;
+    }
+}

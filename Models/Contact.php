@@ -12,26 +12,9 @@ class Contact extends AbstractEntity{
     private ?string $telephone = null;
     private ?string $siteInternet = null;
     private $sens;
-    private string $niveau;
-    private $nbCreches;
-    private ?Departement $departement = null; // Stocke le département du contact
-    private ?Ville $ville = null; // Stocke le département du contact
-    
-    public function setVille(?Ville $ville) {
-        $this->ville = $ville;
-    }
-
-    public function getVille(): ?Ville {
-        return $this->ville;
-    }  
-    
-    public function setDepartement(?Departement $departement) {
-        $this->departement = $departement;
-    }
-
-    public function getDepartement(): ?Departement {
-        return $this->departement;
-    }  
+    public $localisation;
+    public array $localisations = [];
+    private array $interetsCreche = [];
 
     public function setIdContact(int $idContact):void{
         $this -> idContact = $idContact;
@@ -97,19 +80,35 @@ class Contact extends AbstractEntity{
         return $this -> sens;
     }
 
-    public function setNiveau (string $niveau){
-        $this -> niveau = $niveau;
+    public function setLocalisation(?Localisation $localisation) {
+        $this->localisation = $localisation;
     }
 
-    public function getNiveau ():string{
-        return $this -> niveau;
+    public function getLocalisation(): ?Localisation {
+        return $this->localisation;
     }
 
-    public function setNbCreches ($nbCreches){
-        $this -> nbCreches = $nbCreches;
+    public function ajouterLocalisation(Localisation $localisation) {
+        $this->localisations[] = $localisation;
     }
 
-    public function getNbCreches ():int{
-        return $this -> nbCreches;
-    }    
+    public function setLocalisations(array $localisations) {
+        $this->localisations[] = $localisations;
+    }
+
+    public function getLocalisations(): array {
+        return $this->localisations;
+    }
+    
+    public function ajouterInteretCreche(InteretCreche $interetCreche) {
+        $this->interetsCreche[] = $interetCreche;
+    }
+
+    public function getInteretsCreche(): array {
+        return $this->interetsCreche;
+    }
+
+    public function setInteretsCreche(array $interetsCreche) {
+        $this->interetsCreche = $interetsCreche;
+    }
 }

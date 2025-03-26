@@ -8,16 +8,10 @@ class InteretCreche extends AbstractEntity{
     private $idContact;
     private $niveau;
     private $idLocalisation;
-    private $identifiant;
     private $dateColonne;
-    private $localisation;
-    private $contact;
-    private $ville;
-    private $departement;   
-    private $region;
     private array $niveaux = [];
-    private array $contacts = [];
-    
+    private array $contacts = [];  
+    private $localisation;  
 
     public function setNiveaux (array $niveaux){
         $this -> niveaux = $niveaux;
@@ -28,53 +22,11 @@ class InteretCreche extends AbstractEntity{
     }
 
     public function setContacts (array $contacts){
-        var_dump($contacts); //
         $this -> contacts = $contacts;
     }
     
     public function getContacts ():array {
         return $this -> contacts;
-    }
-    
-    
-    public function setRegion ($region){
-        $this -> region = $region;
-    }
-
-    public function getRegion (){
-        return $this -> region;
-    }
-
-    public function setDepartement ($departement){
-        $this -> departement = $departement;
-    }
-
-    public function getDepartement (){
-        return $this -> departement;
-    }
-
-    public function setVille ($ville){
-        $this -> ville = $ville;
-    }
-
-    public function getVille (){
-        return $this -> ville;
-    }
-
-    public function setContact ($contact){
-        $this -> contact = $contact;
-    }
-
-    public function getContact (){
-        return $this -> contact;
-    }
-
-    public function setLocalisation ($localisation){
-        $this -> localisation = $localisation;
-    }
-
-    public function getLocalisation (){
-        return $this -> localisation;
     }
 
     public function setIdInteretCreche(int $idInteretCreche):void{
@@ -125,12 +77,12 @@ class InteretCreche extends AbstractEntity{
         return $this -> idLocalisation;
     }
 
-    public function setIdentifiant (string $identifiant){
-        $this -> identifiant = $identifiant;
+    public function setLocalisation(Localisation $localisation){
+        $this -> localisation = $localisation;
     }
 
-    public function getIdentifiant ():string{
-        return $this -> identifiant;
+    public function getLocalisation ():Localisation{
+        return $this -> localisation;
     }
 
     // ✅ Méthode pour ajouter des niveaux et contacts sans écraser les précédents
@@ -145,6 +97,6 @@ class InteretCreche extends AbstractEntity{
     }
 
     public function ajouterContact($contact) {
-        $this->contact[] = $contact;
+        $this->contacts[] = $contact;
     }
 }

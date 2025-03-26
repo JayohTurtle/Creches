@@ -3,7 +3,6 @@
 include_once('AbstractEntityManager.php');
 
 class InteretFranceManager extends AbstractEntityManager{
-    public $db;
 
     // Insère les interets avec l'id contact
     public function insertInteretFrance($idContact) {
@@ -16,7 +15,8 @@ class InteretFranceManager extends AbstractEntityManager{
         return $result;
     }
 
-    public function hasInteretFrance($idContact) {
+    //Fonction qui permet de récupérer les intérêts pour la France par idContact
+    public function getInteretFranceByIdContact($idContact) {
 
         $sql = "SELECT COUNT(*) as existe FROM interetFrance WHERE idContact = :idContact";
         $query = $this->db->query($sql, ['idContact' => $idContact]);

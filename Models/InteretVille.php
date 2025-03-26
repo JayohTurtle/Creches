@@ -7,8 +7,8 @@ class InteretVille extends AbstractEntity{
     private $idInteretVille;
     private $idContact;
     private $idVille;
-    private $ville;
     private $rayon;
+    private $ville;
 
 
     public function setIdInteretVille(int $idInteretVille):void{

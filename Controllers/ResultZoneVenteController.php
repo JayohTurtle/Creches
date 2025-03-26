@@ -81,7 +81,7 @@ class ResultZoneVenteController{
                     $loc->setAdresse($localisation->getAdresse());
                     $loc->setIdLocalisation($localisation->getIdLocalisation());
                     $loc->setTaille($localisation->getTaille());
-                    $loc->setDistance($localisation->getDistanceKm());
+                    $loc->setDistance($localisation->getDistance());
                     $loc->setDepartement($localisation->getDepartement());
                     $loc->setRegion($localisation->getRegion());
                 

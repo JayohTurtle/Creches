@@ -3,7 +3,8 @@
 include_once('AbstractEntityManager.php');
 
 class CommentManager extends AbstractEntityManager {
-    
+
+    //Fonction pour insérer un commentaire
     public function insertComment(Comment $comment) {
         if (!empty($comment->getCommentaire())) {
             $sql = 'INSERT INTO commentaires (idContact, commentaire, dateComment, operateur) 
@@ -17,7 +18,8 @@ class CommentManager extends AbstractEntityManager {
         }
     }
 
-    public function extractComments($idContact) {
+    //Fonction pour récupérer les commentaires d'un contact
+    public function getCommentsByIdContact($idContact) {
         $sql = 'SELECT * FROM commentaires WHERE idContact = :idContact';
         $stmt = $this->db->query($sql, ['idContact' => $idContact]);
     

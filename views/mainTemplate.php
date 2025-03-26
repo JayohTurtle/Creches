@@ -22,9 +22,10 @@
             <div><a class="nav-link" href="index.php?action=createUser">🔐 Page Admin</a></div>
             <?php endif; ?>
             <div><a class="nav-link" href="index.php?action=accueil">Accueil</a></div>
-            <div><a class="nav-link" href="index.php?action=clients">Clients</a></div>
+            <div><a class="nav-link" href="index.php?action=contacts">Contacts</a></div>
+            <div><a class="nav-link" href="index.php?action=vendeurs">Vendeurs</a></div>
             <div><a class="nav-link" href="index.php?action=acheteurs">Acheteurs</a></div>
-            <div><a class="nav-link" href="index.php?action=newContactForm">Nouveau contact</a></div>
+            <div><a class="nav-link" href="index.php?action=newContact">Nouveau contact</a></div>
             <div><a href="index.php?action=logout" class='btn btn-secondary'>Déconnexion</a></div>
         </div>
     </div>

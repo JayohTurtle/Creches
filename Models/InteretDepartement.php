@@ -36,8 +36,9 @@ class InteretDepartement extends AbstractEntity{
     public function setDepartement (Departement $departement){
         $this -> departement = $departement;
     }
-
+    
     public function getDepartement ():Departement{
         return $this -> departement;
     }
+
 }

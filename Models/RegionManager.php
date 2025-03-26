@@ -4,12 +4,6 @@ include_once('AbstractEntityManager.php');
 
 class RegionManager extends AbstractEntityManager{
 
-    public function getRegionIdByName($region) {
-        $sql = 'SELECT idRegion FROM regions WHERE region = :region';
-        $idRegion = $this->db->query($sql, ['region' => $region])->fetchColumn();
-        return $idRegion !== false ? (int) $idRegion : null;
-    }
-
     function getRegions(){
         $request = "select * from regions";
         $statement = $this -> db -> query($request);
@@ -20,6 +14,12 @@ class RegionManager extends AbstractEntityManager{
 
         }
         return $regionList;
+    }
+
+    public function getRegionIdByName($region) {
+        $sql = 'SELECT idRegion FROM regions WHERE region = :region';
+        $idRegion = $this->db->query($sql, ['region' => $region])->fetchColumn();
+        return $idRegion !== false ? (int) $idRegion : null;
     }
     
 }

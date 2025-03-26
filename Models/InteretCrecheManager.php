@@ -1,146 +1,7 @@
 <?php
 
 include_once('AbstractEntityManager.php');
-
 class InteretCrecheManager extends AbstractEntityManager {
-
-    
-
-    public function getContactsByIdentifiant($identifiant)
-    {
-        $sql = 'SELECT 
-                    c.idContact, 
-                    c.contact,
-                    c.nom, 
-                    c.telephone, 
-                    c.email, 
-                    i.niveau, 
-                    l.identifiant
-                FROM interetCreche i
-                JOIN contacts c ON i.idContact = c.idContact
-                JOIN localisations l ON i.idLocalisation = l.idLocalisation
-                WHERE l.identifiant = :identifiant';
-
-        $stmt = $this->db->query($sql, [':identifiant' => $identifiant]);
-
-        $contacts = [];
-        while ($row = $stmt->fetch()) {
-            $contact = new Contact([
-                'idContact' => $row['idContact'],
-                'contact'=> $row['contact'],
-                'nom' => $row['nom'],
-                'telephone' => $row['telephone'],
-                'email' => $row['email'],
-                'niveau' => $row['niveau'],
-                'identifiant' => $row['identifiant'] // ici on récupère l'identifiant de la crèche
-            ]);
-            $contacts[] = $contact;
-        }
-        
-        return $contacts;
-    }
-
-    // Méthode pour obtenir le nombre de crèches associées à un contact
-    public function getNbCrechesByContactId($idContact) {
-        // Requête pour compter le nombre de crèches pour ce contact
-        $query = "SELECT COUNT(*) AS nbCreches
-                    FROM localisations
-                    WHERE idContact = :idContact";
-
-        // Utilisation du gestionnaire de DB pour exécuter la requête et obtenir les résultats sous forme de tableau
-        $stmt = DBManager::getInstance()->query($query, ['idContact' => $idContact]);
-
-        // Récupérer le résultat sous forme de tableau
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // Retourne le nombre de crèches ou 0 si aucune crèche n'est trouvée
-        return $result['nbCreches'] ?? 0;
-    }
-
-     // Méthode pour vérifier si un contact est intéressé par le département de la crèche
-     public function isContactInterestedInCrecheDepartment($idContact, $identifiantCreche) {
-        // Requête pour obtenir l'ID du département associé à la crèche
-        $sql = "SELECT l.idDepartement
-                FROM localisations l
-                WHERE l.identifiant = :identifiant
-            ";
-
-        // Exécuter la requête pour récupérer l'ID du département
-        $this->db->query($sql, ['identifiant' => $identifiantCreche]);
-
-        // Récupérer l'ID du département de la crèche
-        $departement = $this->db->fetch(PDO::FETCH_ASSOC);
-
-        if ($departement) {
-            // Si on trouve un département, on vérifie dans la table interetdepartements si ce contact est intéressé
-            $sql = "SELECT COUNT(*) as interestCount
-                    FROM interetdepartement i
-                    WHERE i.idContact = :idContact
-                    AND i.idDepartement = :idDepartement
-                ";
-
-            // Exécuter la requête de vérification d'intérêt du contact pour ce département
-            $stmt = $this->db->query($sql, [
-                'idContact' => $idContact,
-                'idDepartement' => $departement['idDepartement']
-            ]);
-
-            // Récupérer le résultat
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            // Si interestCount > 0, cela signifie que le contact est intéressé par ce département
-            return $result['interestCount'] > 0;
-        }
-
-        return false;  // Si aucun département n'est trouvé, on retourne false
-    }
-
-    // Vérifier si un contact est interessé par un département
-    public function isContactInterestedInDepartment($idContact, $idDepartement) {
-        // Requête SQL pour vérifier si le contact est intéressé par ce département
-        $sql = "SELECT COUNT(*) as interestCount 
-                FROM interetdepartement
-                WHERE idContact = :idContact 
-                AND idDepartement = :idDepartement";
-
-        // Exécuter la requête avec les paramètres
-        $stmt = $this->db->query($sql, [
-            'idContact' => $idContact,
-            'idDepartement' => $idDepartement
-        ]);
-
-        // Récupérer le résultat
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // Si interestCount > 0, cela signifie que le contact est intéressé par ce département
-        return $result['interestCount'] > 0;
-    }
-
-    // Vérifier si un contact est interessé par une ville
-    public function isContactInterestedInCity($idContact, $idVille) {
-        // Requête SQL pour vérifier si le contact est intéressé par ce département
-        $sql = "SELECT COUNT(*) as interestCount 
-                FROM interetville
-                WHERE idContact = :idContact 
-                AND idVille = :idVille";
-
-        // Exécuter la requête avec les paramètres
-        $stmt = $this->db->query($sql, [
-            'idContact' => $idContact,
-            'idVille' => $idVille
-        ]);
-
-        // Récupérer le résultat
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // Si interestCount > 0, cela signifie que le contact est intéressé par ce département
-        return $result['interestCount'] > 0;
-    }
-    
-    public function getCrecheData(){
-        $sql = "SELECT idContact, niveau, idLocalisation, date_colonne FROM interetCreche";
-        return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC); // Récupère les données sous forme de tableau associatif
-    }
 
     // Insère les interets avec les id identifiant et contact
     
@@ -172,26 +33,94 @@ class InteretCrecheManager extends AbstractEntityManager {
         return $result;
     }
 
+    //Fonction qui récupère tous les interets creches
+    public function getInteretsCrecheData(){
+        $sql = "SELECT idContact, niveau, idLocalisation, date_colonne FROM interetCreche";
+        return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC); // Récupère les données sous forme de tableau associatif
+    }
+
+    //Fonction qui récupère les interets creches par idContact
     public function getInteretsCrechesByIdContact($idContact) {
 
-        $sql = "SELECT i.niveau, l.identifiant, i.date_colonne
+        $sql = "SELECT i.niveau, i.idLocalisation, i.date_colonne, i.idInteretCreche,
+                l.idLocalisation, l.idGroupe, l.identifiant,l.idVille, l.idDepartement, l.taille, l.adresse,
+                v.ville, v.codePostal,
+                d.departement, d.idRegion,
+                r.region,
+                g.nom,
+                c.idContact, c.nom, c.email, c.telephone, c.contact
                 FROM interetCreche i
                 JOIN localisations l ON i.idLocalisation = l.idLocalisation
+                JOIN villes v ON l.idVille = v.idVille
+                JOIN departements d ON l.idDepartement = d.idDepartement
+                JOIN regions r ON d.idRegion = r.idRegion
+                JOIN groupes g ON l.idGroupe = g.idGroupe
+                JOIN contacts c ON i.idContact = c.idContact
                 WHERE i.idContact = :idContact";
 
-        $query = $this->db->query($sql, ['idContact' => $idContact]);
-        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        $result = $this->db->query($sql, ['idContact' => $idContact]);
 
-        if (!$result) {
-            return null;
+        $interetsCreche = [];
+        $niveauCounts = [
+            'Achat réalisé' => 0,
+            'Dossier envoyé' => 0,
+            'NDA envoyé' => 0,
+            'Intéressé' => 0,
+            'LOI'=> 0
+        ];
+        
+        while ($row = $result->fetch()) {
+            // Compter les niveaux
+            if (isset($niveauCounts[$row['niveau']])) {
+                $niveauCounts[$row['niveau']]++;
+            }
+        
+            // Clé unique basée sur l'ID de localisation
+            $key = $row['idLocalisation'];
+        
+            // Vérifier si on a déjà créé un objet pour cette localisation
+            if (!isset($interetsCreche[$key])) {
+                $interetsCreche[$key] = new InteretCreche([
+                    'idInteretCreche' => $row['idInteretCreche'],
+                    'idLocalisation' => $row['idLocalisation'],
+                    'dateColonne' => $row['date_colonne'],
+                    'niveau' => $row['niveau'],
+                    'localisation' => new Localisation([
+                        'adresse' => $row['identifiant'], // Pas d'adresse dans la requête, j'utilise `identifiant`
+                        'identifiant' => $row['identifiant'],
+                        'idGroupe' => $row['idGroupe'],
+                        'taille' => $row['taille'],
+                        'idVille' => $row['idVille'],
+                        'idDepartement' => $row['idDepartement'],
+                    ]),
+                    'ville' => new Ville([
+                        'ville' => $row['ville'],
+                        'codePostal' => $row['codePostal']
+                    ]),
+                    'departement' => new Departement([
+                        'departement' => $row['departement'],
+                        'idRegion' => $row['idRegion'],
+                    ]),
+                    'region' => new Region([
+                        'region' => $row['region']
+                    ])
+                ]);
+            }
+        
+            // Ajouter un contact avec le niveau
+            $interetsCreche[$key]->ajouterContact(new Contact([
+                'idContact' => $idContact,
+                'contact' => $row['contact'],
+                'nom' => $row['nom'],
+                'niveau' => $row['niveau'],
+            ]));
         }
-
-        $interetsCreches = [];
-        foreach ($result as $row) {
-            $interetsCreches[] = new InteretCreche($row); // On passe un tableau
-        }
-
-        return $interetsCreches;
+        
+        // Résultat final : les données complètes + les comptages
+        return [
+            'interetsCreche' => array_values($interetsCreche), // Pour avoir un tableau indexé propre
+            'niveauCounts' => $niveauCounts
+        ];
     }
 
     public function getInteretsCrecheByIdLocalisations(array $idLocalisations) {
@@ -228,6 +157,15 @@ class InteretCrecheManager extends AbstractEntityManager {
         $result = $this->db->query($sql, $params);
 
         $interetsCreche = [];
+        $niveauCounts = [
+            'Achat réalisé' => 0,
+            'Dossier envoyé' => 0,
+            'NDA envoyé' => 0,
+            'Intéressé' => 0,
+            'LOI'=> 0
+        ];
+
+        $interetsCreche = [];
 
         while ($row = $result->fetch()) {
             // Clé unique basée sur l'ID de localisation
@@ -236,16 +174,18 @@ class InteretCrecheManager extends AbstractEntityManager {
             // Vérifier si on a déjà créé un objet pour cette localisation
             if (!isset($interetsCreche[$key])) {
                 $interetsCreche[$key] = new InteretCreche([
-                    'idInteretCreche' => $row['idInteretCreche'],
-                    'idLocalisation' => $row['idLocalisation'],
-                    'dateColonne' => $row['date_colonne'],
-                    'localisation' => new Localisation([
-                        'adresse' => $row['adresse'],
-                        'identifiant' => $row['identifiant'],
-                        'idGroupe' => $row['idGroupe'],
-                        'taille' => $row['taille'],
-                        'idVille' => $row['idVille'],
-                        'idDepartement' => $row['idDepartement'],
+                    'idInteretCreche'=> $row['idInteretCreche'],
+                    'idContact'=> $row['idContact'],
+                    'idLocalisation'=> $row['idLocalisation'],
+                    'dateColonne'=> $row['date_colonne'],
+                    'niveau'=> $row['niveau'],
+                    'localisation'=> new Localisation([
+                        'adresse'=> $row['adresse'],
+                        'identifiant'=> $row['identifiant'],
+                        'idGroupe'=> $row['idGroupe'],
+                        'taille'=> $row['taille'],
+                        'idVille'=> $row['idVille'],
+                        'idDepartement'=> $row['idDepartement'],
                     ]),
                     'ville' => new Ville([
                         'ville' => $row['ville'],
@@ -272,9 +212,79 @@ class InteretCrecheManager extends AbstractEntityManager {
 
         // Retourner un tableau contenant uniquement les objets InteretCreche
         
-        return array_values($interetsCreche);
+        return [
+            'interetsCreche' => array_values($interetsCreche), // Pour avoir un tableau indexé propre
+            'niveauCounts' => $niveauCounts
+        ];
     }
-}
 
-
+        //Fonction qui récupère les contacts par niveau d'intérêt
+    public function getContactsByNiveau($niveau)
+{
+    $niveauMapping = [
+        'interesses' => 'Intéressé',
+        'nda_envoyes' => 'NDA envoyé',
+        'dossiers_envoyes' => 'Dossier envoyé',
+        'sous_offre' => 'Sous offre',
+        'achat_realise' => 'Achat réalisé'
+    ];
     
+    // Vérifier si la clé existe dans le mapping
+    $niveauEnBase = $niveauMapping[$niveau] ?? null;
+
+    if ($niveauEnBase === null) {
+        throw new Exception("Le niveau fourni est invalide : " . $niveau);
+    }
+
+    $sql = "SELECT ic.idContact, ic.idLocalisation, ic.date_colonne, ic.niveau,
+    c.contact, c.nom, c.email, c.telephone,
+    l.idDepartement, l.taille, l.identifiant,
+    d.departement, d.idRegion,
+    r.region
+    FROM interetCreche ic
+    JOIN contacts c ON ic.idContact = c.idContact
+    JOIN localisations l ON ic.idLocalisation = l.idLocalisation
+    JOIN departements d ON l.idDepartement = d.idDepartement
+    JOIN regions r ON d.idRegion = r.idRegion
+    WHERE ic.niveau = :niveau";
+
+    $query = $this->db->query($sql, ['niveau' => $niveauEnBase]);
+    $result = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    $contacts = [];
+
+    foreach ($result as $row) {
+        $idContact = $row['idContact'];
+
+        // Vérifier si l'objet Contact existe déjà dans le tableau
+        if (!isset($contacts[$idContact])) {
+            $contacts[$idContact] = new Contact([
+                'idContact'=> $row['idContact'],
+                'contact'=> $row['contact'],
+                'nom'=> $row['nom'],
+                'email'=> $row['email'],
+                'telephone'=> $row['telephone']
+            ]);
+        }
+
+        // Créer une nouvelle Localisation
+        $localisation = new Localisation([
+            'idLocalisation'=> $row['idLocalisation'],
+            'date_colonne'=> $row['date_colonne'],
+            'niveau'=> $row['niveau'],
+            'idDepartement'=> $row['idDepartement'],
+            'taille'=> $row['taille'],
+            'identifiant'=> $row['identifiant'],
+            'departement'=> $row['departement'],
+            'idRegion'=> $row['idRegion'],
+            'region'=> $row['region']
+        ]);
+
+        // Ajouter la localisation à l'objet Contact
+        $contacts[$idContact]->ajouterLocalisation($localisation);
+    }
+
+    return array_values($contacts); // Pour réindexer le tableau et obtenir un array normal
+    }
+
+}

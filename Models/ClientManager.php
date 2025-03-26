@@ -3,31 +3,20 @@
 include_once('AbstractEntityManager.php');
 
 class ClientManager extends AbstractEntityManager {
-    
-    //on récupère le nom dans la base contacts et les identifiants dans la base localisations
-    //les identifiants sont récupérés sous forme de tableau
-    public function getClientsWithContacts() {
-        $sql = "SELECT clients.*, 
-                        contacts.nom AS nom, 
-                        GROUP_CONCAT(DISTINCT localisations.identifiant SEPARATOR ', ') AS identifiants
-                FROM clients
-                JOIN contacts ON clients.idContact = contacts.idContact
-                LEFT JOIN localisations ON contacts.idContact = localisations.idContact
-                GROUP BY clients.idClient, contacts.nom";
+
+    public function insertClient(Client $client) {
+        $sql = 'INSERT INTO clients (idContact, statut, valorisation, commission) 
+                VALUES (:idContact, :statut, :valorisation, :commission)';
         
-        $statement = $this->db->query($sql);
-        $clientList = [];
-    
-        while ($row = $statement->fetch()) {
-            $client = new Client($row);
-            $client->setNom($row['nom']); // Stocker le nom du contact
-            $client->setIdentifiant($row['identifiants'] ?? ''); // Stocker les identifiants concaténés
-            $clientList[] = $client;
-        }
-    
-        return $clientList;
+        $this->db->query($sql, [
+            'idContact' => $client->getIdContact(),
+            'statut' => $client->getStatut(),
+            'valorisation' => $client->getValorisation(),
+            'commission' => $client->getCommission()
+        ]);
     }
 
+    //Fonction pour récupérer les données des vendeurs
     public function getDataClients(){
         $sql = "SELECT idContact, commission, statut, dateStatut FROM clients";
         $result = $this->db->query($sql);
@@ -46,52 +35,10 @@ class ClientManager extends AbstractEntityManager {
         return $clientsData; // Retourne un tableau d'objets Client
     }
 
-    public function getAllClients() {
-        // Requête SQL pour récupérer tous les clients
-        $sql = 'SELECT * FROM clients';
-        
-        // Appel du dbManager pour exécuter la requête
-        $clientsData = $this->db->query($sql);
-        
-        // Créer des objets Client à partir des données
-        $clients = [];
-        foreach ($clientsData as $clientData) {
-            $client = new Client();
-            $client->setIdContact($clientData['idContact']);
-            $client->setIdClient($clientData['idClient']);
-            $client->setStatut($clientData['statut']);
-            $client->setDateStatut($clientData['dateStatut']);
-            $client->setCommission($clientData['commission']);
-            $client->setValorisation($clientData['valorisation']);
-            // Ajoute d'autres attributs si nécessaire
-            $clients[] = $client;
-        }
-        
-        return $clients; // Retourne un tableau d'objets Client
-    }
-
-    public function getIdClients(){
-        $sql = "SELECT idContact FROM clients";
-        $idClients = $this->db->query($sql);
-        return $idClients->fetchAll(PDO::FETCH_ASSOC); // Récupérer les résultats sous forme de tableau associatif
-    }
-    
-    public function insertClient(Client $client) {
-        $sql = 'INSERT INTO clients (idContact, statut, valorisation, commission) 
-                VALUES (:idContact, :statut, :valorisation, :commission)';
-        
-        $this->db->query($sql, [
-            'idContact' => $client->getIdContact(),
-            'statut' => $client->getStatut(),
-            'valorisation' => $client->getValorisation(),
-            'commission' => $client->getCommission()
-        ]);
-    }
-    
     // on récupère les données dans clients avec idContact
-    public function getDataClientsById($idContact){
+    public function getDataClientsByIdContact($idContact){
 
-        $sql = "SELECT commission, valorisation, statut, dateStatut
+        $sql = "SELECT commission, valorisation, statut, dateStatut, idClient
         FROM clients
         WHERE idContact = ?";
 
@@ -101,6 +48,7 @@ class ClientManager extends AbstractEntityManager {
             $row = $result->fetch();
 
             $clientData = new Client();
+            $clientData ->setIdClient($row['idClient']);
             $clientData->setValorisation($row['valorisation']);
             $clientData->setCommission($row['commission']);
             $clientData->setStatut($row['statut']);
@@ -110,5 +58,81 @@ class ClientManager extends AbstractEntityManager {
         }
         return null;
     }
-        
+
+    public function getClientsByStatut($statut){
+
+        $statutMapping = [
+            'approche' => 'Approche',
+            'negociation' => 'Négociation',
+            'mandats_envoyes' => 'Mandat envoyé',
+            'mandats_signes' => 'Mandat signé',
+            'vendu' => 'Vendu'
+        ];
+
+        if (isset($statutMapping[$statut])) {
+            $statutEnBase = $statutMapping[$statut];
+        } else {
+            $statutEnBase = null; // Par défaut, si la valeur n'existe pas
+        }
+    
+        // Si on veut tous les statuts, on ne met pas de filtre WHERE
+        if ($statut === "Tous") {
+            $sql = "SELECT cl.idContact, cl.idClient, cl.statut, cl.valorisation, cl.commission, cl.dateStatut,
+                        c.contact, c.nom, c.email, c.telephone
+                    FROM clients cl
+                    JOIN contacts c ON cl.idContact = c.idContact";
+            $query = $this->db->query($sql);
+        } else {
+            $sql = "SELECT cl.idContact, cl.idClient, cl.statut, cl.valorisation, cl.commission, cl.dateStatut,
+                        c.contact, c.nom, c.email, c.telephone
+                    FROM clients cl
+                    JOIN contacts c ON cl.idContact = c.idContact
+                    WHERE cl.statut = :statut";
+            $query = $this->db->query($sql, ['statut' => $statutEnBase]);
+        }
+
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        $clients = [];
+        foreach ($result as $row) {
+            // Création des objets clients
+            $client = new Client([
+                'idContact'=> $row['idContact'],
+                'idClient'=> $row['idClient'],
+                'statut'=> $row['statut'],
+                'valorisation'=> $row['valorisation'],
+                'commission'=> $row['commission'],
+                'dateStatut'=> $row['dateStatut'],
+            ]);
+
+            $contact = new Contact([
+                'contact' => $row['contact'],
+                'nom' => $row['nom'],
+                'email'=> $row['email'],
+                'telephone'=> $row['telephone']
+            ]);
+
+            $client->setContact($contact);
+            $clients[] = $client;
+        }
+
+        return $clients;
+    }
+
+    public function getCommissions() {
+        $sql = "SELECT SUM(commission) AS total_commission FROM clients";
+        $result = $this->db->query($sql)->fetch(PDO::FETCH_ASSOC);
+    
+        return $result['total_commission'] ?? 0; // Retourne la somme ou 0 si null
+    }
+
+    public function modifCommission($idContact, $commission) {
+        $sql = "UPDATE clients SET commission = '$commission' WHERE idContact = $idContact";
+        return $this->db->query($sql);
+    }
+
+    public function modifValorisation($idContact, $valorisation) {
+        $sql = "UPDATE clients SET valorisation = '$valorisation' WHERE idContact = $idContact";
+        return $this->db->query($sql);
+    }
 }

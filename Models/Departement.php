@@ -5,7 +5,7 @@ include_once('AbstractEntity.php');
 class Departement extends AbstractEntity{
 
     private $idDepartement;
-    private ? string $departement = null;
+    private $departement;
     private $code;
     private $idRegion;
 
@@ -17,11 +17,11 @@ class Departement extends AbstractEntity{
         return $this -> idDepartement;
     }
 
-    public function setDepartement (?string $departement){
+    public function setDepartement (string $departement){
         $this -> departement = $departement;
     }
 
-    public function getDepartement ():?string{
+    public function getDepartement ():string{
         return $this -> departement;
     }
 

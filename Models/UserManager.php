@@ -4,12 +4,6 @@ include_once('AbstractEntityManager.php');
 
 class UserManager extends AbstractEntityManager {
 
-    public $db;
-
-    public function __construct() {
-        $this->db = DBManager::getInstance();
-    }
-
     public function createUser(string $email, string $password, string $role = "user") {
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
         $sql = "INSERT INTO users (email, password, role, mustChangePassword) VALUES (?, ?, ?, 1)";
@@ -48,8 +42,6 @@ class UserManager extends AbstractEntityManager {
         }
         return null;
     }
-
-    
 }
 
 

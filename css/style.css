@@ -53,7 +53,8 @@ h6{
     color: #E0E0E0;
     font-size: 20px;
     font-weight: 600;
-    text-decoration: underline;
+    padding-bottom: 5px;
+
 }
 
 /*Main Template*/
@@ -61,13 +62,13 @@ h6{
     max-width: 1200px;
 }
 a{
-    color: #E0E0E0;
+    color: #90CAF9;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 a:hover{
-    color: #90CAF9;
+    color: white;
 }
 #mainNavbar {
     background-color: #121212;
@@ -94,7 +95,6 @@ a:hover{
     border: none;
     outline: none;
     height: 40px; /* Hauteur fixe pour éviter le déplacement */
-    width: 130px; /* Largeur ajustée */
     transition: background 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     justify-content: center;  /* Centre horizontalement */
@@ -134,6 +134,21 @@ a:hover{
 }
 .btn-success:hover {
     background-color: #43A047;
+}
+
+.btn-warning{
+    background-color: #FFA726; /* Orange */
+    height: 40px;
+    border: none;
+    transition: background 0.3s ease;
+    display: flex;
+    justify-content: center;  /* Centre horizontalement */
+    align-items: center;      /* Centre verticalement */
+    text-align: center; /* Assure l'alignement horizontal */
+}
+
+.btn-warning:hover {
+    background-color: #FB8C00;
 }
 
 /*New contact*/
@@ -185,9 +200,9 @@ textarea {
     margin-left: 10px; /* Ajuste cet espace selon tes besoins */
 }
 
-input[type="checkbox"] {
-    transform: scale(1.5); /* Agrandit la checkbox 1.5x */
-    margin-left: 15px; /* Espace entre la case et le texte */
+checkbox-group {
+    display: flex;
+    margin-left: 10px;
 }
 
 .error {
@@ -255,11 +270,11 @@ input[type="checkbox"] {
 }
 
 .contact-article{
-    height:450px;
+    height:475px;
 }
 
 .client-article{
-    height:500px;
+    height:550px;
 }
 
 .zone-achat-article{
@@ -319,38 +334,31 @@ input[type="checkbox"] {
     display: none; /* Caché par défaut */
     position: fixed;
     z-index: 1000;
-    left: 0;
-    top: 0;
+    left: 0%;
+    top: 0%;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
 }
 
-.small-modal{
-    display: none; /* Caché par défaut */
-    position: fixed;
-    z-index: 1000;
-    left: 5;
-    top: 3;
-    width: 30%;
-    height: 30%;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-
 /* Contenu du popup */
 .modal-content {
     background-color: #252525;
-    margin: 15% auto;
-    padding: 20px;
+    margin:15% auto;
     border-radius: 10px;
-    width: 50%;
+    width: 40%;
     text-align: center;
 }
 .modal-content form {
     display: flex;
     flex-direction: column;
     align-items: center; /* Centre horizontalement */
+}
+
+/*Pages seeStatut*/
+.iconCopie{
+    cursor: pointer; 
+    width: 14px;
 }
 
 /* Bouton pour fermer */

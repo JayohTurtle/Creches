@@ -9,17 +9,6 @@ class InteretGroupe extends AbstractEntity{
     private $niveau;
     private $idGroupe;
     private $dateInteret;
-    private ?Contact $contact = null; // ✅ Ajout de la propriété manquante
-    private $groupe;
-    private $nom;
-
-    public function setContact(Contact $contact): void {
-        $this->contact = $contact;
-    }
-
-    public function getContact(): ?Contact {
-        return $this->contact;
-    }
 
     public function getIdGroupe(){
         return $this->idGroupe;
@@ -45,28 +34,12 @@ class InteretGroupe extends AbstractEntity{
         return $this -> idContact;
     }
 
-    public function setNom (string $nom){
-        $this -> nom = $nom;
-    }
-
-    public function getnom ():string{
-        return $this -> nom;
-    }
-
     public function setNiveau (string $niveau){
         $this -> niveau = $niveau;
     }
 
     public function getniveau ():string{
         return $this -> niveau;
-    }
-
-    public function setGroupe (string $groupe){
-        $this -> groupe = $groupe;
-    }
-
-    public function getGroupe ():string{
-        return $this -> groupe;
     }
 
     public function setDateInteret (string $dateInteret){

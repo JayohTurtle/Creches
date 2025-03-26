@@ -1,16 +1,5 @@
-// Événement sur le bouton d'ouverture du popup rechercheContact
-document.getElementById("boutonRechercheContact").addEventListener("click", function() {
-    setTimeout(() => {
-        let element = document.getElementById("popupRechercheContact")
-        if (element) {
-            updateVisibleInputContact()
-        } else {
-            console.warn("L'élément n'est pas encore disponible !")
-        }
-    }, 100) // Petit délai pour s'assurer que le DOM est mis à jour
-
-
-    // Gestion de l'apparition des input de popupRechercheContact
+document.addEventListener("DOMContentLoaded", function () {
+    // Gestion des recherches par contact
     const radioButtonsContact = document.querySelectorAll('input[name="contactResearch"]')
     const inputGroupsContact = {
         contact: "inputContact",
@@ -35,46 +24,26 @@ document.getElementById("boutonRechercheContact").addEventListener("click", func
 
     radioButtonsContact.forEach(radio => radio.addEventListener("change", updateVisibleInputContact))
     updateVisibleInputContact() // Exécuter au chargement
-})
 
-document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("formResearchContact").addEventListener("submit", function (event) {
-        event.preventDefault(); // Empêche le rechargement de la page
+     //Gestion des recherches d'acheteurs
+     const radioButtonsLocal = document.querySelectorAll('input[name="localResearch"]')
+     const inputGroupsLocal = {
+         researchVille: "inputVille",
+         researchDepartement: "inputDepartement",
+         researchRegion: "inputRegion",
+     }
+ 
+     function updateVisibleInputLocal() {
+         const selectedValue = document.querySelector('input[name="localResearch"]:checked').value
+         document.querySelectorAll('.-input').forEach(input => input.value = "")
+         Object.values(inputGroupsLocal).forEach(id => document.getElementById(id).classList.add('d-none'))
+         document.getElementById(inputGroupsLocal[selectedValue]).classList.remove('d-none')
+         
+     
+     }
+ 
+     radioButtonsLocal.forEach(radio => radio.addEventListener("change", updateVisibleInputLocal))
+     updateVisibleInputLocal() // Exécuter au chargement
+ 
+ })
 
-        let formData = new FormData(this);
-
-        fetch("index.php?action=researchResultContacts", {
-            method: "POST",
-            body: formData,
-        })
-        .then(response => {
-            if (response.ok) {
-                fermerPopup('popupRechercheContact')
-                window.location.href = 'http://localhost/creches/index.php?action=resultContacts';
-            } else {
-                console.error('Erreur lors de l\'envoi des données');
-            }
-        })
-        .catch(error => console.error('Erreur lors de l\'envoi des données:', error));
-    });
-});
-
-/**
- * Fonction pour fermer une popup donnée par son ID.
- */
-function fermerPopup(idPopup) {
-    let popup = document.getElementById(idPopup)
-    if (popup) {
-        popup.style.display = "none"
-    }
-}
-
-/**
- * Fonction pour ouvrir une popup donnée par son ID.
- */
-function ouvrirPopup(idPopup) {
-    let popup = document.getElementById(idPopup)
-    if (popup) {
-        popup.style.display = "block"
-    }
-}

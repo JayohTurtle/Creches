@@ -23,7 +23,7 @@ class ResultZoneAchatController{
     public function showResultZoneAchat(){
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $zoneType = $_POST['localResearchAchat'] ?? null;
-            $nombreCreche = $_POST['researchNbreCreche'] ?? 0;
+            $nombreCreche = (int) ($_POST['researchNbreCreche'] ?? 0);
             $zoneValue = null;
             $idDepartementList = [];
 
@@ -101,35 +101,39 @@ class ResultZoneAchatController{
                 case 'researchFranceAchat':
                     $idContacts = $this->localisationManager->getIdContactByLocalisations();
             }
-
+            
             // Supprimer les doublons
             $idContacts = array_unique($idContacts);
+            
            // Récupérer les informations des contacts
             $contacts = [];
             foreach ($idContacts as $idContact) {
+
+                $contact = $this->contactManager->getContactByIdContact($idContact);
                 
-                $contact = $this->contactManager->getAcheteursById($idContact);
-                $nombreCrecheContact = $this->localisationManager->countCreches($idContact);
+                $nombreCrecheContact = $this->localisationManager->countCrechesByIdContact($idContact);
+                
                 if($nombreCrecheContact >= $nombreCreche){
-                
-                    if ($contact !== null) {
+                    
+                    if ($contact instanceof Contact) {
+                        if ($contact->getSens() === 'Acheteur' || $contact->getSens() === 'Acheteur/Vendeur') { 
                         // Récupérer les intérêts des crèches pour ce contact
+                        
                         $interetsCreche = $this->interetCrecheManager->getInteretsCrechesByIdContact($idContact);
-
-                        // Récupérer les intérêts des groupes pour ce contact
-                        $interetsGroupe = $this->interetGroupeManager->getInteretsGroupesByIdContact($idContact);
-
                         // Ajouter les intérêts sous forme de tableau associatif ou dans un tableau spécifique
                         $contacts[] = [
                             'contact' => $contact,
                             'interetsCreche' => $interetsCreche,
-                            'interetsGroupe' => $interetsGroupe
                         ];
+                        }
+                        
                     };
                 }
             }
+            
             $nombreContacts = count($contacts);
         }
+
         // Passer les résultats à la vue
         $view = new View();
         $view->render('resultZoneAchat', [
