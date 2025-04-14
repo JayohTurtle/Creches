@@ -31,8 +31,9 @@ function modifIdentiteFormulaires() {
 
             let formData = new FormData(this)
             console.log("🔍 Vérification du formulaire :", this.innerHTML)
-            let idContact = this.querySelector("[name='idContact']").value 
             let champ = this.querySelector("[name='champ']").value 
+            let idContact = this.querySelector("[name='idContact']").value 
+            
             let valeur = this.querySelector("[name='valeur']").value 
 
             console.log("📩 Données envoyées :", { idContact, champ, valeur })
@@ -697,6 +698,62 @@ function modifValorisationFormulaire() {
     }
 }
 
+// 🔹 Événement sur le bouton d'ouverture du popup ajoutInteretCreche
+function modifStatutFormulaire() {
+    
+    //fermeture de la popup et envoi des données
+    const formModifStatut = document.getElementById("addStatutForm")
+    
+    if (formModifStatut) {
+        formModifStatut.addEventListener("submit", function (e) {
+            e.preventDefault() // Empêcher le rechargement de la page par défaut
+        
+            // Récupérer les données du formulaire
+            let formData = new FormData(this)
+        
+            fetch("index.php?action=modifStatut", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => {
+                console.log("Réponse brute :", response)
+            
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP : ${response.status}`)
+                }
+                return response.text()  // 🔥 Récupérer la réponse brute
+            })
+            .then(text => {
+                console.log("Texte brut reçu :", text)
+            
+                try {
+                    let jsonData = JSON.parse(text)
+                    console.log("JSON parsé :", jsonData)
+                    return jsonData
+                } catch (error) {
+                    console.error("❌ Erreur de parsing JSON :", error)
+                    throw new Error("La réponse du serveur n'est pas un JSON valide : " + text)
+                }
+            })
+            .then(data => {
+                console.log("🟢 Réponse du serveur :", data) // Debug
+                if (data.status === "success") {
+                    fermerPopup("popupModifStatut")
+                    afficherMessageSucces("Statut modifié avec succès !")
+                    window.location.reload(false)  // Rafraîchir la page
+                } else {
+                    console.error("❌ Erreur serveur :", data.message)
+                    afficherMessageErreur(data.message)
+                }
+            })
+            .catch(error => {
+                console.error("❌ Problème avec la requête fetch :", error)
+                afficherMessageErreur("Une erreur est survenue. Veuillez réessayer.")
+            })
+        })
+    }
+}
+
 /**
 * Fonction pour fermer une popup donnée par son ID.
 */
@@ -708,10 +765,25 @@ function fermerPopup(idPopup) {
     
 let popupActive = null // Stocke l'ID de la popup ouverte
 
-function ouvrirPopup(idPopup) {
+function ouvrirPopup(idPopup, identifiantCreche, niveauCreche) {
+    // Ouvrir la popup (par exemple en la rendant visible)
+    const popup = document.getElementById(idPopup);
+    if (popup) {
+        popup.style.display = 'block';  // Exemple de modification pour afficher la popup
+    }
 
-    let popup = document.getElementById(idPopup)
-    popup.style.display = "block" 
+    // Remplir l'input avec l'identifiant de la crèche, ou le laisser vide si pas d'identifiant
+    const inputInteretCreche = document.getElementById('interetCreche');
+    if (inputInteretCreche) {
+        // Si identifiantCreche est défini, pré-remplir l'input, sinon laisser vide
+        inputInteretCreche.value = identifiantCreche ? identifiantCreche : '';
+    }
+
+    // Remplir l'input pour le niveau de la crèche si nécessaire
+    const selectNiveau = document.getElementById('niveauInteret');
+    if (selectNiveau) {
+        selectNiveau.value = niveauCreche || '';  // Si niveauCreche est défini, pré-remplir, sinon laisser vide
+    }
 
     // Mettre à jour la variable de popup active
     popupActive = idPopup
@@ -762,6 +834,10 @@ function appelerFonctionPopup(idPopup) {
         
         case "popupModifValorisation":
             modifValorisationFormulaire()
+            break
+        
+        case "popupModifStatut":
+            modifStatutFormulaire()
             break
 
         default:

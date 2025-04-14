@@ -109,26 +109,25 @@
         </div>
     </div>
     <!-- Boîte modale pour modifier un téléphone -->
-        <div id="popupModifTelephone" class="modal">
-            <div class="modal-content form-group d-flex flex-column align-items-center">
-                <span class="close" onclick="fermerPopup('popupModifTelephone')">&times;</span>
-                <h5>Ajouter/modifier téléphone</h5>
-                <form class = "article justify-content-center infoContactForm" id="addInfoContact" method="POST">
-                    <div class="row mt-2 justify-content-center">
-                        <div class="form-group w-100" id="inputInfoTelephone">
-                            <label for="infoTelephone">Téléphone</label>
-                            <input type="tel" class="form-control" name="valeur" id="infoTelephone">
-                        </div>                        
-                        <?php if (isset($contact) && $contact instanceof Contact): ?>
-                            <input type="hidden" name="champ" value="telephone">
-                            <input type="hidden" name="idContact" value="<?= (int) $contact->getIdContact() ?>">
-                        <?php endif; ?>
-                    </div>
-                    <div class="form-group col-md-3 d-flex justify-content-center">
-                        <button type="submit" class="btn btn-primary small-button">Envoyer</button>
-                    </div>
-                </form>
-            </div>
+    <div id="popupModifTelephone" class="modal">
+        <div class="modal-content form-group d-flex flex-column align-items-center">
+            <span class="close" onclick="fermerPopup('popupModifTelephone')">&times;</span>
+            <h5>Ajouter/modifier téléphone</h5>
+            <form class = "article justify-content-center infoContactForm" id="addInfoContact" method="POST">
+                <div class="row mt-2 justify-content-center">
+                    <div class="form-group w-100" id="inputInfoTelephone">
+                        <label for="infoTelephone">Téléphone</label>
+                        <input type="tel" class="form-control" name="valeur" id="infoTelephone">
+                    </div>                        
+                    <?php if (isset($contact) && $contact instanceof Contact): ?>
+                        <input type="hidden" name="champ" value="telephone">
+                        <input type="hidden" name="idContact" value="<?= (int) $contact->getIdContact() ?>">
+                    <?php endif; ?>
+                </div>
+                <div class="form-group col-md-3 d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary small-button">Envoyer</button>
+                </div>
+            </form>
         </div>
     </div>
     <!-- Boîte modale pour modifier le sens -->

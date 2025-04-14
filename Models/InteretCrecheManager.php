@@ -66,7 +66,7 @@ class InteretCrecheManager extends AbstractEntityManager {
             'Dossier envoyé' => 0,
             'NDA envoyé' => 0,
             'Intéressé' => 0,
-            'LOI'=> 0
+            'Sous-offre'=> 0
         ];
         
         while ($row = $result->fetch()) {
@@ -162,10 +162,8 @@ class InteretCrecheManager extends AbstractEntityManager {
             'Dossier envoyé' => 0,
             'NDA envoyé' => 0,
             'Intéressé' => 0,
-            'LOI'=> 0
+            'Sous-offre'=> 0
         ];
-
-        $interetsCreche = [];
 
         while ($row = $result->fetch()) {
             // Clé unique basée sur l'ID de localisation
@@ -208,6 +206,11 @@ class InteretCrecheManager extends AbstractEntityManager {
                 'nom'       => $row['nom'],
                 'niveau'    => $row['niveau'], // Associer le niveau à chaque contact
             ]));
+
+             // Mise à jour des statistiques de niveaux
+            if (isset($niveauCounts[$row['niveau']])) {
+            $niveauCounts[$row['niveau']]++;
+            }
         }
 
         // Retourner un tableau contenant uniquement les objets InteretCreche
@@ -221,11 +224,12 @@ class InteretCrecheManager extends AbstractEntityManager {
         //Fonction qui récupère les contacts par niveau d'intérêt
     public function getContactsByNiveau($niveau)
 {
+
     $niveauMapping = [
         'interesses' => 'Intéressé',
         'nda_envoyes' => 'NDA envoyé',
         'dossiers_envoyes' => 'Dossier envoyé',
-        'sous_offre' => 'Sous offre',
+        'sous_offres' => 'Sous-offre',
         'achat_realise' => 'Achat réalisé'
     ];
     

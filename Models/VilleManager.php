@@ -95,4 +95,11 @@ class VilleManager extends AbstractEntityManager{
 
         return $coords ?: null; // Retourne null si aucun résultat
     }
+
+    public function getIdVilleByName($ville){
+
+        $sql = 'SELECT idVille FROM villes WHERE ville = :ville';
+        $idVille = $this->db->query($sql, ['ville' => $ville])->fetchColumn();
+        return $idVille !== false ? (int) $idVille : null;
+    }
 }

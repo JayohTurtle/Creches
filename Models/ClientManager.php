@@ -120,11 +120,11 @@ class ClientManager extends AbstractEntityManager {
     }
 
     public function getCommissions() {
-        $sql = "SELECT SUM(commission) AS total_commission FROM clients";
+        $sql = "SELECT SUM(commission) AS total_commission FROM clients WHERE statut = 'Vendu'";
         $result = $this->db->query($sql)->fetch(PDO::FETCH_ASSOC);
     
         return $result['total_commission'] ?? 0; // Retourne la somme ou 0 si null
-    }
+    }    
 
     public function modifCommission($idContact, $commission) {
         $sql = "UPDATE clients SET commission = '$commission' WHERE idContact = $idContact";
@@ -133,6 +133,11 @@ class ClientManager extends AbstractEntityManager {
 
     public function modifValorisation($idContact, $valorisation) {
         $sql = "UPDATE clients SET valorisation = '$valorisation' WHERE idContact = $idContact";
+        return $this->db->query($sql);
+    }
+
+    public function modifStatut($idContact, $statut){
+        $sql = "UPDATE clients SET statut = '$statut' WHERE idContact = $idContact";
         return $this->db->query($sql);
     }
 }

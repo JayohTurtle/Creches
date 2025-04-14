@@ -54,4 +54,11 @@ class InteretRegionManager extends AbstractEntityManager{
 
         return $interetsRegions;
     }
+
+    public function getIdContactByInteretRegion($idRegion){
+        $sql = "SELECT idContact FROM interetregion WHERE idRegion = :idRegion";
+        $result = $this->db->query($sql,['idRegion' => $idRegion]);
+        
+        return $result->fetchAll(PDO::FETCH_COLUMN);
+    }
 }

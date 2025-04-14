@@ -33,7 +33,7 @@
                         onclick="copierTextePopup('emailACopier_<?= urlencode($contact->getEmail()) ?>', this)">
                 </p>
                 <p>Téléphone : <?= htmlspecialchars($contact->getTelephone()) ?></p>
-                <p><strong>Intérêts :</strong></p>
+                <p><strong>Offre(s) pour :</strong></p>
                 <ul>
                     <?php foreach ($contact->getLocalisations() as $localisation): ?>
                         <li>

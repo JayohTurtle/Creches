@@ -7,6 +7,7 @@ class ResultZoneContactController{
     private $villeManager;
     private $departementManager;
     private $regionManager;
+    private $commentManager;
 
 
     public function __construct() {
@@ -15,7 +16,7 @@ class ResultZoneContactController{
         $this->localisationManager = new LocalisationManager();
         $this->contactManager = new ContactManager();
         $this->regionManager = new RegionManager();
-
+        $this->commentManager = new CommentManager();
     }
 
     public function showResultZoneContact(){
@@ -118,11 +119,15 @@ class ResultZoneContactController{
         foreach ($idContacts as $idContact) {
 
             $contact = $this->contactManager->getContactByIdContact($idContact);
+            $commentaires = $this->commentManager->getCommentsByIdContact($idContact);
             
             $nombreCrecheContact = $this->localisationManager->countCrechesByIdContact($idContact);
             
             if($nombreCrecheContact >= $nombreCreche){
-                $contacts[] = ['contact' => $contact];  
+                $contacts[] = [
+                    'contact' => $contact,
+                    'commentaires' => $commentaires
+                ];  
             }
         }
 
@@ -137,7 +142,7 @@ class ResultZoneContactController{
             'zoneVille' => $zoneVille ?? '',
             'rayon'=> $rayon ?? null,
             'nombreContacts'=> $nombreContacts,
-            'nombreCreche'=> $nombreCreche
+            'nombreCreche'=> $nombreCreche,
         ]);
     }
 

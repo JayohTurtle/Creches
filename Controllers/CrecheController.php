@@ -29,4 +29,25 @@ class CrecheController {
             'localisation' => $localisation
         ]);
     }
+
+    public function handleCrecheVendue() {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $identifiant = $_POST['identifiant'];
+            $idLocalisation = $this->localisationManager->getIdLocalisationByIdentifiant($identifiant);
+            $this->localisationManager->setLocalisationVendue($idLocalisation);
+            header("Location: index.php?action=creche&success=1&idLocalisation=" . $idLocalisation);
+            exit();
+
+        }
+    }
+    public function handleCrecheAVendre() {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $identifiant = $_POST['identifiant'];
+            $idLocalisation = $this->localisationManager->getIdLocalisationByIdentifiant($identifiant);
+            $this->localisationManager->setLocalisationAVendre($idLocalisation);
+            header("Location: index.php?action=creche&success=1&idLocalisation=" . $idLocalisation);
+            exit();
+
+        }
+    }
 }

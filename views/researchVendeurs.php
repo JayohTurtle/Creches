@@ -61,7 +61,7 @@
                     <p><strong>Crèche(s) vendue(s):</strong> <?= htmlspecialchars($interetsCreche["niveauCounts"] ['Achat réalisé']) ?></p>
                 </div>
                 <div>
-                    <p><strong>Sous offre(s):</strong> <?= htmlspecialchars($interetsCreche["niveauCounts"] ['LOI']) ?></p>
+                    <p><strong>Sous offre(s):</strong> <?= htmlspecialchars($interetsCreche["niveauCounts"] ['Sous-offre']) ?></p>
                 </div>
                 <div>
                     <p><strong>Dossier(s) envoyé(s):</strong> <?= htmlspecialchars($interetsCreche["niveauCounts"] ['Dossier envoyé']) ?></p>
@@ -88,7 +88,8 @@
                                         <?= htmlspecialchars($localisation->getAdresse()) ?>, 
                                         <?= htmlspecialchars($localisation->getVille()->getVille()) ?>, 
                                         <?= htmlspecialchars($localisation->getDepartement()->getDepartement()) ?>, 
-                                        <?= htmlspecialchars($localisation->getRegion()->getRegion()) ?>
+                                        <?= htmlspecialchars($localisation->getRegion()->getRegion()) ?>,
+                                        <?= htmlspecialchars($localisation->getTaille()) ?>,
                                     </a>
                                 </li>
                             </strong>
@@ -127,15 +128,14 @@
         <div class="modal-content form-group d-flex flex-column align-items-center">
             <span class="close" onclick="fermerPopup('popupModifEmail')">&times;</span>
             <h5>Ajouter/modifier un email</h5>
-            <form class = "article justify-content-center" id="addEmail" method="POST">
+            <form class = "article justify-content-center infoContactForm" id="addEmail" method="POST">
                 <div class="row mt-2 justify-content-center">
                     <div class="form-group w-100" id="inputInfoEmail">
                         <label for="infoEmail">Email</label>
                         <input type="email" class="form-control" name="infoEmail" id="infoEmail">
                     </div>
-                    <?php if (isset($client) && $client instanceof Contact): ?>
-                        <input type="hidden" name="idContact" value="<?= (int) $client->getIdContact() ?>">
-                    <?php endif; ?>
+                    <input type="hidden" name="champ" value="email">
+                    <input type="hidden" name="idContact" value="<?= (int) $client->getIdContact() ?>">
                 </div>
                 <div class="form-group col-md-3 d-flex justify-content-center">
                     <button type="submit" class="btn btn-primary small-button">Envoyer</button>
@@ -148,20 +148,20 @@
         <div class="modal-content form-group d-flex flex-column align-items-center">
             <span class="close" onclick="fermerPopup('popupModifTelephone')">&times;</span>
             <h5>Ajouter/modifier téléphone</h5>
-            <form class = "article justify-content-center" id="addInfoContact" method="POST">
+            <form class = "article justify-content-center infoContactForm" id="addInfoContact" method="POST">
                 <div class="row mt-2 justify-content-center">
                     <div class="form-group w-100" id="inputInfoTelephone">
                         <label for="infoTelephone">Téléphone</label>
-                        <input type="tel" class="form-control" name="infoTelephone" id="infoTelephone">
+                        <input type="tel" class="form-control" name="valeur" id="infoTelephone">
                     </div>                        
-                    <?php if (isset($client) && $client instanceof Contact): ?>
-                        <input type="hidden" name="idContact" value="<?= (int) $client->getIdContact() ?>">
-                    <?php endif; ?>
+                    <input type="hidden" name="champ" value="telephone">
+                    <input type="hidden" name="idContact" value="<?= (int) $client->getIdContact() ?>">
                 </div>
-                <div class="form-group col-md-3 d-flex justify-content-center">
-                    <button type="submit" class="btn btn-primary small-button">Envoyer</button>
-                </div>
-            </form>
+                    <div class="form-group col-md-3 d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary small-button">Envoyer</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     <!-- Boîte modale pour modifier un statut -->
@@ -169,7 +169,7 @@
         <div class="modal-content form-group d-flex flex-column align-items-center">
             <span class="close" onclick="fermerPopup('popupModifStatut')">&times;</span>
             <h5>Modifier le statut</h5>
-            <form class = "article justify-content-center" id="addInfoStatut" method="POST">
+            <form class = "article justify-content-center" id="addStatutForm" method="POST">
                 <div class="row mt-2 justify-content-center">
                     <div class="form-group w-100" id="inputInfoStatut">
                         <label for="infoStatut">Statut</label>
@@ -196,18 +196,17 @@
         <div class="modal-content form-group d-flex flex-column align-items-center">
             <span class="close" onclick="fermerPopup('popupModifSens')">&times;</span>
             <h5>Modifier le sens</h5>
-            <form class = "article justify-content-center" id="addInfoSens" method="POST">
+            <form class = "article justify-content-center infoContactForm" id="addInfoSens" method="POST">
                 <div class="row mt-2 justify-content-center">
                     <div class="form-group w-100" id="inputInfoSens">
                         <label for="infoSens">Sens</label>
-                        <select class="form-control w-100" name="infoSens" id="infoSens">
+                        <select class="form-control w-100" name="valeur" id="infoSens">
                             <option value=""></option>
                             <option value="acheteur">Acheteur</option>
                             <option value="vendeur">Vendeur</option>
                         </select>
-                        <?php if (isset($client) && $client instanceof Contact): ?>
-                            <input type="hidden" name="idContact" value="<?= (int) $client->getIdContact() ?>">
-                        <?php endif; ?>
+                        <input type="hidden" name="champ" value="sens">
+                        <input type="hidden" name="idContact" value="<?= (int) $client->getIdContact() ?>">
                     </div>
                 </div>
                 <div class="form-group col-md-3 d-flex justify-content-center">
@@ -221,15 +220,14 @@
         <div class="modal-content form-group d-flex flex-column align-items-center">
             <span class="close" onclick="fermerPopup('popupModifSite')">&times;</span>
             <h5>Ajouter un site</h5>
-            <form class = "article justify-content-center" id="addInfoSite" method="POST">
+            <form class = "article justify-content-center infoContactForm" id="addInfoSite" method="POST">
                 <div class="row mt-2 justify-content-center">
                     <div class="form-group w-100" id="inputInfoSite">
                         <label for="infoSite">Site internet</label>
                         <input type="text" class="form-control" name="infoSite" id="infoSite">
-                    </div>                        
-                    <?php if (isset($client) && $client instanceof Contact): ?>
-                        <input type="hidden" name="idContact" value="<?= (int) $client->getIdContact() ?>">
-                    <?php endif; ?>
+                    </div>     
+                    <input type="hidden" name="champ" value="siteInternet">                   
+                    <input type="hidden" name="idContact" value="<?= (int) $client->getIdContact() ?>">
                 </div>
                 <div class="form-group col-md-3 d-flex justify-content-center">
                     <button type="submit" class="btn btn-primary small-button">Envoyer</button>
@@ -242,16 +240,14 @@
         <div class="modal-content form-group d-flex flex-column align-items-center">
             <span class="close" onclick="fermerPopup('popupModifSIREN')">&times;</span>
             <h5>Ajouter un SIREN</h5>
-            <form class = "article justify-content-center" id="addInfoSIREN" method="POST">
+            <form class = "article justify-content-center infoContactForm" id="addInfoSIREN" method="POST">
                 <div class="row mt-2 justify-content-center">
                     <div class="form-group" id="inputInfoSIREN">
                         <label for="infoSIREN">SIREN</label>
                         <input type="text" class="form-control" name="infoSIREN" id="infoSIREN">
                     </div>
-                    
-                    <?php if (isset($client) && $client instanceof Contact): ?>
-                        <input type="hidden" name="idContact" value="<?= (int) $client->getIdContact() ?>">
-                    <?php endif; ?>
+                    <input type="hidden" name="champ" value="siren">
+                    <input type="hidden" name="idContact" value="<?= (int) $client->getIdContact() ?>">
                 </div>
                 <div class="form-group col-md-3 d-flex justify-content-center">
                     <button type="submit" class="btn btn-primary small-button">Envoyer</button>
@@ -333,7 +329,7 @@
                     </div>
                 </div>
                 <?php
-                    $nom = isset($contact) ? $contact->getNom() : ''; // Vérification de l'existence de $contact
+                    $nom = isset($client) ? $client->getNom() : ''; // Vérification de l'existence de $contact
                 ?>
                 <input type="hidden" name="nom" value="<?= htmlspecialchars($nom) ?>">
                 <input type="hidden" name="idContact" value="<?= (int) $idContact ?>">

@@ -33,7 +33,7 @@ class AcheteursController {
             "NDA envoyé" => "nda_envoyes",
             "NDA signé" => "nda_signes",
             "Dossier envoyé" => "dossiers_envoyes",
-            "LOI" => "sous_offres",
+            "Sous-offre" => "sous_offres",
             "Vendu" => "vendus"
         ];
 

@@ -22,6 +22,12 @@ class AjoutInteretVilleController{
             $codePostal = $this-> sanitizeInput($_POST['codePostalInterest']);
             $rayon = $this-> sanitizeInput($_POST['rayonInterest']);
 
+            if ($rayon === "") {
+                $rayon = 5; // Si le rayon est vide, on le met à 5
+            } else {
+                $rayon = (int) $rayon; // Sinon, on le convertit en entier
+            }
+
             //si interetVille n'est pas vide, on ajoute la ville si elle n'existe pas et on ajoute l'intérêt
             if (!empty($_POST['villeInterest'])){
                 $idDepartement = $this->departementManager->getDepartementIdByCodePostal($codePostal);

@@ -21,6 +21,7 @@
             <?php foreach ($contacts as $item): ?>
                 <?php if (!empty($item['contact'])): ?>
                     <?php $contact = $item['contact']; // Récupération directe de l'objet ?>
+                    <?php $commentaires = $item['commentaires'] ?? []; ?>
                     <div class="row">
                         <div class="col-md-5">
                             <div class="article mb-3 d-flex justify-content-between align-items-center">
@@ -38,7 +39,20 @@
                                         <img class="iconCopie" src="assets/images/copier.png" alt="Copier"
                                             onclick="copierTextePopup('emailACopier_<?= urlencode($contact->getEmail()) ?>', this)">
                                     </p>
+                                    <P><strong>Sens:</strong> <?= htmlspecialchars($contact->getSens()) ?></P>
                                     <p><strong>Téléphone:</strong> <?= htmlspecialchars($contact->getTelephone()) ?></p>
+                                    <ul>
+                                        <?php if (!empty($commentaires)): ?>
+                                            <?php foreach ($commentaires as $comment): ?>
+                                                <li>Le <?= htmlspecialchars($comment->getDateCommentFormatFr()); ?> 
+                                                    , <?= htmlspecialchars($comment->getOperateur()) ?> a écrit :
+                                                    <?= htmlspecialchars($comment->getCommentaire()) ?>
+                                                </li>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <li>Aucun commentaire trouvé.</li>
+                                        <?php endif; ?>
+                                    </ul>
                                 </div>
                                 <input type="checkbox" class="form-check-input email-checkbox" data-email="<?= htmlspecialchars($contact->getEmail()) ?>">
                             </div>

@@ -7,6 +7,7 @@ class ResultZoneVenteController{
     private $villeManager;
     private $departementManager;
     private $regionManager;
+    private $interetCrecheManager;
 
     public function __construct() {
         $this->villeManager = new VilleManager();
@@ -14,6 +15,7 @@ class ResultZoneVenteController{
         $this->localisationManager = new LocalisationManager();
         $this->contactManager = new ContactManager();
         $this->regionManager = new RegionManager();
+        $this->interetCrecheManager = new InteretCrecheManager();
     }
 
     public function showResultZoneVente() {

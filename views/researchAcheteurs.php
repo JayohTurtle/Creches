@@ -53,7 +53,7 @@
                     <p><strong>Crèche(s) achetée(s):</strong> <?= htmlspecialchars($interetsCreche["niveauCounts"] ['Achat réalisé']) ?></p>
                 </div>
                 <div>
-                    <p><strong>Offre(s):</strong> <?= htmlspecialchars($interetsCreche["niveauCounts"] ['LOI']) ?></p>
+                    <p><strong>Offre(s):</strong> <?= htmlspecialchars($interetsCreche["niveauCounts"] ['Sous-offre']) ?></p>
                 </div>
                 <div>
                     <p><strong>Dossier(s) envoyé(s):</strong> <?= htmlspecialchars($interetsCreche["niveauCounts"] ['Dossier envoyé']) ?></p>
@@ -134,7 +134,9 @@
                             <p style="display: flex; align-items: center; gap: 8px;">
                                 <strong>Niveau :</strong> <?= htmlspecialchars($interetCreche->getNiveau()) ?><strong> le :</strong> <?= htmlspecialchars($interetCreche->getDateColonneFormatFr()); ?>
                                 <a href="#" 
-                                    onclick="ouvrirPopup('popupAjoutInteretCreche', <?= htmlspecialchars(json_encode($interetCreche->getLocalisation()->getIdentifiant()), ENT_QUOTES, 'UTF-8') ?>, <?= htmlspecialchars(json_encode($interetCreche->getNiveau()), ENT_QUOTES, 'UTF-8') ?>)">
+                                    onclick="ouvrirPopup('popupAjoutInteretCreche', 
+                                        <?= htmlspecialchars(json_encode($interetCreche->getLocalisation()->getIdentifiant()), ENT_QUOTES, 'UTF-8') ?>, 
+                                        <?= htmlspecialchars(json_encode($interetCreche->getNiveau()), ENT_QUOTES, 'UTF-8') ?>)">
                                     <img class="iconCopie" src="assets/images/modif.png" alt="Modifier">
                                 </a>
                             </p>
@@ -355,43 +357,44 @@
         </div>
     </div>
     <!-- Boîte modale pour ajouter un intérêt sur une crèche -->
-    <div id="popupAjoutInteretCreche" class="modal col-md-4" style="display: none;" >
-        <div class="modal-content form-group d-flex flex-column align-items-center">
-            <span class="close" onclick="fermerPopup('popupAjoutInteretCreche')">&times;</span>
-            <h3>Interêt</h3>
-            <form class = "article justify-content-center col-md-12" id="addInterestCrecheForm" method="POST">
-                <div class="form-group mt-3">
-                    <label for="niveauInteret">Niveau</label>
-                    <select class="form-control w-100" name="niveauInteret" id="niveauInteret">
-                        <option value="Intéressé">Intéressé</option>
-                        <option value="NDA envoyé">NDA envoyé</option>
-                        <option value="Dossier envoyé">Dossier envoyé</option>
-                        <option value="LOI">LOI</option>
-                        <option value="Achat réalisé">Achat réalisé</option>
-                    </select>
-                </div>
-                <div class="form-group col-md-10 mt-3" id= "inputChoixInteretCreche">
-                    <label for="identifiant">Sur une crèche</label>
-                    <input type="text" class="form-control" name="interetCreche" id="interetCreche" list="getIdentifiants">
-                    <datalist id="getIdentifiants">
-                        <?php if (!empty($localisationsAVendre) && is_array($localisationsAVendre)): ?>
-                            <?php foreach ($localisationsAVendre as $localisationAVendre) : ?>
-                                <pre><?php var_dump($localisationAVendre->getIdentifiant()); ?></pre>
-                                <?php if ($localisationAVendre instanceof Localisation): ?>
-                                    <option value="<?= htmlspecialchars($localisationAVendre->getIdentifiant()) ?>"></option>
-                                <?php endif; ?>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p>Aucune localisation disponible.</p>
-                        <?php endif; ?>
-                    </datalist>
-                </div>
-                <input type="hidden" name="idContact" value="<?= (int) $idContact ?>">
-                <div class="form-group col-md-3 d-flex justify-content-center">
-                    <button type="submit" class="btn btn-primary small-button" id="ajoutInteretCreche">Envoyer</button>
-                </div>
-            </form>
-        </div>
+    <div id="popupAjoutInteretCreche" class="modal col-md-4" style="display: none;">
+    <div class="modal-content form-group d-flex flex-column align-items-center">
+        <span class="close" onclick="fermerPopup('popupAjoutInteretCreche')">&times;</span>
+        <h3>Intérêt</h3>
+        <form class="article justify-content-center col-md-12" id="addInterestCrecheForm" method="POST">
+            <div class="form-group mt-3">
+                <label for="niveauInteret">Niveau</label>
+                <select class="form-control w-100" name="niveauInteret" id="niveauInteret">
+                    <option value="Intéressé">Intéressé</option>
+                    <option value="NDA envoyé">NDA envoyé</option>
+                    <option value="Dossier envoyé">Dossier envoyé</option>
+                    <option value="Sous-offre">Sous-offre</option>
+                    <option value="Achat réalisé">Achat réalisé</option>
+                </select>
+            </div>
+            <div class="form-group col-md-10 mt-3" id="inputChoixInteretCreche">
+                <label for="identifiant">Sur une crèche</label>
+                <input type="text" class="form-control" name="interetCreche" id="interetCreche" list="getIdentifiants"
+                    value="">  <!-- L'input sera mis à jour dynamiquement -->
+                <datalist id="getIdentifiants">
+                    <?php if (!empty($localisationsAVendre) && is_array($localisationsAVendre)): ?>
+                        <?php foreach ($localisationsAVendre as $localisationAVendre) : ?>
+                            <?php if ($localisationAVendre instanceof Localisation): ?>
+                                <option value="<?= htmlspecialchars($localisationAVendre->getIdentifiant()) ?>"></option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p>Aucune localisation disponible.</p>
+                    <?php endif; ?>
+                </datalist>
+            </div>
+            <input type="hidden" name="idContact" value="<?= (int) $idContact ?>">
+            <div class="form-group col-md-3 d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary small-button" id="ajoutInteretCreche">Envoyer</button>
+            </div>
+        </form>
+    </div>
+</div>
     </div>
     <!-- Boîte modale pour ajouter un intérêt sur une ville -->
     <div id="popupAjoutInteretVille" class="modal" style="display: none;">

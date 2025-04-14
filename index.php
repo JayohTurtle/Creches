@@ -16,17 +16,7 @@ spl_autoload_register(function ($class) {
     }
 });
 
-session_start();
-
-$publicPages = ['userFormConnect', 'resetPassword', 'changePassword', 'forgotPassword', 'login', 'sendResetLink']; // Liste des pages accessibles sans connexion
-
-$action = $_GET['action'] ?? 'home';
-
-//Vérifier si l'utilisateur est connecté sauf pour les pages publiques
-if (!isset($_SESSION['user']) && (!isset($_GET['action']) || !in_array($_GET['action'], $publicPages))) {
-    header("Location: index.php?action=userFormConnect");
-    exit;
-}
+$action = $_GET['action'] ?? 'accueil';
 
 // Récupération de l'action (par défaut : "accueil")
 $action = $_REQUEST['action'] ?? 'accueil';
@@ -35,11 +25,6 @@ $action = $_REQUEST['action'] ?? 'accueil';
 $controller = null;
 
 switch ($action) {
-
-    case 'userFormConnect':
-        $controller = new UserFormConnectController();
-        $controller->showUserFormConnect();
-        break;
 
     case 'newContact':
         $controller = new NewContactController();
@@ -104,17 +89,7 @@ switch ($action) {
     case 'researchVendeurs':
         $controller = new ResearchVendeursController();
         $controller->handleResearchVendeurs();
-        break;
-
-    case 'login':
-        $controller = new ConnectController();
-        $controller->login();
-        break;
-
-    case 'logout':
-        $controller = new ConnectController();
-        $controller->logout();
-        break;        
+        break;     
 
     case 'accueil':
         $controller = new AccueilController();
@@ -221,8 +196,28 @@ switch ($action) {
         $controller->handleModifValorisation();
         break;
 
+    case 'modifStatut':
+        $controller = new ModifStatutController();
+        $controller->handleModifStatut();
+        break;
+
     case 'confirmerModificationContact':
         $controller = new AjoutInfoContactController();
         $controller->handleConfirmationModificationContact();
         break;
+
+    case 'crecheAVendre':
+        $controller = new CrecheController();
+        $controller->handleCrecheAVendre();
+        break;
+
+    case 'crecheVendue':
+        $controller = new CrecheController();
+        $controller->handleCrecheVendue();
+        break;
+
+
+    default:
+    echo "La page '$action' n'existe pas.";
+    break;
 }

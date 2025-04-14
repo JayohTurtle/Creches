@@ -2,9 +2,9 @@
 <div class="container">
     <div class="articles">
         <div class="article">
-            <h5>
-                Crèches à vendre : <?= htmlspecialchars($zoneValue) ?> - (<?= htmlspecialchars($nombreLocalisations) ?>)
-            </h5>
+            <h4>
+                Vendeurs : <?= htmlspecialchars($zoneValue) ?>
+            </h4>
         </div>
         <?php if (!empty($localisations) && $localisations[0] instanceof Localisation): ?>
             <div class="mt-3 row g-3"> 

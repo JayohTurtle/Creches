@@ -8,23 +8,30 @@ class LocalisationManager extends AbstractEntityManager{
         $sql = "SELECT 
             l.identifiant, 
             ST_X(l.location) AS lng, 
-            ST_Y(l.location) AS lat, 
-            -- Si un vendeur a un mandat signé, il devient client, sinon il reste vendeur
+            ST_Y(l.location) AS lat,
+            -- Logique de statut personnalisée
             CASE 
-                WHEN c.sens = 'vendeur' AND cl.statut = 'Mandat signé' THEN 'client'
-                ELSE c.sens
+                WHEN cl.statut = 'Mandat signé' THEN
+                    CASE 
+                        WHEN l.vente = 'groupe' THEN 'client'
+                        WHEN l.vente = 'solo' AND l.statut = 'A vendre' THEN 'client'
+                        WHEN l.vente = 'solo' AND l.statut = 'Vendu' THEN 'neutre'
+                        ELSE LOWER(c.sens)
+                    END
+                ELSE LOWER(c.sens)
             END AS statut
         FROM localisations l
         JOIN contacts c ON l.idContact = c.idContact
-        LEFT JOIN clients cl ON l.idContact = cl.idContact -- LEFT JOIN car un contact peut ne pas être client
-        WHERE cl.statut IS NULL OR cl.statut != 'vendu'; -- Exclure les clients vendus
-        ";
-    
+        LEFT JOIN clients cl ON l.idContact = cl.idContact
+        WHERE (cl.statut IS NULL OR cl.statut != 'vendu')
+            AND NOT (cl.statut = 'Mandat signé' AND l.vente = 'solo' AND l.statut = 'Vendu')";
+
         $query = $this->db->query($sql);
-        return $query->fetchAll(); // Retourne un tableau associatif avec les résultats
+        return $query->fetchAll(PDO::FETCH_ASSOC);
     }
     
-
+    
+    
     //Fonction pour récupérer les localisations à vendre
     public function getLocalisationsAVendre(){
         $sql = "SELECT c.idContact, l.identifiant
@@ -143,14 +150,14 @@ class LocalisationManager extends AbstractEntityManager{
     }
 
     public function getIdLocalisationByIdentifiant($identifiant) {
-        $sql = "SELECT idLocalisation FROM localisations WHERE identifiant = '$identifiant' LIMIT 1";
-    
-        $stmt = $this->db->query($sql);
-    
+        $sql = "SELECT idLocalisation FROM localisations WHERE identifiant = ? LIMIT 1";
+        
+        $stmt = $this->db->query($sql, [$identifiant]); // 🔹 Passer les paramètres à la méthode query()
+        
         $result = $stmt->fetch(PDO::FETCH_ASSOC); // 🔹 Récupérer la ligne
-    
+        
         return $result ? $result['idLocalisation'] : null; // 🔹 Retourner l'ID ou null
-    }
+    }    
 
     //Récupérer toutes les localisations
     function getLocalisations(){
@@ -200,7 +207,7 @@ class LocalisationManager extends AbstractEntityManager{
     //Fonction qui permet de récupérer les localisations par idContact
     public function getLocalisationsByIdContact($idContact) {
     
-        $sql = "SELECT l.idLocalisation, l.identifiant, l.adresse, 
+        $sql = "SELECT l.idLocalisation, l.identifiant, l.adresse, l.taille,
             v.idVille, v.ville, 
             d.idDepartement, d.departement, 
             r.idRegion, r.region  
@@ -237,6 +244,7 @@ class LocalisationManager extends AbstractEntityManager{
                 'idLocalisation' => (int) $row['idLocalisation'],
                 "identifiant" => $row['identifiant'],
                 'adresse' => $row['adresse'],
+                'taille' => $row['taille']
             ]);
             $localisation->setVille($ville);
             $localisation->setDepartement($departement);
@@ -287,6 +295,7 @@ class LocalisationManager extends AbstractEntityManager{
 
     public function getLocalisationsInRayon($coords, $rayon) {
         // Vérification des paramètres
+    
         if (empty($coords['lng']) || empty($coords['lat']) || empty($rayon)) {
             throw new Exception("Les coordonnées et le rayon doivent être définis.");
         }
@@ -556,7 +565,7 @@ class LocalisationManager extends AbstractEntityManager{
 
     //Fonction qui permet de récupérer la localisation par idLocalisation
     public function getLocalisationByIdLocalisation($idLocalisation) {
-        $sql = "SELECT l.idLocalisation, l.identifiant, l.adresse, 
+        $sql = "SELECT l.idLocalisation, l.identifiant, l.adresse, l.statut, l.taille,
                 v.idVille, v.ville, 
                 d.idDepartement, d.departement, 
                 r.idRegion, r.region  
@@ -594,6 +603,8 @@ class LocalisationManager extends AbstractEntityManager{
             'idLocalisation' => (int) $row['idLocalisation'],
             "identifiant" => $row['identifiant'],
             'adresse' => $row['adresse'],
+            'statut' => $row['statut'],
+            'taille' => $row['taille'],
         ]);
     
         $localisation->setVille($ville);
@@ -601,5 +612,15 @@ class LocalisationManager extends AbstractEntityManager{
         $localisation->setRegion($region);
     
         return $localisation;
+    }
+
+    public function setLocalisationVendue($idLocalisation) {
+        $sql = "UPDATE localisations SET statut = 'Vendue' WHERE idLocalisation = :idLocalisation";
+        $this->db->query($sql, ['idLocalisation' => $idLocalisation]);
+    }
+
+    public function setLocalisationAVendre($idLocalisation) {
+        $sql = "UPDATE localisations SET statut = 'A vendre' WHERE idLocalisation = :idLocalisation";
+        $this->db->query($sql, ['idLocalisation' => $idLocalisation]);
     }
 }

@@ -57,4 +57,11 @@ class InteretVilleManager extends AbstractEntityManager{
 
         return $interetsVilles;
     }
+
+    public function getIdContactByInteretVille($idVille){
+        $sql = "SELECT idContact FROM interetville WHERE idVille = :idVille";
+        $result = $this->db->query($sql,['idVille' => $idVille]);
+        
+        return $result->fetchAll(PDO::FETCH_COLUMN);
+    }
 }

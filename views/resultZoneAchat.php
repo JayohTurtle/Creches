@@ -12,35 +12,54 @@
                 <?php foreach ($contacts as $item): ?>
                     <?php if (!empty($item['contact'])): ?>
                         <?php $contact = $item['contact']; // Récupération directe de l'objet ?>
-                        <div class="col-md-12">
-                            <div class="article mb-3">
-                                <h5 class="mb-2"> Contact</h5>
-                                <p>
-                                    <a href="index.php?action=researchAcheteurs&idContact=<?= urlencode($contact->getIdContact()) ?>">
-                                        <strong><?= htmlspecialchars($contact->getNom()) ?> (<?= htmlspecialchars($contact->getContact()) ?>)</strong>
-                                    </a>
-                                </p>
-                                <p style="display: flex; align-items: center; gap: 8px;">
-                                    Email :
-                                    <span id="emailACopier_<?= urlencode($contact->getEmail()) ?>">
-                                        <?= htmlspecialchars($contact->getEmail()) ?>
-                                    </span>
-                                    <img class="iconCopie" src="assets/images/copier.png" alt="Copier"
-                                        onclick="copierTextePopup('emailACopier_<?= urlencode($contact->getEmail()) ?>', this)">
-                                </p>
-                                <p><strong>Téléphone:</strong> <?= htmlspecialchars($contact->getTelephone()) ?></p>
-                                <?php if (!empty($item['interetsCreche']['interetsCreche'])): ?>
-                                    <h6>Intérêts Crèches:</h6>
-                                    <div class="flex-wrap gap-3">
-                                        <?php foreach ($item['interetsCreche']['interetsCreche'] as $interet): ?>
-                                            <p><strong>Niveau:</strong> <?= htmlspecialchars($interet->getNiveau()) ?></p>
-                                            <p><strong>Identifiant:</strong> <?= htmlspecialchars($interet->getLocalisation()->getIdentifiant()) ?></p>
-                                            <p><strong>Date:</strong> <?= htmlspecialchars($interet->getDateColonneFormatFr()) ?></p><br>
-                                        <?php endforeach; ?>
+                        <?php $interetsCreche = $item['interetsCreche']['interetsCreche'] ?? []; ?>
+                        <?php $commentaires = $item['commentaires'] ?? []; ?>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="article mb-3 d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-2"> Contact</h5>
+                                        <p>
+                                            <a href="index.php?action=researchAcheteurs&idContact=<?= urlencode($contact->getIdContact()) ?>">
+                                                <strong><?= htmlspecialchars($contact->getNom()) ?> (<?= htmlspecialchars($contact->getContact()) ?>)</strong>
+                                            </a>
+                                        </p>
+                                        <p><strong>Sens :</strong><?= htmlspecialchars($contact->getSens()) ?> </p>
+                                        <p style="display: flex; align-items: center; gap: 8px;">
+                                            Email :
+                                            <span id="emailACopier_<?= urlencode($contact->getEmail()) ?>">
+                                                <?= htmlspecialchars($contact->getEmail()) ?>
+                                            </span>
+                                            <img class="iconCopie" src="assets/images/copier.png" alt="Copier"
+                                                onclick="copierTextePopup('emailACopier_<?= urlencode($contact->getEmail()) ?>', this)">
+                                        </p>
+                                        <p><strong>Téléphone:</strong> <?= htmlspecialchars($contact->getTelephone()) ?></p>
+                                        <?php if (!empty($interetsCreche)): ?>
+                                            <h6>Intérêts Crèches:</h6>
+                                            <div class="flex-wrap gap-3">
+                                                <?php foreach ($interetsCreche as $interetCreche): ?>
+                                                    <p><strong>Niveau:</strong> <?= htmlspecialchars($interetCreche->getNiveau()) ?></p>
+                                                    <p><strong>Identifiant:</strong> <?= htmlspecialchars($interetCreche->getLocalisation()->getIdentifiant()) ?></p>
+                                                    <p><strong>Date:</strong> <?= htmlspecialchars($interetCreche->getDateColonneFormatFr()) ?></p><br>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php else: ?>
+                                            <p>Aucun intérêt crèche trouvé.</p>
+                                        <?php endif; ?>
+                                        <h6>Commentaires</h5>
+                                        <?php if (!empty($commentaires)): ?>
+                                            <?php foreach ($commentaires as $comment): ?>
+                                                <li>Le <?= htmlspecialchars($comment->getDateCommentFormatFr()); ?> 
+                                                    , <?= htmlspecialchars($comment->getOperateur()) ?> a écrit :
+                                                    <?= htmlspecialchars($comment->getCommentaire()) ?>
+                                                </li>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <li>Aucun commentaire trouvé.</li>
+                                        <?php endif; ?>
                                     </div>
-                                <?php else: ?>
-                                    <p>Aucun intérêt crèche trouvé.</p>
-                                <?php endif; ?>
+                                    <input type="checkbox" class="form-check-input email-checkbox" data-email="<?= htmlspecialchars($contact->getEmail()) ?>">
+                                </div>
                             </div>
                         </div>
                     <?php endif; ?>

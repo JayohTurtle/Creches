@@ -53,6 +53,12 @@ class InteretDepartementManager extends AbstractEntityManager{
         }
 
         return $interetsDepartements;
+    }
 
+    public function getIdContactByInteretDepartement($idZone){
+        $sql = "SELECT idContact FROM interetDepartement WHERE idDepartement = :idZone";
+        $result = $this->db->query($sql,['idZone' => $idZone]);
+        
+        return $result->fetchAll(PDO::FETCH_COLUMN);
     }
 }

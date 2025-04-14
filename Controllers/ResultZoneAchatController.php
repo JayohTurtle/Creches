@@ -8,7 +8,11 @@ class ResultZoneAchatController{
     private $departementManager;
     private $regionManager;
     private $interetCrecheManager;
+    private $interetDepartementManager;
+    private $interetRegionManager;
+    private $interetVilleManager;
     private $interetGroupeManager;
+    private $commentManager;
 
     public function __construct() {
         $this->villeManager = new VilleManager;
@@ -17,7 +21,11 @@ class ResultZoneAchatController{
         $this->contactManager = new ContactManager();
         $this->regionManager = new RegionManager();
         $this->interetCrecheManager = new InteretCrecheManager();
+        $this->interetDepartementManager = new InteretDepartementManager();
         $this->interetGroupeManager = new InteretGroupeManager();
+        $this->interetRegionManager = new InteretRegionManager();
+        $this->interetVilleManager = new InteretVilleManager();
+        $this->commentManager = new CommentManager();
     }
 
     public function showResultZoneAchat(){
@@ -66,28 +74,48 @@ class ResultZoneAchatController{
 
             // Vérifier quel type de recherche est sélectionné
             $idContacts = [];
+            $idContacts1 = [];
+            $idContacts2 = [];
 
             switch ($zoneType) {
                 case 'researchVilleAchat':
+
+                    //Récupérer l'idVille
+                    $idVille = $this->villeManager->getIdVilleByName($zoneVille);
                     // Récupérer les objets Localisation contenant les identifiants
                     $localisationContacts = $this->localisationManager->getLocalisationsInRayon($coords, $rayon);
-
+                    
                     // Récupérer uniquement les idContact
                     foreach ($localisationContacts as $localisation) {
-                        // Accéder directement à l'index 'idContact'
-                        $idContacts[] = $localisation->getIdContact();
+                        // Vérifier si l'idContact est non nul avant de l'ajouter au tableau
+                        if ($localisation->getIdContact() !== null) {
+                            $idContacts1[] = $localisation->getIdContact();
+                        }
                     }
+                    
+                    $idContacts2 = array_filter($this->interetVilleManager->getIdContactByInteretVille($idVille), function($idContact) {
+                        return $idContact !== null;
+                    });
+                    
+                    $idContacts = array_unique(array_merge($idContacts1, $idContacts2));
                     break;
 
                 case 'researchDepartementAchat':
                     // S'assurer que idZone est un tableau, même si c'est un seul ID
-                    $idContacts = $this->localisationManager->getIdContactByIdDepartement([$idZone]);
+                    
+                    $idContacts1 = $this->localisationManager->getIdContactByIdDepartement([$idZone]);
+                    $idContacts2 = $this->interetDepartementManager->getIdContactByInteretDepartement([$idZone]);
+                    
+                    $idContacts1 = is_array($idContacts1) ? $idContacts1 : [];
+                    $idContacts2 = is_array($idContacts2) ? $idContacts2 : [];
+                    
+                    $idContacts = array_unique(array_merge($idContacts1, $idContacts2));
                     break;
 
                 case 'researchRegionAchat':
                     // Récupérer la liste des départements de la région
                     $idDepartementList = $this->departementManager->getDepartementsIdByIdRegion($idRegion);
-                
+
                     // On s'assure que idDepartementList est un tableau
                     $idDepartementArray = [];
                     foreach ($idDepartementList as $dep) {
@@ -95,44 +123,53 @@ class ResultZoneAchatController{
                     }
                 
                     // Passer un tableau de départements à la méthode
-                    $idContacts = $this->localisationManager->getIdContactByIdDepartement($idDepartementArray);
+                    $idContacts1 = $this->localisationManager->getIdContactByIdDepartement($idDepartementArray);
+                    $idContacts2 = $this->interetRegionManager->getIdContactByInteretRegion($idRegion);
+                    
+                    // S'assurer que $idContacts1 et $idContacts2 sont des tableaux avant de les fusionner
+                    $idContacts1 = is_array($idContacts1) ? $idContacts1 : [];
+                    $idContacts2 = is_array($idContacts2) ? $idContacts2 : [];
+                    
+                    $idContacts = array_unique(array_merge($idContacts1, $idContacts2));
                     break;
 
                 case 'researchFranceAchat':
                     $idContacts = $this->localisationManager->getIdContactByLocalisations();
             }
             
-            // Supprimer les doublons
-            $idContacts = array_unique($idContacts);
-            
-           // Récupérer les informations des contacts
-            $contacts = [];
-            foreach ($idContacts as $idContact) {
+        // Supprimer les doublons
+        $idContacts = array_unique($idContacts);
+        
+        // Récupérer les informations des contacts
+        $contacts = [];
+        foreach ($idContacts as $idContact) {
 
-                $contact = $this->contactManager->getContactByIdContact($idContact);
-                
-                $nombreCrecheContact = $this->localisationManager->countCrechesByIdContact($idContact);
-                
-                if($nombreCrecheContact >= $nombreCreche){
-                    
-                    if ($contact instanceof Contact) {
-                        if ($contact->getSens() === 'Acheteur' || $contact->getSens() === 'Acheteur/Vendeur') { 
-                        // Récupérer les intérêts des crèches pour ce contact
-                        
-                        $interetsCreche = $this->interetCrecheManager->getInteretsCrechesByIdContact($idContact);
-                        // Ajouter les intérêts sous forme de tableau associatif ou dans un tableau spécifique
-                        $contacts[] = [
-                            'contact' => $contact,
-                            'interetsCreche' => $interetsCreche,
-                        ];
-                        }
-                        
-                    };
-                }
-            }
+            $contact = $this->contactManager->getContactByIdContact($idContact);
+            $commentaires = $this->commentManager->getCommentsByIdContact($idContact);
             
-            $nombreContacts = count($contacts);
+            $nombreCrecheContact = $this->localisationManager->countCrechesByIdContact($idContact);
+            
+            if($nombreCrecheContact >= $nombreCreche){
+                
+                if ($contact instanceof Contact) {
+                    if ($contact->getSens() === 'Acheteur' || $contact->getSens() === 'Neutre') { 
+                    // Récupérer les intérêts des crèches pour ce contact
+                    
+                    $interetsCreche = $this->interetCrecheManager->getInteretsCrechesByIdContact($idContact);
+                    // Ajouter les intérêts sous forme de tableau associatif ou dans un tableau spécifique
+                    $contacts[] = [
+                        'contact' => $contact,
+                        'interetsCreche' => $interetsCreche,
+                        'commentaires' => $commentaires
+                    ];
+                    }
+                    
+                };
+                
+            }
         }
+        $nombreContacts = count($contacts);
+    }
 
         // Passer les résultats à la vue
         $view = new View();

@@ -19,6 +19,7 @@ class Localisation extends AbstractEntity {
     private $departement;
     private $ville;
     private $niveau;
+    private $statut;
 
 
     public function setIdLocalisation(int $idLocalisation): void {
@@ -139,5 +140,13 @@ class Localisation extends AbstractEntity {
 
     public function getNiveau() {
         return $this->niveau;
+    }
+
+    public function setStatut( $statut) {
+        $this->statut = $statut;
+    }
+    
+    public function getStatut() {
+        return $this->statut;
     }
 }
