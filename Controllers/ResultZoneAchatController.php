@@ -93,7 +93,7 @@ class ResultZoneAchatController{
                         }
                     }
                     
-                    $idContacts2 = array_filter($this->interetVilleManager->getIdContactByInteretVille($idVille), function($idContact) {
+                    $idContacts2 = array_filter($this->interetVilleManager->getIdContactByInteretVille($idVille, $zoneVille), function($idContact) {
                         return $idContact !== null;
                     });
                     

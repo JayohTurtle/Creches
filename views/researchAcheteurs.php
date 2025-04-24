@@ -412,7 +412,7 @@
                     </div>
                     <div class="form-group col-md-3">
                         <label for="codePostalInterest">Code postal</label>
-                        <input class="form-control general-input" id="codePostalInterest" name="codePostalInterest" autocomplete="off">
+                        <input type="text" class="form-control general-input" id="codePostalInterest" name="codePostalInterest" autocomplete="off">
                         <datalist id="codePostauxInterest"></datalist>
                     </div>
                     <div class="form-group col-md-2">
